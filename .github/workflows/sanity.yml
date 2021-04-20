@@ -1,0 +1,52 @@
+name: execute sanity tests
+
+on:
+  push:
+
+defaults:
+  run:
+    shell: bash
+    
+jobs:
+  execute:
+    runs-on: ubuntu-20.04
+    env:
+      AWS_EKS_NAME: tip-wlan-main
+      AWS_DEFAULT_OUTPUT: json
+      AWS_DEFAULT_REGION: us-east-2
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_CLIENT_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_CLIENT_KEY }}
+      NS: sanity-test-run-${{ github.run_id }}
+ 
+    steps:
+      - name: set up Kubernetes connection
+        run: |
+          aws eks update-kubeconfig --name ${AWS_EKS_NAME}
+          kubectl config set-context --current --namespace=${NS}
+
+      - name: create namespace
+        run: |
+          kubectl create ns ${NS}
+
+      - uses: actions/checkout@v2
+        with:
+          path: wlan-testing
+
+      - uses: actions/checkout@v2
+        with:
+          path: wlan-lanforge-scripts
+          repository: Telecominfraproject/wlan-lanforge-scripts
+
+      - name: load lanforge scripts
+        working-directory: wlan-testing
+        run: ./sync_repos.bash
+
+      - name: load test code into cluster
+        run: |
+          kubectl create configmap wlan-testing --from-file=wlan-testing
+
+#      - name: clean up namespace
+#        run: kubectl delete ns ${NS}
+#        if: ${{ always() }}
+
