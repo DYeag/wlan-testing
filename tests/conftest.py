@@ -32,6 +32,7 @@ from controller.controller import FirmwareUtility
 import pytest
 import logging
 from configuration import RADIUS_SERVER_DATA
+from configuration import RADIUS_ACCOUNTING_SERVER_DATA
 from configuration import TEST_CASES
 from configuration import CONFIGURATION
 from configuration import FIRMWARE
@@ -50,6 +51,7 @@ def pytest_addoption(parser):
     parser.addini("milestone", "milestone Id")
 
     parser.addini("num_stations", "Number of Stations/Clients for testing")
+    parser.addini("passpoint_config", "Passpoint configuration file")
 
     # change behaviour
     parser.addoption(
@@ -127,6 +129,12 @@ def radius_info():
     yield RADIUS_SERVER_DATA
 
 
+@pytest.fixture(scope="session")
+def radius_accounting_info():
+    allure.attach(body=str(RADIUS_ACCOUNTING_SERVER_DATA), name="Radius Accounting server Info: ")
+    yield RADIUS_ACCOUNTING_SERVER_DATA
+
+
 # Get Configuration data f
 @pytest.fixture(scope="session")
 def get_configuration(testbed):
@@ -167,7 +175,7 @@ def instantiate_access_point(testbed, get_apnos, get_configuration):
 
 # Controller Fixture
 @pytest.fixture(scope="session")
-def setup_controller(request, get_configuration, instantiate_access_point):
+def setup_controller(request, get_configuration):
     try:
         sdk_client = Controller(controller_data=get_configuration["controller"])
         allure.attach(body=str(get_configuration["controller"]), name="Controller Instantiated: ")
@@ -306,6 +314,7 @@ def get_security_flags():
     # Add more classifications as we go
     security = ["open", "wpa", "wep", "wpa2_personal", "wpa3_personal", "wpa3_personal_mixed", "wpa_wpa2_enterprise_mixed",
                 "wpa_wpa2_personal_mixed", "wpa_enterprise", "wpa2_enterprise", "wpa3_enterprise_mixed",
+                "wpa_eap", "wpa2_eap", "wpa2_only_eap",
                 "wpa3_enterprise", "twog", "fiveg", "radius"]
     yield security
 

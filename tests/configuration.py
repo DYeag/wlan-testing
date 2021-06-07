@@ -1,24 +1,25 @@
 CONFIGURATION = {
-    "basic-ext-03-01": {
+    "basic-01": {
         "controller": {
-            'url': "https://wlan-portal-svc-nola-ext-03.cicd.lab.wlan.tip.build",  # API base url for the controller
-            'username': 'support@example.com',
-            'password': 'support',
+            'url': "https://cmap-portal-svc.rtl.lab.netexperience.com",  # API base url for the controller
+            'username': 'automation.netex@gmail.com',
+            'password': 'openwifi123$',
             'version': "1.1.0-SNAPSHOT",
-            'commit_date': "2021-04-27"
+            'commit_date': "2021-04-27",
+            "customer_id": 2
         },
         'access_point': [
             {
                 'model': 'ecw5410',
                 'mode': "wifi5",
-                'serial': '903cb3944807',
-                'jumphost': True,
-                'ip': "192.168.200.230",
-                'username': "lanforge",
-                'password': "lanforge",
+                'serial': '04f8f8fc3ef2',
+                'jumphost': False,
+                'ip': "10.10.5.5",
+                'username': "root",
+                'password': "openwifi",
                 'port': 22,
                 'jumphost_tty': '/dev/ttyAP1',
-                'version': "ecw5410-2021-03-30-pending-9cb289b"
+                'version': "ecw5410-1.1.0-rc3"
             }
         ],
         "traffic_generator": {
@@ -126,12 +127,74 @@ FIRMWARE = {
 }
 
 RADIUS_SERVER_DATA = {
-    "ip": "10.28.3.100",
-    "port": 1812,
-    "secret": "testing123",
+    "ip": "52.234.179.191",
+    "port": 11812,
+    "secret": "yeababy20!",
     "user": "nolaradius",
     "password": "nolastart",
     "pk_password": "whatever"
+}
+
+RADIUS_ACCOUNTING_SERVER_DATA = {
+    "ip": "52.234.179.191",
+    "port": 11813,
+    "secret": "yeababy20!"
+}
+
+PASSPOINT_PROVIDER_INFO = {
+    "mcc": None,
+    "mnc": None,
+    "network": None,
+    "nai_realms": {
+        "domain": "oss.ameriband.com",
+        "encoding": 0,
+        "eap_map": {"EAP-TTLS with username/password": ["Credential Type:username/password",
+                                                        "Non-EAP Inner Authentication Type:MSCHAPV2"]}
+    },
+    "osu_nai_standalone": "anonymous@ameriband.com",
+    "osu_nai_shared": "anonymous@ameriband.com",
+    "roaming_oi": []
+}
+
+PASSPOINT_OPERATOR_INFO = {
+    "osen": "Disabled",
+    "domain_name_list": ["telecominfraproject.atlassian.net"],
+    "operator_names": [
+        {"locale": "eng", "name": "Default friendly passpoint_operator name"},
+        {"locale": "fra", "name": "Nom de l'opérateur convivial par défaut"}
+    ]
+}
+
+PASSPOINT_VENUE_INFO = {
+    "venue_type": {"group": "Business", "type": "Police Station"},
+    "venue_names": [
+        {"locale": "eng", "name": "Example passpoint_venue", "url": "http://www.example.com/info-eng"},
+        {"locale": "fra", "name": "Exemple de lieu", "url": "http://www.example.com/info-fra"}
+    ]
+}
+
+PASSPOINT_PROFILE_INFO = {
+    "radius_configuration": {
+        "user_defined_nas_id": "FB001AP001",
+        "operator_id": "AmeribandTIP",
+        "radius_acounting_service_interval": 60
+    },
+    "interworking_hs2dot0": "Enabled",
+    "hessid": None,
+    "access_network": {
+        "Access Network Type": "Free Public Network",
+        "Authentication Type": "Acceptance of Terms & Conditions",
+        "Emergency Services Reachable": "Enabled",
+        "Unauthenticated Emergency Service": "Disabled",
+    },
+    "ip_connectivity": {
+        "Internet Connectivity": "Enabled",
+        "IP Address Type": "Public IPv4 Address Available",
+        "Connection Capability": [{"status": "open", "protocol": "TCP", "port": 8888}],
+        "ANQP Domain ID": 1234,
+        "GAS Address 3 Behaviour": "P2P Spec Workaround From Request",
+        "Disable DGAF": False
+    }
 }
 
 TEST_CASES = {
