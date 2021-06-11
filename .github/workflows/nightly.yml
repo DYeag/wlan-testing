@@ -28,8 +28,8 @@ on:
         description: 'Pytest marker expression that will be used to select the tests to execute'
         required: false
   push:
-    branches:
-      - master
+  #  branches:
+  #    - master
   schedule:
   - cron: '15 0 * * *'
 
@@ -66,237 +66,243 @@ jobs:
     - name: push docker image
       run: docker push ${{ env.DOCKER_SERVER }}/cloud-sdk-nightly:pytest-${{ github.run_number }}
 
-#  cloudsdk:
+  cloudsdk:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout pki scripts repo
+      uses: actions/checkout@v2
+      with:
+        path: wlan-pki
+        repository: Telecominfraproject/wlan-pki-cert-scripts
+    - name: Checkout Cloud SDK repo
+      uses: actions/checkout@v2
+      with:
+        path: wlan-helm
+        repository: Telecominfraproject/wlan-cloud-helm
+    - name: Checkout helm values repo
+      uses: actions/checkout@v2
+      with:
+        path: toolsmith
+        repository: Telecominfraproject/Toolsmith
+        token: ${{ secrets.PAT_TOKEN }}
+
+    - name: Prepare environment
+      run: |
+        mkdir -p ./wlan-pki/testCA/private ./wlan-pki/testCA/newcerts ./wlan-pki/generated
+        touch ./wlan-pki/testCA/index.txt
+        echo "01" > ./wlan-pki/testCA/serial.txt
+        echo "${{ env.CACERT }}" | base64 -d > ./wlan-pki/testCA/cacert.pem
+        echo "${{ env.CAKEY }}" | base64 -d > ./wlan-pki/testCA/private/cakey.pem
+        cp ./toolsmith/helm-values/aws-cicd.yaml ./wlan-helm/tip-wlan/resources/environments/aws-cicd.yaml
+
+    - name: Generate certs
+      run: |
+        cd ./wlan-pki
+        ./generate_all.sh true
+        ./copy-certs-to-helm.sh "../wlan-helm"
+
+    - name: Deploy Cloud SDK
+      run: |
+        cd ./wlan-helm/tip-wlan
+        aws eks update-kubeconfig  --name ${{ env.AWS_EKS_NAME }}
+        # start deployment
+        helm dependency update
+        helm upgrade --install tip . -f resources/environments/aws-cicd.yaml --create-namespace --namespace tip --wait --timeout 20m
+
+    - name: Show pod state on deployment failure
+      if: failure()
+      run: |
+        kubectl get pods -n tip
+        kubectl describe pods -n tip
+
+    - name: shut down cloud controller
+      if: always()
+      run: |
+        kubectl get ingress --namespace tip
+        helm delete tip --namespace tip || true
+        kubectl delete ns tip --wait=true --ignore-not-found true
+
+#  test:
+#    runs-on: ubuntu-latest
+#    needs: [ build ]
+#    steps:
+#    - name: get EKS access credentials
+#      run: aws eks update-kubeconfig --name ${{ env.AWS_EKS_NAME }}
+#
+#    - name: install Allure CLI tool
+#      run: |
+#        wget https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/${{ env.ALLURE_CLI_VERSION }}/allure-commandline-${{ env.ALLURE_CLI_VERSION }}.tgz
+#        tar -xzf allure-commandline-${{ env.ALLURE_CLI_VERSION }}.tgz
+#
+#    - name: set job name
+#      id: job
+#      run: echo "::set-output name=name::nightly-ci-${{ github.run_number }}"
+#
+#    - name: create configuration.py secret
+#      run: |
+#        cat << EOF > configuration.py
+#        ${{ secrets.LAB_CONFIGURATION }}
+#        EOF
+#
+#        kubectl create secret generic configuration --from-file=configuration=./configuration.py
+#
+#    - name: run sanity tests
+#      run: |
+#        cat <<EOF | kubectl apply -f -
+#        apiVersion: batch/v1
+#        kind: Job
+#        metadata:
+#          name: "${{ steps.job.outputs.name }}"
+#        spec:
+#          template:
+#            spec:
+#              containers:
+#              - name: tests
+#                image: ${{ env.DOCKER_SERVER }}/cloud-sdk-nightly:pytest-${{ github.run_number }}
+#                command:
+#                  - /bin/bash
+#                  - -x
+#                  - -c
+#                  - |
+#                    cd tests
+#                    pytest -m "${{ github.event.inputs.marker_expression || 'sanity' }}" -s -vvv --testbed="${{ github.event.inputs.testbed || 'basic-02' }}" --skip-testrail --alluredir=/tmp/allure-results
+#                    ret=\$?
+#                    # sleep some time to be able to download the Allure results
+#                    sleep 60
+#                    exit \$ret
+#                volumeMounts:
+#                - name: configuration
+#                  mountPath: "/wlan-testing/tests/configuration.py"
+#                  subPath: configuration
+#                  readOnly: true
+#              imagePullSecrets:
+#              - name: tip-docker-registry-key
+#              restartPolicy: Never
+#              volumes:
+#              - name: configuration
+#                secret:
+#                  secretName: configuration
+#          backoffLimit: 0
+#        EOF
+#
+#        sleep 60 # wait for the pod to come up
+#
+#        podname=$(kubectl get pods --no-headers -o custom-columns=":metadata.name" -l job-name="${{ steps.job.outputs.name }}" | sed "s/pod\///")
+#
+#        until [ -s test_everything.xml ]
+#        do
+#          sleep 10
+#          echo "waiting for tests to complete..."
+#          kubectl cp $podname:/wlan-testing/tests/test_everything.xml test_everything.xml >/dev/null 2>&1
+#        done
+#        echo "tests completed"
+#
+#        echo "downloading allure results..."
+#        kubectl cp $podname:/tmp/allure-results allure-results >/dev/null 2>&1
+#
+#        echo "waiting for pod to exit"
+#        kubectl logs -f $podname >/dev/null 2>&1
+#
+#        exit $(kubectl get pod $podname --output="jsonpath={.status.containerStatuses[].state.terminated.exitCode}")
+#
+#    - name: print logs
+#      if: always()
+#      run: |
+#        podname=$(kubectl get pods --no-headers -o custom-columns=":metadata.name" -l job-name="${{ steps.job.outputs.name }}" | sed "s/pod\///")
+#        kubectl logs $podname
+#
+#    - name: upload Allure results as artifact
+#      if: always()
+#      uses: actions/upload-artifact@v2
+#      with:
+#        name: allure-results
+#        path: allure-results
+#
+#    - name: cleanup
+#      if: always()
+#      run: |
+#        kubectl delete job "${{ steps.job.outputs.name }}" --wait=true --ignore-not-found=true
+#        kubectl delete secret configuration --wait=true --ignore-not-found=true
+#
+#  report:
+#    needs: [ test ]
+#    if: always()
 #    runs-on: ubuntu-latest
 #    steps:
-#    - name: Checkout pki scripts repo
+#    - name: install Allure CLI tool
+#      run: |
+#        wget https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/${{ env.ALLURE_CLI_VERSION }}/allure-commandline-${{ env.ALLURE_CLI_VERSION }}.tgz
+#        tar -xzf allure-commandline-${{ env.ALLURE_CLI_VERSION }}.tgz
+#
+#    - uses: actions/download-artifact@v2
+#      with:
+#        name: allure-results
+#        path: allure-results
+#
+#    - name: checkout testing repo
 #      uses: actions/checkout@v2
 #      with:
-#        path: wlan-pki
-#        repository: Telecominfraproject/wlan-pki-cert-scripts
-#    - name: Checkout Cloud SDK repo
+#        path: wlan-testing
+#
+#    - name: get reports branch
 #      uses: actions/checkout@v2
+#      continue-on-error: true
 #      with:
-#        path: wlan-helm
-#        repository: Telecominfraproject/wlan-cloud-helm
-#    - name: Checkout helm values repo
-#      uses: actions/checkout@v2
+#        ref: gh-pages
+#        path: reports
+#
+#    - name: copy history into results
+#      run: |
+#        if [ -e "reports/sanity/latest" ] ; then
+#          cp -r reports/sanity/latest/history/ allure-results/history
+#        fi
+#
+#    - name: add report metadata
+#      run: |
+#        cat << EOF >> allure-results/environment.properties
+#        Testbed=${{ github.event.inputs.testbed || 'basic-02' }}
+#        Tests.CommitId=$(cd wlan-testing && git rev-parse --short HEAD)
+#        CiRun.Id=${{ github.run_id }}
+#        CiRun.Number=${{ github.run_number }}
+#        CiRun.Url=https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
+#        EOF
+#
+#    - name: generate Allure report
+#      run: allure-${{ env.ALLURE_CLI_VERSION }}/bin/allure generate
+#
+#    - name: upload Allure report as artifact
+#      uses: actions/upload-artifact@v2
 #      with:
-#        path: toolsmith
-#        repository: Telecominfraproject/Toolsmith
-#        token: ${{ secrets.PAT_TOKEN }}
-#
-#    - name: Prepare environment
+#        name: allure-report
+#        path: allure-report
+#    
+#    - name: copy new report
+#      if: ${{ (github.event.inputs.marker_expression || 'sanity') == 'sanity' }}
 #      run: |
-#        mkdir -p ./wlan-pki/testCA/private
-#        mkdir -p ./wlan-pki/testCA/newcerts
-#        mkdir -p ./wlan-pki/generated
-#        touch ./wlan-pki/testCA/index.txt
-#        echo "01" > ./wlan-pki/testCA/serial.txt
-#        echo "${{ env.CACERT }}" | base64 -d > ./wlan-pki/testCA/cacert.pem
-#        echo "${{ env.CAKEY }}" | base64 -d > ./wlan-pki/testCA/private/cakey.pem
-#        cp ./toolsmith/helm-values/aws-cicd.yaml ./wlan-helm/tip-wlan/resources/environments/aws-cicd.yaml
+#        mkdir -p reports/sanity
+#        cp -Tr allure-report reports/sanity/${{ github.run_number }}
 #
-#    - name: Generate certs
-#      run: |
-#        cd ./wlan-pki
-#        ./generate_all.sh true
-#        ./copy-certs-to-helm.sh "../wlan-helm"
+#    - name: update latest symlink
+#      if: ${{ (github.event.inputs.marker_expression || 'sanity') == 'sanity' }}
+#      working-directory: reports/sanity
+#      run: ln -fns ${{ github.run_number }} latest
 #
-#    - name: Deploy Cloud SDK
-#      run: |
-#        cd ./wlan-helm/tip-wlan
-#        aws eks update-kubeconfig  --name ${{ env.AWS_EKS_NAME }}
-#        # start deployment
-#        helm dependency update
-#        helm upgrade --install tip . -f resources/environments/aws-cicd.yaml --create-namespace --namespace tip
+#    - name: generate new index.html
+#      run: python wlan-testing/.github/tools/generate_directory_index.py -r reports
 #
-#    - name: Show pod state on deployment failure
-#      if: failure()
+#    - name: commit reports update
+#      working-directory: reports
 #      run: |
-#        kubectl get pods -n tip
-#        kubectl describe pods -n tip
-
-  test:
-    runs-on: ubuntu-latest
-    needs: [ build ]
-    steps:
-    - name: get EKS access credentials
-      run: aws eks update-kubeconfig --name ${{ env.AWS_EKS_NAME }}
-
-    - name: install Allure CLI tool
-      run: |
-        wget https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/${{ env.ALLURE_CLI_VERSION }}/allure-commandline-${{ env.ALLURE_CLI_VERSION }}.tgz
-        tar -xzf allure-commandline-${{ env.ALLURE_CLI_VERSION }}.tgz
-
-    - name: set job name
-      id: job
-      run: echo "::set-output name=name::nightly-ci-${{ github.run_number }}"
-
-    - name: create configuration.py secret
-      run: |
-        cat << EOF > configuration.py
-        ${{ secrets.LAB_CONFIGURATION }}
-        EOF
-
-        kubectl create secret generic configuration --from-file=configuration=./configuration.py
-
-    - name: run sanity tests
-      run: |
-        cat <<EOF | kubectl apply -f -
-        apiVersion: batch/v1
-        kind: Job
-        metadata:
-          name: "${{ steps.job.outputs.name }}"
-        spec:
-          template:
-            spec:
-              containers:
-              - name: tests
-                image: ${{ env.DOCKER_SERVER }}/cloud-sdk-nightly:pytest-${{ github.run_number }}
-                command:
-                  - /bin/bash
-                  - -x
-                  - -c
-                  - |
-                    cd tests
-                    pytest -m "${{ github.event.inputs.marker_expression || 'sanity' }}" -s -vvv --testbed="${{ github.event.inputs.testbed || 'basic-02' }}" --skip-testrail --alluredir=/tmp/allure-results
-                    ret=\$?
-                    # sleep some time to be able to download the Allure results
-                    sleep 60
-                    exit \$ret
-                volumeMounts:
-                - name: configuration
-                  mountPath: "/wlan-testing/tests/configuration.py"
-                  subPath: configuration
-                  readOnly: true
-              imagePullSecrets:
-              - name: tip-docker-registry-key
-              restartPolicy: Never
-              volumes:
-              - name: configuration
-                secret:
-                  secretName: configuration
-          backoffLimit: 0
-        EOF
-
-        sleep 60 # wait for the pod to come up
-
-        podname=$(kubectl get pods --no-headers -o custom-columns=":metadata.name" -l job-name="${{ steps.job.outputs.name }}" | sed "s/pod\///")
-
-        until [ -s test_everything.xml ]
-        do
-          sleep 10
-          echo "waiting for tests to complete..."
-          kubectl cp $podname:/wlan-testing/tests/test_everything.xml test_everything.xml >/dev/null 2>&1
-        done
-        echo "tests completed"
-
-        echo "downloading allure results..."
-        kubectl cp $podname:/tmp/allure-results allure-results >/dev/null 2>&1
-
-        echo "waiting for pod to exit"
-        kubectl logs -f $podname >/dev/null 2>&1
-
-        exit $(kubectl get pod $podname --output="jsonpath={.status.containerStatuses[].state.terminated.exitCode}")
-
-    - name: print logs
-      if: always()
-      run: |
-        podname=$(kubectl get pods --no-headers -o custom-columns=":metadata.name" -l job-name="${{ steps.job.outputs.name }}" | sed "s/pod\///")
-        kubectl logs $podname
-
-    - name: upload Allure results as artifact
-      if: always()
-      uses: actions/upload-artifact@v2
-      with:
-        name: allure-results
-        path: allure-results
-
-    - name: cleanup
-      if: always()
-      run: |
-        kubectl delete job "${{ steps.job.outputs.name }}" --wait=true --ignore-not-found=true
-        kubectl delete secret configuration --wait=true --ignore-not-found=true
-
-  report:
-    needs: [ test ]
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-    - name: install Allure CLI tool
-      run: |
-        wget https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/${{ env.ALLURE_CLI_VERSION }}/allure-commandline-${{ env.ALLURE_CLI_VERSION }}.tgz
-        tar -xzf allure-commandline-${{ env.ALLURE_CLI_VERSION }}.tgz
-
-    - uses: actions/download-artifact@v2
-      with:
-        name: allure-results
-        path: allure-results
-
-    - name: checkout testing repo
-      uses: actions/checkout@v2
-      with:
-        path: wlan-testing
-
-    - name: get reports branch
-      uses: actions/checkout@v2
-      continue-on-error: true
-      with:
-        ref: gh-pages
-        path: reports
-
-    - name: copy history into results
-      run: |
-        if [ -e "reports/sanity/latest" ] ; then
-          cp -r reports/sanity/latest/history/ allure-results/history
-        fi
-
-    - name: add report metadata
-      run: |
-        cat << EOF >> allure-results/environment.properties
-        Testbed=${{ github.event.inputs.testbed || 'basic-02' }}
-        Tests.CommitId=$(cd wlan-testing && git rev-parse --short HEAD)
-        CiRun.Id=${{ github.run_id }}
-        CiRun.Number=${{ github.run_number }}
-        CiRun.Url=https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
-        EOF
-
-    - name: generate Allure report
-      run: allure-${{ env.ALLURE_CLI_VERSION }}/bin/allure generate
-
-    - name: upload Allure report as artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: allure-report
-        path: allure-report
-    
-    - name: copy new report
-      if: ${{ (github.event.inputs.marker_expression || 'sanity') == 'sanity' }}
-      run: |
-        mkdir -p reports/sanity
-        cp -Tr allure-report reports/sanity/${{ github.run_number }}
-
-    - name: update latest symlink
-      if: ${{ (github.event.inputs.marker_expression || 'sanity') == 'sanity' }}
-      working-directory: reports/sanity
-      run: ln -fns ${{ github.run_number }} latest
-
-    - name: generate new index.html
-      run: python wlan-testing/.github/tools/generate_directory_index.py -r reports
-
-    - name: commit reports update
-      working-directory: reports
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-        git add .
-        git commit -m "Automated deployment: $(date -u)"
-
-    - name: push
-      uses: ad-m/github-push-action@v0.6.0
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: gh-pages
-        directory: reports
+#        git config --global user.name "github-actions[bot]"
+#        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+#
+#        git add .
+#        git commit -m "Automated deployment: $(date -u)"
+#
+#    - name: push
+#      uses: ad-m/github-push-action@v0.6.0
+#      with:
+#        github_token: ${{ secrets.GITHUB_TOKEN }}
+#        branch: gh-pages
+#        directory: reports
+#
