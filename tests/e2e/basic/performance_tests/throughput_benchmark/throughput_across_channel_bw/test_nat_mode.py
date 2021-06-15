@@ -13,6 +13,8 @@ pytestmark = [pytest.mark.performance, pytest.mark.dataplane_throughput_test, py
 setup_params_general = {
     "mode": "NAT",
     "ssid_modes": {
+        "open": [{"ssid_name": "ssid_open_2g", "appliedRadios": ["is2dot4GHz"]},
+                 {"ssid_name": "ssid_open_5g", "appliedRadios": ["is5GHzU", "is5GHz", "is5GHzL"]}],
         "wpa2_personal": [
             {"ssid_name": "ssid_wpa2_2g", "appliedRadios": ["is2dot4GHz"], "security_key": "something"},
             {"ssid_name": "ssid_wpa2_5g", "appliedRadios": ["is5GHzU", "is5GHz", "is5GHzL"],
@@ -45,7 +47,7 @@ class TestDataplaneThroughputNAT(object):
         profile_data = setup_params_general["ssid_modes"]["wpa2_personal"][0]
         ssid_name = profile_data["ssid_name"]
         security_key = profile_data["security_key"]
-        security = "wpa2"
+        security = "open"
         mode = "NAT"
         band = "twog"
         vlan = 1
