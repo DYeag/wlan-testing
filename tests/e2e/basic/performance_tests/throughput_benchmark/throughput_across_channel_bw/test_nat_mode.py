@@ -19,7 +19,10 @@ setup_params_general = {
             {"ssid_name": "ssid_wpa2_2g", "appliedRadios": ["is2dot4GHz"], "security_key": "something"},
             {"ssid_name": "ssid_wpa2_5g", "appliedRadios": ["is5GHzU", "is5GHz", "is5GHzL"],
              "security_key": "something"}]},
-    "rf": {},
+    "rf": {
+        "is5GHz": {"channelBandwidth": "is20MHz"},
+        "is5GHzL": {"channelBandwidth": "is20MHz"},
+        "is5GHzU": {"channelBandwidth": "is20MHz"}},
     "radius": False
 }
 

@@ -225,16 +225,14 @@ class RunTest:
             self.client_connect.upstream_port = self.upstream_port + "." + str(vlan_id)
         if pkt_size is None:
             raw_data = ['pkts: Custom;60;142;256;512;1024;MTU', 'directions: DUT Transmit;DUT Receive',
-                    'traffic_types: UDP;TCP', "show_3s: 1", "show_ll_graphs: 1", "show_log: 1"]
-        else:
-            raw_data = ['pkts: %s' % pkt_size, 'directions: DUT Transmit;DUT Receive',
                         'traffic_types: UDP;TCP', "show_3s: 1", "show_ll_graphs: 1", "show_log: 1"]
+        else:
+            raw_data = [['pkts: %s' % pkt_size], 'directions: DUT Transmit;DUT Receive',
+                        ['traffic_types: UDP;TCP'], "show_3s: 1", "show_ll_graphs: 1", "show_log: 1"]
 
         if rx_sen:
             raw_data.append("attenuations: 0..+50..950")
             raw_data.append("attenuations2: 0..+50..950")
-
-
 
         self.dataplane_obj = DataplaneTest(lf_host=self.lanforge_ip,
                                            lf_port=self.lanforge_port,
