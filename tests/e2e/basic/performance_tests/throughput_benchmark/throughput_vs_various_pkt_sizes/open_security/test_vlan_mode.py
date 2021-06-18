@@ -30,6 +30,7 @@ setup_params_general = {
     scope="class"
 )
 @pytest.mark.usefixtures("setup_profiles")
+@pytest.mark.open
 class TestThroughputVsPktVlanOpen2G(object):
     """Throughput vs Various Pkt Size Test vlan mode
        pytest -m "throughput_vs_pkt and vlan"
@@ -354,6 +355,7 @@ setup_params_5g = {
     scope="class"
 )
 @pytest.mark.usefixtures("setup_profiles")
+@pytest.mark.open
 class TestThroughputVsPktVlanOpen5G(object):
     """Throughput vs Various Pkt Size Test vlan mode
        pytest -m "throughput_vs_pkt and vlan"

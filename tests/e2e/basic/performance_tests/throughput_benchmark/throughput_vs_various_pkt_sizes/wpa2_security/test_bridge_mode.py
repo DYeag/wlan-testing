@@ -12,7 +12,7 @@ pytestmark = [pytest.mark.performance, pytest.mark.throughput_vs_pkt, pytest.mar
               pytest.mark.usefixtures("setup_test_run")]
 
 setup_params_general = {
-    "mode": "Bridge",
+    "mode": "BRIDGE",
     "ssid_modes": {
         "wpa2_personal": [
             {"ssid_name": "ssid_wpa2_2g", "appliedRadios": ["is2dot4GHz"], "security_key": "something"},
@@ -31,6 +31,7 @@ setup_params_general = {
     scope="class"
 )
 @pytest.mark.usefixtures("setup_profiles")
+@pytest.mark.wpa2
 class TestThroughputVsPktBridge2G(object):
     """Throughput vs Various Pkt Size Test Bridge mode
        pytest -m "throughput_vs_pkt and Bridge"
@@ -337,7 +338,7 @@ class TestThroughputVsPktBridge2G(object):
             assert False
 
 setup_params_5g = {
-    "mode": "Bridge",
+    "mode": "BRIDGE",
     "ssid_modes": {
         "wpa2_personal": [
             {"ssid_name": "ssid_wpa2_2g", "appliedRadios": ["is2dot4GHz"], "security_key": "something"},
@@ -356,6 +357,7 @@ setup_params_5g = {
     scope="class"
 )
 @pytest.mark.usefixtures("setup_profiles")
+@pytest.mark.wpa2
 class TestThroughputVsPktBridge5G(object):
     """Throughput vs Various Pkt Size Test Bridge mode
        pytest -m "throughput_vs_pkt and Bridge"

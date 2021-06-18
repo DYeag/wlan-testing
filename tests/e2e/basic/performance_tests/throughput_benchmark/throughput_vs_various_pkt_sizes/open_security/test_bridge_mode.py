@@ -12,7 +12,7 @@ pytestmark = [pytest.mark.performance, pytest.mark.throughput_vs_pkt, pytest.mar
               pytest.mark.usefixtures("setup_test_run")]
 
 setup_params_general = {
-    "mode": "Bridge",
+    "mode": "BRIDGE",
     "ssid_modes": {
         "open": [{"ssid_name": "ssid_open_2g", "appliedRadios": ["is2dot4GHz"]},
                  {"ssid_name": "ssid_open_5g", "appliedRadios": ["is5GHzU", "is5GHz", "is5GHzL"]}]},
@@ -29,6 +29,7 @@ setup_params_general = {
     scope="class"
 )
 @pytest.mark.usefixtures("setup_profiles")
+@pytest.mark.open
 class TestThroughputVsPktBridge2G(object):
     """Throughput vs Various Pkt Size Test Bridge mode
        pytest -m "throughput_vs_pkt and Bridge"
@@ -38,8 +39,8 @@ class TestThroughputVsPktBridge2G(object):
     @pytest.mark.twog
     @pytest.mark.pktcustom
     def test_client_open_pkt_custom_2g(self, get_vif_state,
-                                       lf_test, station_names_twog, create_lanforge_chamberview_dut,
-                                       get_configuration):
+                                   lf_test, station_names_twog, create_lanforge_chamberview_dut,
+                                   get_configuration):
         """Throughput Vs Pkt Sizes Bridge Mode
            pytest -m "throughput_vs_pkt and Bridge and open and twog"
         """
@@ -423,20 +424,10 @@ class TestThroughputVsPktBridge2G(object):
 
 
 setup_params_5g = {
-    "mode": "Bridge",
+    "mode": "BRIDGE",
     "ssid_modes": {
         "open": [{"ssid_name": "ssid_open_2g", "appliedRadios": ["is2dot4GHz"]},
-                 {"ssid_name": "ssid_open_5g", "appliedRadios": ["is5GHzU", "is5GHz", "is5GHzL"]}],
-        "wpa_personal": [
-            {"ssid_name": "ssid_wpa_eap_2g", "appliedRadios": ["is2dot4GHz"]},
-            {"ssid_name": "ssid_wpa_eap_5g", "appliedRadios": ["is5GHzU", "is5GHz", "is5GHzL"]}],
-        "wpa2_personal": [
-            {"ssid_name": "ssid_wpa2_2g", "appliedRadios": ["is2dot4GHz"], "security_key": "something"},
-            {"ssid_name": "ssid_wpa2_5g", "appliedRadios": ["is5GHzU", "is5GHz", "is5GHzL"],
-             "security_key": "something"}],
-        "wpa3_enterprise": [
-            {"ssid_name": "ssid_wpa3_eap_2g", "appliedRadios": ["is2dot4GHz"]},
-            {"ssid_name": "ssid_wpa3_eap_5g", "appliedRadios": ["is5GHzU", "is5GHz", "is5GHzL"]}]},
+                 {"ssid_name": "ssid_open_5g", "appliedRadios": ["is5GHzU", "is5GHz", "is5GHzL"]}]},
     "rf": {},
     "radius": False
 }
@@ -450,6 +441,7 @@ setup_params_5g = {
     scope="class"
 )
 @pytest.mark.usefixtures("setup_profiles")
+@pytest.mark.open
 class TestThroughputVsPktBridge5G(object):
     """Throughput vs Various Pkt Size Test Bridge mode
        pytest -m "throughput_vs_pkt and Bridge"
@@ -464,7 +456,7 @@ class TestThroughputVsPktBridge5G(object):
         """Throughput Vs Pkt Sizes Bridge Mode
            pytest -m "throughput_vs_pkt and Bridge and open and fivg"
         """
-        profile_data = setup_params_general["ssid_modes"]["open"][0]
+        profile_data = setup_params_5g["ssid_modes"]["open"][1]
         ssid_name = profile_data["ssid_name"]
 
         security = "open"
@@ -507,7 +499,7 @@ class TestThroughputVsPktBridge5G(object):
         """Throughput Vs Pkt Sizes Bridge Mode
            pytest -m "throughput_vs_pkt and Bridge and open and fivg"
         """
-        profile_data = setup_params_general["ssid_modes"]["open"][0]
+        profile_data = setup_params_5g["ssid_modes"]["open"][1]
         ssid_name = profile_data["ssid_name"]
         security = "open"
         mode = "BRIDGE"
@@ -549,7 +541,7 @@ class TestThroughputVsPktBridge5G(object):
         """Throughput Vs Pkt Sizes Bridge Mode
            pytest -m "throughput_vs_pkt and Bridge and open and fivg"
         """
-        profile_data = setup_params_general["ssid_modes"]["open"][0]
+        profile_data = setup_params_5g["ssid_modes"]["open"][1]
         ssid_name = profile_data["ssid_name"]
 
         security = "open"
@@ -592,7 +584,7 @@ class TestThroughputVsPktBridge5G(object):
         """Throughput Vs Pkt Sizes Bridge Mode
            pytest -m "throughput_vs_pkt and Bridge and open and fivg"
         """
-        profile_data = setup_params_general["ssid_modes"]["open"][0]
+        profile_data = setup_params_5g["ssid_modes"]["open"][1]
         ssid_name = profile_data["ssid_name"]
 
         security = "open"
@@ -635,7 +627,7 @@ class TestThroughputVsPktBridge5G(object):
         """Throughput Vs Pkt Sizes Bridge Mode
            pytest -m "throughput_vs_pkt and Bridge and open and fivg"
         """
-        profile_data = setup_params_general["ssid_modes"]["open"][0]
+        profile_data = setup_params_5g["ssid_modes"]["open"][1]
         ssid_name = profile_data["ssid_name"]
 
         security = "open"
@@ -678,7 +670,7 @@ class TestThroughputVsPktBridge5G(object):
         """Throughput Vs Pkt Sizes Bridge Mode
            pytest -m "throughput_vs_pkt and Bridge and open and fivg"
         """
-        profile_data = setup_params_general["ssid_modes"]["open"][0]
+        profile_data = setup_params_5g["ssid_modes"]["open"][1]
         ssid_name = profile_data["ssid_name"]
 
         security = "open"
@@ -721,7 +713,7 @@ class TestThroughputVsPktBridge5G(object):
         """Throughput Vs Pkt Sizes Bridge Mode
            pytest -m "throughput_vs_pkt and Bridge and open and fivg"
         """
-        profile_data = setup_params_general["ssid_modes"]["open"][0]
+        profile_data = setup_params_5g["ssid_modes"]["open"][1]
         ssid_name = profile_data["ssid_name"]
 
         security = "open"

@@ -32,6 +32,7 @@ setup_params_general = {
     scope="class"
 )
 @pytest.mark.usefixtures("setup_profiles")
+@pytest.mark.wpa3
 class TestThroughputVsPktNatAWpa32G(object):
     """Throughput vs Various Pkt Size Test nat mode
        pytest -m "throughput_vs_pkt and nat"
@@ -358,6 +359,7 @@ setup_params_5g = {
     scope="class"
 )
 @pytest.mark.usefixtures("setup_profiles")
+@pytest.mark.wpa3
 class TestThroughputVsPktNatOpen5G(object):
     """Throughput vs Various Pkt Size Test nat mode
        pytest -m "throughput_vs_pkt and nat"
