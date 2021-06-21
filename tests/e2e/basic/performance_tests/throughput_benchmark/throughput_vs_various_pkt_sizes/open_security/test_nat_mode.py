@@ -8,7 +8,7 @@ import os
 import pytest
 import allure
 
-pytestmark = [pytest.mark.performance, pytest.mark.throughput_vs_pkt, pytest.mark.nat, pytest.mark.open,
+pytestmark = [pytest.mark.performance, pytest.mark.throughput_vs_pkt, pytest.mark.nat, pytest.mark.ope,
               pytest.mark.usefixtures("setup_test_run")]
 
 setup_params_general = {
@@ -338,17 +338,7 @@ setup_params_5g = {
     "mode": "NAT",
     "ssid_modes": {
         "open": [{"ssid_name": "ssid_open_2g", "appliedRadios": ["is2dot4GHz"]},
-                 {"ssid_name": "ssid_open_5g", "appliedRadios": ["is5GHzU", "is5GHz", "is5GHzL"]}],
-        "wpa_personal": [
-            {"ssid_name": "ssid_wpa_eap_2g", "appliedRadios": ["is2dot4GHz"]},
-            {"ssid_name": "ssid_wpa_eap_5g", "appliedRadios": ["is5GHzU", "is5GHz", "is5GHzL"]}],
-        "wpa2_personal": [
-            {"ssid_name": "ssid_wpa2_2g", "appliedRadios": ["is2dot4GHz"], "security_key": "something"},
-            {"ssid_name": "ssid_wpa2_5g", "appliedRadios": ["is5GHzU", "is5GHz", "is5GHzL"],
-             "security_key": "something"}],
-        "wpa3_enterprise": [
-            {"ssid_name": "ssid_wpa3_eap_2g", "appliedRadios": ["is2dot4GHz"]},
-            {"ssid_name": "ssid_wpa3_eap_5g", "appliedRadios": ["is5GHzU", "is5GHz", "is5GHzL"]}]},
+                 {"ssid_name": "ssid_open_5g", "appliedRadios": ["is5GHzU", "is5GHz", "is5GHzL"]}]},
     "rf": {},
     "radius": False
 }
@@ -376,7 +366,7 @@ class TestThroughputVsPktNatOpen5G(object):
         """Throughput Vs Pkt Sizes nat Mode
            pytest -m "throughput_vs_pkt and nat and open and fiveg"
         """
-        profile_data = setup_params_general["ssid_modes"]["open"][1]
+        profile_data = setup_params_5g["ssid_modes"]["open"][1]
         ssid_name = profile_data["ssid_name"]
 
         security = "open"
@@ -419,7 +409,7 @@ class TestThroughputVsPktNatOpen5G(object):
         """Throughput Vs Pkt Sizes nat Mode
            pytest -m "throughput_vs_pkt and nat and open and fiveg"
         """
-        profile_data = setup_params_general["ssid_modes"]["open"][1]
+        profile_data = setup_params_5g["ssid_modes"]["open"][1]
         ssid_name = profile_data["ssid_name"]
         security = "open"
         mode = "NAT"
@@ -461,7 +451,7 @@ class TestThroughputVsPktNatOpen5G(object):
         """Throughput Vs Pkt Sizes nat Mode
            pytest -m "throughput_vs_pkt and nat and open and fiveg"
         """
-        profile_data = setup_params_general["ssid_modes"]["open"][0]
+        profile_data = setup_params_5g["ssid_modes"]["open"][1]
         ssid_name = profile_data["ssid_name"]
 
         security = "open"
@@ -504,7 +494,7 @@ class TestThroughputVsPktNatOpen5G(object):
         """Throughput Vs Pkt Sizes nat Mode
            pytest -m "throughput_vs_pkt and nat and open and fiveg"
         """
-        profile_data = setup_params_general["ssid_modes"]["open"][0]
+        profile_data = setup_params_5g["ssid_modes"]["open"][1]
         ssid_name = profile_data["ssid_name"]
 
         security = "open"
@@ -547,7 +537,7 @@ class TestThroughputVsPktNatOpen5G(object):
         """Throughput Vs Pkt Sizes nat Mode
            pytest -m "throughput_vs_pkt and nat and open and fiveg"
         """
-        profile_data = setup_params_general["ssid_modes"]["open"][0]
+        profile_data = setup_params_5g["ssid_modes"]["open"][1]
         ssid_name = profile_data["ssid_name"]
 
         security = "open"
@@ -590,7 +580,7 @@ class TestThroughputVsPktNatOpen5G(object):
         """Throughput Vs Pkt Sizes nat Mode
            pytest -m "throughput_vs_pkt and nat and open and fiveg"
         """
-        profile_data = setup_params_general["ssid_modes"]["open"][0]
+        profile_data = setup_params_5g["ssid_modes"]["open"][1]
         ssid_name = profile_data["ssid_name"]
 
         security = "open"
@@ -633,7 +623,7 @@ class TestThroughputVsPktNatOpen5G(object):
         """Throughput Vs Pkt Sizes nat Mode
            pytest -m "throughput_vs_pkt and nat and open and fiveg"
         """
-        profile_data = setup_params_general["ssid_modes"]["open"][0]
+        profile_data = setup_params_5g["ssid_modes"]["open"][1]
         ssid_name = profile_data["ssid_name"]
 
         security = "open"

@@ -8,7 +8,7 @@ import os
 import pytest
 import allure
 
-pytestmark = [pytest.mark.performance, pytest.mark.throughput_vs_pkt, pytest.mark.Bridge,
+pytestmark = [pytest.mark.performance, pytest.mark.throughput_vs_pkt, pytest.mark.Bridge, pytest.mark.open,
               pytest.mark.usefixtures("setup_test_run")]
 
 setup_params_general = {
@@ -29,7 +29,6 @@ setup_params_general = {
     scope="class"
 )
 @pytest.mark.usefixtures("setup_profiles")
-@pytest.mark.open
 class TestThroughputVsPktBridge2G(object):
     """Throughput vs Various Pkt Size Test Bridge mode
        pytest -m "throughput_vs_pkt and Bridge"
@@ -340,16 +339,16 @@ class TestThroughputVsPktBridge2G(object):
     @pytest.mark.wpa_personal
     @pytest.mark.twog
     @pytest.mark.pktcustom
-    def test_client_wpa_personal_pkt_custom_2g(self, get_vif_state,
+    def test_client_open_pkt_custom_2g(self, get_vif_state,
                                                lf_test, station_names_twog, create_lanforge_chamberview_dut,
                                                get_configuration):
         """Throughput Vs Pkt Sizes Bridge Mode
-           pytest -m "throughput_vs_pkt and Bridge and wpa_personal and twog"
+           pytest -m "throughput_vs_pkt and Bridge and open and twog"
         """
-        profile_data = setup_params_general["ssid_modes"]["wpa_personal"][0]
+        profile_data = setup_params_general["ssid_modes"]["open"][0]
         ssid_name = profile_data["ssid_name"]
 
-        security = "wpa_personal"
+        security = "open"
         mode = "BRIDGE"
         band = "twog"
         vlan = 1
@@ -380,18 +379,18 @@ class TestThroughputVsPktBridge2G(object):
         else:
             assert False
 
-    @pytest.mark.wpa_personal
+    @pytest.mark.open
     @pytest.mark.twog
     @pytest.mark.pkt60
-    def test_client_wpa_personal_pkt_60_2g(self, get_vif_state,
+    def test_client_open_pkt_60_2g(self, get_vif_state,
                                            lf_test, station_names_twog, create_lanforge_chamberview_dut,
                                            get_configuration):
         """Throughput Vs Pkt Sizes Bridge Mode
-           pytest -m "throughput_vs_pkt and Bridge and wpa_personal and twog"
+           pytest -m "throughput_vs_pkt and Bridge and open and twog"
         """
-        profile_data = setup_params_general["ssid_modes"]["wpa_personal"][0]
+        profile_data = setup_params_general["ssid_modes"]["open"][0]
         ssid_name = profile_data["ssid_name"]
-        security = "wpa_personal"
+        security = "open"
         mode = "BRIDGE"
         band = "twog"
         vlan = 1
@@ -441,27 +440,26 @@ setup_params_5g = {
     scope="class"
 )
 @pytest.mark.usefixtures("setup_profiles")
-@pytest.mark.open
 class TestThroughputVsPktBridge5G(object):
     """Throughput vs Various Pkt Size Test Bridge mode
        pytest -m "throughput_vs_pkt and Bridge"
     """
 
     @pytest.mark.open
-    @pytest.mark.fivg
+    @pytest.mark.fiveg
     @pytest.mark.pktcustom
     def test_client_open_pkt_custom_5g(self, get_vif_state,
-                                       lf_test, station_names_fivg, create_lanforge_chamberview_dut,
+                                       lf_test, station_names_fiveg, create_lanforge_chamberview_dut,
                                        get_configuration):
         """Throughput Vs Pkt Sizes Bridge Mode
-           pytest -m "throughput_vs_pkt and Bridge and open and fivg"
+           pytest -m "throughput_vs_pkt and Bridge and open and fiveg"
         """
         profile_data = setup_params_5g["ssid_modes"]["open"][1]
         ssid_name = profile_data["ssid_name"]
 
         security = "open"
         mode = "BRIDGE"
-        band = "fivg"
+        band = "fiveg"
         vlan = 1
         dut_name = create_lanforge_chamberview_dut
         if ssid_name not in get_vif_state:
@@ -469,10 +467,10 @@ class TestThroughputVsPktBridge5G(object):
             pytest.xfail("SSID NOT AVAILABLE IN VIF STATE")
         station = lf_test.Client_Connect(ssid=ssid_name, security=security,
                                          mode=mode, band=band,
-                                         station_name=station_names_fivg, vlan_id=vlan)
+                                         station_name=station_names_fiveg, vlan_id=vlan)
 
         if station:
-            dp_obj = lf_test.dataplane(station_name=station_names_fivg, mode=mode,
+            dp_obj = lf_test.dataplane(station_name=station_names_fiveg, mode=mode,
                                        instance_name="TIP_PERF_DPT_WPA2_5G",
                                        vlan_id=vlan, dut_name=dut_name, pkt_size="Custom")
             report_name = dp_obj.report_name[0]['LAST']["response"].split(":::")[1].split("/")[-1]
@@ -485,25 +483,25 @@ class TestThroughputVsPktBridge5G(object):
                 allure.attach.file(source="../reports/" + report_name + "/" + pdf,
                                    name=get_configuration["access_point"][0]["model"] + "_dataplane")
             print("Test Completed... Cleaning up Stations")
-            lf_test.Client_disconnect(station_name=station_names_fivg)
+            lf_test.Client_disconnect(station_name=station_names_fiveg)
             assert station
         else:
             assert False
 
     @pytest.mark.open
-    @pytest.mark.fivg
+    @pytest.mark.fiveg
     @pytest.mark.pkt60
     def test_client_open_pkt_60_5g(self, get_vif_state,
-                                   lf_test, station_names_fivg, create_lanforge_chamberview_dut,
+                                   lf_test, station_names_fiveg, create_lanforge_chamberview_dut,
                                    get_configuration):
         """Throughput Vs Pkt Sizes Bridge Mode
-           pytest -m "throughput_vs_pkt and Bridge and open and fivg"
+           pytest -m "throughput_vs_pkt and Bridge and open and fiveg"
         """
         profile_data = setup_params_5g["ssid_modes"]["open"][1]
         ssid_name = profile_data["ssid_name"]
         security = "open"
         mode = "BRIDGE"
-        band = "fivg"
+        band = "fiveg"
         vlan = 1
         dut_name = create_lanforge_chamberview_dut
         if ssid_name not in get_vif_state:
@@ -511,10 +509,10 @@ class TestThroughputVsPktBridge5G(object):
             pytest.xfail("SSID NOT AVAILABLE IN VIF STATE")
         station = lf_test.Client_Connect(ssid=ssid_name, security=security,
                                          mode=mode, band=band,
-                                         station_name=station_names_fivg, vlan_id=vlan)
+                                         station_name=station_names_fiveg, vlan_id=vlan)
 
         if station:
-            dp_obj = lf_test.dataplane(station_name=station_names_fivg, mode=mode,
+            dp_obj = lf_test.dataplane(station_name=station_names_fiveg, mode=mode,
                                        instance_name="TIP_PERF_DPT_WPA2_5G",
                                        vlan_id=vlan, dut_name=dut_name, pkt_size="60")
             report_name = dp_obj.report_name[0]['LAST']["response"].split(":::")[1].split("/")[-1]
@@ -527,26 +525,26 @@ class TestThroughputVsPktBridge5G(object):
                 allure.attach.file(source="../reports/" + report_name + "/" + pdf,
                                    name=get_configuration["access_point"][0]["model"] + "_dataplane")
             print("Test Completed... Cleaning up Stations")
-            lf_test.Client_disconnect(station_name=station_names_fivg)
+            lf_test.Client_disconnect(station_name=station_names_fiveg)
             assert station
         else:
             assert False
 
     @pytest.mark.open
-    @pytest.mark.fivg
+    @pytest.mark.fiveg
     @pytest.mark.pkt142
     def test_client_open_pkt_142_5g(self, get_vif_state,
-                                    lf_test, station_names_fivg, create_lanforge_chamberview_dut,
+                                    lf_test, station_names_fiveg, create_lanforge_chamberview_dut,
                                     get_configuration):
         """Throughput Vs Pkt Sizes Bridge Mode
-           pytest -m "throughput_vs_pkt and Bridge and open and fivg"
+           pytest -m "throughput_vs_pkt and Bridge and open and fiveg"
         """
         profile_data = setup_params_5g["ssid_modes"]["open"][1]
         ssid_name = profile_data["ssid_name"]
 
         security = "open"
         mode = "BRIDGE"
-        band = "fivg"
+        band = "fiveg"
         vlan = 1
         dut_name = create_lanforge_chamberview_dut
         if ssid_name not in get_vif_state:
@@ -554,10 +552,10 @@ class TestThroughputVsPktBridge5G(object):
             pytest.xfail("SSID NOT AVAILABLE IN VIF STATE")
         station = lf_test.Client_Connect(ssid=ssid_name, security=security,
                                          mode=mode, band=band,
-                                         station_name=station_names_fivg, vlan_id=vlan)
+                                         station_name=station_names_fiveg, vlan_id=vlan)
 
         if station:
-            dp_obj = lf_test.dataplane(station_name=station_names_fivg, mode=mode,
+            dp_obj = lf_test.dataplane(station_name=station_names_fiveg, mode=mode,
                                        instance_name="TIP_PERF_DPT_WPA2_5G",
                                        vlan_id=vlan, dut_name=dut_name, pkt_size="142")
             report_name = dp_obj.report_name[0]['LAST']["response"].split(":::")[1].split("/")[-1]
@@ -570,26 +568,26 @@ class TestThroughputVsPktBridge5G(object):
                 allure.attach.file(source="../reports/" + report_name + "/" + pdf,
                                    name=get_configuration["access_point"][0]["model"] + "_dataplane")
             print("Test Completed... Cleaning up Stations")
-            lf_test.Client_disconnect(station_name=station_names_fivg)
+            lf_test.Client_disconnect(station_name=station_names_fiveg)
             assert station
         else:
             assert False
 
     @pytest.mark.open
-    @pytest.mark.fivg
+    @pytest.mark.fiveg
     @pytest.mark.pkt256
     def test_client_open_pkt_256_5g(self, get_vif_state,
-                                    lf_test, station_names_fivg, create_lanforge_chamberview_dut,
+                                    lf_test, station_names_fiveg, create_lanforge_chamberview_dut,
                                     get_configuration):
         """Throughput Vs Pkt Sizes Bridge Mode
-           pytest -m "throughput_vs_pkt and Bridge and open and fivg"
+           pytest -m "throughput_vs_pkt and Bridge and open and fiveg"
         """
         profile_data = setup_params_5g["ssid_modes"]["open"][1]
         ssid_name = profile_data["ssid_name"]
 
         security = "open"
         mode = "BRIDGE"
-        band = "fivg"
+        band = "fiveg"
         vlan = 1
         dut_name = create_lanforge_chamberview_dut
         if ssid_name not in get_vif_state:
@@ -597,10 +595,10 @@ class TestThroughputVsPktBridge5G(object):
             pytest.xfail("SSID NOT AVAILABLE IN VIF STATE")
         station = lf_test.Client_Connect(ssid=ssid_name, security=security,
                                          mode=mode, band=band,
-                                         station_name=station_names_fivg, vlan_id=vlan)
+                                         station_name=station_names_fiveg, vlan_id=vlan)
 
         if station:
-            dp_obj = lf_test.dataplane(station_name=station_names_fivg, mode=mode,
+            dp_obj = lf_test.dataplane(station_name=station_names_fiveg, mode=mode,
                                        instance_name="TIP_PERF_DPT_WPA2_5G",
                                        vlan_id=vlan, dut_name=dut_name, pkt_size="256")
             report_name = dp_obj.report_name[0]['LAST']["response"].split(":::")[1].split("/")[-1]
@@ -613,26 +611,26 @@ class TestThroughputVsPktBridge5G(object):
                 allure.attach.file(source="../reports/" + report_name + "/" + pdf,
                                    name=get_configuration["access_point"][0]["model"] + "_dataplane")
             print("Test Completed... Cleaning up Stations")
-            lf_test.Client_disconnect(station_name=station_names_fivg)
+            lf_test.Client_disconnect(station_name=station_names_fiveg)
             assert station
         else:
             assert False
 
     @pytest.mark.open
-    @pytest.mark.fivg
+    @pytest.mark.fiveg
     @pytest.mark.pkt512
     def test_client_open_pkt_512_5g(self, get_vif_state,
-                                    lf_test, station_names_fivg, create_lanforge_chamberview_dut,
+                                    lf_test, station_names_fiveg, create_lanforge_chamberview_dut,
                                     get_configuration):
         """Throughput Vs Pkt Sizes Bridge Mode
-           pytest -m "throughput_vs_pkt and Bridge and open and fivg"
+           pytest -m "throughput_vs_pkt and Bridge and open and fiveg"
         """
         profile_data = setup_params_5g["ssid_modes"]["open"][1]
         ssid_name = profile_data["ssid_name"]
 
         security = "open"
         mode = "BRIDGE"
-        band = "fivg"
+        band = "fiveg"
         vlan = 1
         dut_name = create_lanforge_chamberview_dut
         if ssid_name not in get_vif_state:
@@ -640,10 +638,10 @@ class TestThroughputVsPktBridge5G(object):
             pytest.xfail("SSID NOT AVAILABLE IN VIF STATE")
         station = lf_test.Client_Connect(ssid=ssid_name, security=security,
                                          mode=mode, band=band,
-                                         station_name=station_names_fivg, vlan_id=vlan)
+                                         station_name=station_names_fiveg, vlan_id=vlan)
 
         if station:
-            dp_obj = lf_test.dataplane(station_name=station_names_fivg, mode=mode,
+            dp_obj = lf_test.dataplane(station_name=station_names_fiveg, mode=mode,
                                        instance_name="TIP_PERF_DPT_WPA2_5G",
                                        vlan_id=vlan, dut_name=dut_name, pkt_size="512")
             report_name = dp_obj.report_name[0]['LAST']["response"].split(":::")[1].split("/")[-1]
@@ -656,26 +654,26 @@ class TestThroughputVsPktBridge5G(object):
                 allure.attach.file(source="../reports/" + report_name + "/" + pdf,
                                    name=get_configuration["access_point"][0]["model"] + "_dataplane")
             print("Test Completed... Cleaning up Stations")
-            lf_test.Client_disconnect(station_name=station_names_fivg)
+            lf_test.Client_disconnect(station_name=station_names_fiveg)
             assert station
         else:
             assert False
 
     @pytest.mark.open
-    @pytest.mark.fivg
+    @pytest.mark.fiveg
     @pytest.mark.pkt1024
     def test_client_open_pkt_1024_5g(self, get_vif_state,
-                                     lf_test, station_names_fivg, create_lanforge_chamberview_dut,
+                                     lf_test, station_names_fiveg, create_lanforge_chamberview_dut,
                                      get_configuration):
         """Throughput Vs Pkt Sizes Bridge Mode
-           pytest -m "throughput_vs_pkt and Bridge and open and fivg"
+           pytest -m "throughput_vs_pkt and Bridge and open and fiveg"
         """
         profile_data = setup_params_5g["ssid_modes"]["open"][1]
         ssid_name = profile_data["ssid_name"]
 
         security = "open"
         mode = "BRIDGE"
-        band = "fivg"
+        band = "fiveg"
         vlan = 1
         dut_name = create_lanforge_chamberview_dut
         if ssid_name not in get_vif_state:
@@ -683,10 +681,10 @@ class TestThroughputVsPktBridge5G(object):
             pytest.xfail("SSID NOT AVAILABLE IN VIF STATE")
         station = lf_test.Client_Connect(ssid=ssid_name, security=security,
                                          mode=mode, band=band,
-                                         station_name=station_names_fivg, vlan_id=vlan)
+                                         station_name=station_names_fiveg, vlan_id=vlan)
 
         if station:
-            dp_obj = lf_test.dataplane(station_name=station_names_fivg, mode=mode,
+            dp_obj = lf_test.dataplane(station_name=station_names_fiveg, mode=mode,
                                        instance_name="TIP_PERF_DPT_WPA2_5G",
                                        vlan_id=vlan, dut_name=dut_name, pkt_size="1024")
             report_name = dp_obj.report_name[0]['LAST']["response"].split(":::")[1].split("/")[-1]
@@ -699,26 +697,26 @@ class TestThroughputVsPktBridge5G(object):
                 allure.attach.file(source="../reports/" + report_name + "/" + pdf,
                                    name=get_configuration["access_point"][0]["model"] + "_dataplane")
             print("Test Completed... Cleaning up Stations")
-            lf_test.Client_disconnect(station_name=station_names_fivg)
+            lf_test.Client_disconnect(station_name=station_names_fiveg)
             assert station
         else:
             assert False
 
     @pytest.mark.open
-    @pytest.mark.fivg
+    @pytest.mark.fiveg
     @pytest.mark.pktMTU
     def test_client_open_pkt_MTU_5g(self, get_vif_state,
-                                    lf_test, station_names_fivg, create_lanforge_chamberview_dut,
+                                    lf_test, station_names_fiveg, create_lanforge_chamberview_dut,
                                     get_configuration):
         """Throughput Vs Pkt Sizes Bridge Mode
-           pytest -m "throughput_vs_pkt and Bridge and open and fivg"
+           pytest -m "throughput_vs_pkt and Bridge and open and fiveg"
         """
         profile_data = setup_params_5g["ssid_modes"]["open"][1]
         ssid_name = profile_data["ssid_name"]
 
         security = "open"
         mode = "BRIDGE"
-        band = "fivg"
+        band = "fiveg"
         vlan = 1
         dut_name = create_lanforge_chamberview_dut
         if ssid_name not in get_vif_state:
@@ -726,10 +724,10 @@ class TestThroughputVsPktBridge5G(object):
             pytest.xfail("SSID NOT AVAILABLE IN VIF STATE")
         station = lf_test.Client_Connect(ssid=ssid_name, security=security,
                                          mode=mode, band=band,
-                                         station_name=station_names_fivg, vlan_id=vlan)
+                                         station_name=station_names_fiveg, vlan_id=vlan)
 
         if station:
-            dp_obj = lf_test.dataplane(station_name=station_names_fivg, mode=mode,
+            dp_obj = lf_test.dataplane(station_name=station_names_fiveg, mode=mode,
                                        instance_name="TIP_PERF_DPT_WPA2_5G",
                                        vlan_id=vlan, dut_name=dut_name, pkt_size="MTU")
             report_name = dp_obj.report_name[0]['LAST']["response"].split(":::")[1].split("/")[-1]
@@ -742,7 +740,7 @@ class TestThroughputVsPktBridge5G(object):
                 allure.attach.file(source="../reports/" + report_name + "/" + pdf,
                                    name=get_configuration["access_point"][0]["model"] + "_dataplane")
             print("Test Completed... Cleaning up Stations")
-            lf_test.Client_disconnect(station_name=station_names_fivg)
+            lf_test.Client_disconnect(station_name=station_names_fiveg)
             assert station
         else:
             assert False
