@@ -8,7 +8,7 @@ import os
 import pytest
 import allure
 
-pytestmark = [pytest.mark.performance, pytest.mark.throughput_vs_pkt, pytest.mark.nat,
+pytestmark = [pytest.mark.performance, pytest.mark.throughput_vs_pkt, pytest.mark.nat, pytest.mark.open,
               pytest.mark.usefixtures("setup_test_run")]
 
 setup_params_general = {
@@ -29,7 +29,6 @@ setup_params_general = {
     scope="class"
 )
 @pytest.mark.usefixtures("setup_profiles")
-@pytest.mark.open
 class TestThroughputVsPktNatOpen2G(object):
     """Throughput vs Various Pkt Size Test nat mode
        pytest -m "throughput_vs_pkt and nat"
@@ -363,7 +362,6 @@ setup_params_5g = {
     scope="class"
 )
 @pytest.mark.usefixtures("setup_profiles")
-@pytest.mark.open
 class TestThroughputVsPktNatOpen5G(object):
     """Throughput vs Various Pkt Size Test nat mode
        pytest -m "throughput_vs_pkt and nat"
