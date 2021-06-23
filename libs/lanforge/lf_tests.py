@@ -32,6 +32,7 @@ import lf_dataplane_test
 from lf_dataplane_test import DataplaneTest
 from csv_to_influx import CSVtoInflux
 from influx2 import RecordInflux
+from gen_cxprofile import GenCXProfile
 
 
 class RunTest:
@@ -297,6 +298,15 @@ class RunTest:
         influx.post_to_influx()
 
         return self.dataplane_obj
+
+    def gen_test(self, station_names_twog):
+        ping_obj = GenCXProfile()
+        ping_obj.lfclient_host = lanforge_data["ip"]
+        ping_obj.lfclient_port = lanforge_data["port"]
+        ping_obj.type = "lfping"
+        ping_obj.dest = "8.8.8.8"
+        ping_obj.create(station_names_twog[0])
+        ping_obj.start_cx()
 
 
 if __name__ == '__main__':
