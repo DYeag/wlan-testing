@@ -27,6 +27,10 @@ on:
         default: 'sanity'
         description: 'Pytest marker expression that will be used to select the tests to execute'
         required: false
+      firmware_url:
+        default: '<URL to file> from JFROG'
+        description: 'Specify the AP Firmware URL for Test'
+        required: false
   push:
     branches:
       - master
@@ -160,7 +164,7 @@ jobs:
                   - -c
                   - |
                     cd tests
-                    pytest -m "${{ github.event.inputs.marker_expression || 'sanity' }}" -s -vvv --testbed="${{ github.event.inputs.testbed || 'basic-02' }}" --skip-testrail --alluredir=/tmp/allure-results
+                    pytest -m "${{ github.event.inputs.marker_expression || 'sanity' }}" -s -vvv --testbed="${{ github.event.inputs.testbed || 'basic-02' }}" --skip-testrail --alluredir=/tmp/allure-results -o build=${{ github.event.inputs.firmware_url)}
                     ret=\$?
                     # sleep some time to be able to download the Allure results
                     sleep 60
