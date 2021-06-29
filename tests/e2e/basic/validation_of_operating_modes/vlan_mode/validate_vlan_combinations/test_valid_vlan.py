@@ -56,7 +56,7 @@ class TestValidVlan(object):
         upstream_port = lf_data["upstream"]
         port_data = upstream_port.split('.')
         vlan_list = get_vlan_list
-        print("before client..",vlan_list)
+        print("before client..", vlan_list)
         lf_test.Client_disconnect(station_names_twog)
         passes, result = lf_test.Client_Connectivity(ssid=ssid_name, security=security,
                                                      passkey=security_key, mode=mode, band=band,
@@ -71,7 +71,7 @@ class TestValidVlan(object):
 
             sta_ip = sta_ip.split(".")
             sta_vlan_ip = sta_vlan_ip.split(".")
-            print("hello..",sta_ip[:2], sta_vlan_ip[:2])
+            print("hello..", sta_ip[:2], sta_vlan_ip[:2])
             for m, n in zip(sta_ip[0:2], sta_vlan_ip[0:2]):
                 if m != n:
                     assert False
@@ -89,7 +89,7 @@ class TestValidVlan(object):
     @pytest.mark.wpa2_personal
     @pytest.mark.fiveg
     def test_wpa2_ssid_5g(self, get_lanforge_data, lf_test, lf_tools, station_names_fiveg, get_configuration,
-                          get_vlan_list,update_report, test_cases):
+                          get_vlan_list, update_report, test_cases):
         '''
             pytest -m "vlan_combination_test and valid and wpa2_personal and fiveg
         '''

@@ -37,12 +37,11 @@ setup_params_general = {
 @pytest.mark.usefixtures("setup_profiles", "create_vlan")
 class TestInValidVlan(object):
     '''
-     pytest -m "vlan_combination_test and invalid and wpa2_personal and twog and test_invalid_2g
+     pytest -m "vlan_combination_test and invalid and wpa2_personal and twog
     '''
 
     @pytest.mark.wpa2_personal
     @pytest.mark.twog
-    @pytest.mark.test_invalid_2g
     def test_wpa2p_ssid_2g(self, get_lanforge_data, lf_test, lf_tools, station_names_twog, get_configuration,
                            get_vlan_list,update_report, test_cases):
         profile_data = setup_params_general["ssid_modes"]["wpa2_personal"][0]
@@ -88,11 +87,10 @@ class TestInValidVlan(object):
 
     @pytest.mark.wpa2_personal
     @pytest.mark.fiveg
-    @pytest.mark.test_invalid_5g
     def test_wpa2p_ssid_5g(self, get_lanforge_data, lf_test, lf_tools, station_names_fiveg, get_configuration,
                            get_vlan_list,update_report, test_cases):
         '''
-           pytest -m "vlan_combination_test and invalid and wpa2_personal and fiveg and test_invalid_5g
+           pytest -m "vlan_combination_test and invalid and wpa2_personal and fiveg
         '''
 
         profile_data = setup_params_general["ssid_modes"]["wpa2_personal"][1]

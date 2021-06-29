@@ -33,6 +33,7 @@ from lf_dataplane_test import DataplaneTest
 from csv_to_influx import CSVtoInflux
 from influx2 import RecordInflux
 from gen_cxprofile import GenCXProfile
+from realm import Realm
 
 
 class RunTest:
@@ -301,14 +302,30 @@ class RunTest:
 
     def gen_test(self, station_names):
         print(station_names)
-        ping_obj = GenCXProfile(lanforge_data["ip"], lanforge_data["port"])
+        realm_obj=Realm(self.lanforge_ip,self.lanforge_port)
+        ping_obj = realm_obj.new_generic_cx_profile(ver=1)
         # ping_obj.lfclient_host =
         # ping_obj.lfclient_port =
         ping_obj.type = "lfping"
         ping_obj.dest = "8.8.8.8"
-        ping_obj.create(station_names[0])
+        ping_obj.create(station_names)
         ping_obj.start_cx()
         print("generic started")
+        return ping_obj
+
+
+    def choose_ping_command(self):
+        gen_results = self.json_get("generic/list?fields=name,last+results", debug_=self.debug)
+        if self.debug:
+            print(gen_results)
+        if gen_results['endpoints'] is not None:
+            for name in gen_results['endpoints']:
+                for k, v in name.items():
+                    if v['name'] in self.generic_endps_profile.created_endp and not v['name'].endswith('1'):
+                        if v['last results'] != "" and "Unreachable" not in v['last results']:
+                            return True, v['name']
+                        else:
+                            return False, v['name']
 
 
 if __name__ == '__main__':

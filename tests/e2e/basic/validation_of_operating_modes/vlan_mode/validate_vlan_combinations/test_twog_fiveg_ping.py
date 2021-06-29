@@ -2,8 +2,9 @@ import os
 import allure
 import pytest
 
-pytestmark = [pytest.mark.vlan_ping_test, pytest.mark.valid,
-              pytest.mark.usefixtures("setup_test_run")]
+pytestmark = [pytest.mark.vlan_combination_test,
+              pytest.mark.vlan_ping_test,pytest.mark.usefixtures("setup_test_run")]
+
 
 setup_params_general = {
     "mode": "VLAN",
@@ -40,7 +41,7 @@ class TestValidVlan(object):
     def test_wpa2_ssid_2g(self, get_lanforge_data, lf_test, lf_tools, station_names_twog, get_configuration,
                           get_vlan_list, update_report, test_cases):
         '''
-            pytest -m "vlan_combination_test and valid and wpa2_personal and twog
+            pytest -m "vlan_combination_test and vlan_ping_test and wpa2_personal and twog
         '''
 
         profile_data = setup_params_general["ssid_modes"]["wpa2_personal"][0]
@@ -79,8 +80,22 @@ class TestValidVlan(object):
                 assert True
             else:
                 assert False
-            lf_test.gen_test(station_names_twog)
+            ping_obj = lf_test.gen_test(station_names_twog)
             print("generic started")
+            print("helloo..", ping_obj.created_endp)
+            gen_results = lf_tools.json_get("generic/list?fields=name,last+results")
+            print(gen_results)
+            if gen_results['endpoints'] is not None:
+                for name in gen_results['endpoints']:
+                    for k, v in name.items():
+                        if v['name'] in ping_obj.created_endp and not v['name'].endswith('1'):
+                            if v['last results'] != "" and "Unreachable" not in v['last results']:
+                                print("ping successful")
+                                assert True
+
+                            else:
+                                print("ping unsuccessful")
+                                assert False
             try:
                 lf_test.Client_disconnect(station_names_twog)
             except:
@@ -88,11 +103,10 @@ class TestValidVlan(object):
 
     @pytest.mark.wpa2_personal
     @pytest.mark.fiveg
-    @pytest.mark.test_valid_5g
     def test_wpa2_ssid_5g(self, get_lanforge_data, lf_test, lf_tools, station_names_fiveg, get_configuration,
                           get_vlan_list, update_report, test_cases):
         '''
-            pytest -m "vlan_combination_test and valid and wpa2_personal and fiveg and test_valid_5g
+            pytest -m "vlan_combination_test and vlan_ping_test and wpa2_personal and fiveg
         '''
 
         profile_data = setup_params_general["ssid_modes"]["wpa2_personal"][1]
@@ -131,6 +145,22 @@ class TestValidVlan(object):
                 assert True
             else:
                 assert False
+            ping_obj = lf_test.gen_test(station_names_fiveg)
+            print("generic started")
+            print("helloo..", ping_obj.created_endp)
+            gen_results = lf_tools.json_get("generic/list?fields=name,last+results")
+            print(gen_results)
+            if gen_results['endpoints'] is not None:
+                for name in gen_results['endpoints']:
+                    for k, v in name.items():
+                        if v['name'] in ping_obj.created_endp and not v['name'].endswith('1'):
+                            if v['last results'] != "" and "Unreachable" not in v['last results']:
+                                print("ping successful")
+                                assert True
+
+                            else:
+                                print("ping unsuccessful")
+                                assert False
             try:
                 lf_test.Client_disconnect(station_names_fiveg)
             except:

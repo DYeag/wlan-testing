@@ -2,22 +2,23 @@ import os
 import pytest
 import allure
 
-pytestmark = [pytest.mark.vlan_combination_test,pytest.mark.two_ssid_three_radio,
+pytestmark = [pytest.mark.vlan_combination_test, pytest.mark.two_ssid_three_radio,
               pytest.mark.usefixtures("setup_test_run")]
 
 setup_params_general = {
     "mode": "VLAN",
     "ssid_modes": {
         "wpa2_personal": [{"ssid_name": "ssid_wpa2_2g", "appliedRadios": ["is2dot4GHz"], "vlan": 3},
-                 {"ssid_name": "ssid_wpa2_2g", "appliedRadios": ["is2dot4GHz"], "vlan": 4},
-                 {"ssid_name": "ssid_wpa2_5g", "appliedRadios": ["is5GHz", "is5GHzL"], "vlan": 5},
-                 {"ssid_name": "ssid_wpa2_5g", "appliedRadios": ["is5GHz", "is5GHzL"], "vlan": 6},
-                 {"ssid_name": "ssid_wpa2_5gU", "appliedRadios": ["is5GHzU", "is5GHz"], "vlan": 7},
-                 {"ssid_name": "ssid_wpa2_5gU", "appliedRadios": ["is5GHzU", "is5GHz"], "vlan": 8}]},
+                          {"ssid_name": "ssid_wpa2_2g", "appliedRadios": ["is2dot4GHz"], "vlan": 4},
+                          {"ssid_name": "ssid_wpa2_5g", "appliedRadios": ["is5GHz", "is5GHzL"], "vlan": 5},
+                          {"ssid_name": "ssid_wpa2_5g", "appliedRadios": ["is5GHz", "is5GHzL"], "vlan": 6},
+                          {"ssid_name": "ssid_wpa2_5gU", "appliedRadios": ["is5GHzU", "is5GHz"], "vlan": 7},
+                          {"ssid_name": "ssid_wpa2_5gU", "appliedRadios": ["is5GHzU", "is5GHz"], "vlan": 8}]},
 
     "rf": {},
     "radius": False
 }
+
 
 @pytest.mark.two_ssid_three_radio
 @pytest.mark.wifi5
@@ -40,9 +41,9 @@ class TestValidTwoSsidThreeRadio(object):
     @pytest.mark.wpa2_personal
     @pytest.mark.twog
     def test_wpa2_ssid_2g(self, get_lanforge_data, lf_test, lf_tools, station_names_twog, get_configuration,
-                          get_vlan_list,update_report, test_cases):
+                          get_vlan_list, update_report, test_cases):
         '''
-            pytest -m "vlan_combination_test and valid and wpa2_personal and twog
+            pytest -m "vlan_combination_test and two_ssid_three_radio and wpa2_personal and twog
         '''
 
         profile_data = setup_params_general["ssid_modes"]["wpa2_personal"][0]
@@ -89,9 +90,9 @@ class TestValidTwoSsidThreeRadio(object):
     @pytest.mark.wpa2_personal
     @pytest.mark.twog
     def test_wpa2_ssid_2g(self, get_lanforge_data, lf_test, lf_tools, station_names_twog, get_configuration,
-                          get_vlan_list,update_report, test_cases):
+                          get_vlan_list, update_report, test_cases):
         '''
-            pytest -m "vlan_combination_test and valid and wpa2_personal and twog
+            pytest -m "vlan_combination_test and two_ssid_three_radio and wpa2_personal and twog
         '''
 
         profile_data = setup_params_general["ssid_modes"]["wpa2_personal"][1]
@@ -135,14 +136,12 @@ class TestValidTwoSsidThreeRadio(object):
             except:
                 pass
 
-
-
     @pytest.mark.wpa2_personal
     @pytest.mark.fiveg
     def test_wpa2_ssid_5g(self, get_lanforge_data, lf_test, lf_tools, station_names_fiveg, get_configuration,
-                          get_vlan_list,update_report, test_cases):
+                          get_vlan_list, update_report, test_cases):
         '''
-            pytest -m "vlan_combination_test and valid and wpa2_personal and fiveg and test_valid_5g
+            pytest -m "vlan_combination_test and two_ssid_three_radio and wpa2_personal and fiveg
         '''
 
         profile_data = setup_params_general["ssid_modes"]["wpa2_personal"][2]
@@ -189,9 +188,9 @@ class TestValidTwoSsidThreeRadio(object):
     @pytest.mark.wpa2_personal
     @pytest.mark.fiveg
     def test_wpa2_ssid_5g(self, get_lanforge_data, lf_test, lf_tools, station_names_fiveg, get_configuration,
-                          get_vlan_list,update_report, test_cases):
+                          get_vlan_list, update_report, test_cases):
         '''
-            pytest -m "vlan_combination_test and valid and wpa2_personal and fiveg and test_valid_5g
+            pytest -m "vlan_combination_test and two_ssid_three_radio and wpa2_personal and fiveg and test_valid_5g
         '''
 
         profile_data = setup_params_general["ssid_modes"]["wpa2_personal"][3]
@@ -238,9 +237,9 @@ class TestValidTwoSsidThreeRadio(object):
     @pytest.mark.wpa2_personal
     @pytest.mark.fiveg
     def test_wpa2_ssid_5g(self, get_lanforge_data, lf_test, lf_tools, station_names_fiveg, get_configuration,
-                          get_vlan_list,update_report, test_cases):
+                          get_vlan_list, update_report, test_cases):
         '''
-            pytest -m "vlan_combination_test and valid and wpa2_personal and fiveg
+            pytest -m "vlan_combination_test and two_ssid_three_radio and wpa2_personal and fiveg
         '''
 
         profile_data = setup_params_general["ssid_modes"]["wpa2_personal"][4]
@@ -287,9 +286,9 @@ class TestValidTwoSsidThreeRadio(object):
     @pytest.mark.wpa2_personal
     @pytest.mark.fiveg
     def test_wpa2_ssid_5g(self, get_lanforge_data, lf_test, lf_tools, station_names_fiveg, get_configuration,
-                          get_vlan_list,update_report, test_cases):
+                          get_vlan_list, update_report, test_cases):
         '''
-            pytest -m "vlan_combination_test and valid and wpa2_personal and fiveg
+            pytest -m "vlan_combination_test and two_ssid_three_radio and wpa2_personal and fiveg
         '''
 
         profile_data = setup_params_general["ssid_modes"]["wpa2_personal"][5]
