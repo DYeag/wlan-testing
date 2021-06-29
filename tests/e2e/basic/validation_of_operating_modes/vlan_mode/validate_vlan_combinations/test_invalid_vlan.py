@@ -44,7 +44,7 @@ class TestInValidVlan(object):
     @pytest.mark.twog
     @pytest.mark.test_invalid_2g
     def test_wpa2p_ssid_2g(self, get_lanforge_data, lf_test, lf_tools, station_names_twog, get_configuration,
-                           update_report, test_cases):
+                           get_vlan_list,update_report, test_cases):
         profile_data = setup_params_general["ssid_modes"]["wpa2_personal"][0]
         ssid_name = profile_data["ssid_name"]
         security_key = profile_data["security_key"]
@@ -55,30 +55,42 @@ class TestInValidVlan(object):
         lf_data = get_configuration["traffic_generator"]["details"]
         upstream_port = lf_data["upstream"]
         port_data = upstream_port.split('.')
+        vlan_list = get_vlan_list
+        print(vlan_list)
         lf_test.Client_disconnect(station_names_twog)
-        lf_test.Client_Connect(ssid=ssid_name, security=security,
-                               passkey=security_key, mode=mode, band=band,
-                               station_name=station_names_twog, vlan_id=vlan)
+        passes, result = lf_test.Client_Connectivity(ssid=ssid_name, security=security,
+                                                     passkey=security_key, mode=mode, band=band,
+                                                     station_name=station_names_twog, vlan_id=vlan, cleanup=False)
+        if result:
+            sta_vlan_ip = lf_tools.json_get("/port/" + port_data[0] + "/" +
+                                            port_data[1] + "/" + port_data[2] + "." + str(vlan) + "?fields=ip")[
+                "interface"]["ip"]
 
-        sta_vlan_ip = lf_tools.json_get("/port/" + port_data[0] + "/" +
-                                        port_data[1] + "/" + port_data[2] + "." + str(vlan) + "?fields=ip")[
-            "interface"]["ip"]
+            sta_ip = lf_tools.json_get("/port/" + port_data[0] + "/" +
+                                       port_data[1] + "/" + station_names_twog[0] + "?fields=ip")["interface"]["ip"]
 
-        sta_ip = lf_tools.json_get("/port/" + port_data[0] + "/" +
-                                   port_data[1] + "/" + station_names_twog[0] + "?fields=ip")["interface"]["ip"]
-
-        for m, n in zip(sta_ip[0:2], sta_vlan_ip[0:2]):
-            if m != n:
+            sta_ip = sta_ip.split(".")
+            sta_vlan_ip = sta_vlan_ip.split(".")
+            print(sta_ip[:2], sta_vlan_ip[:2])
+            for m, n in zip(sta_ip[0:2], sta_vlan_ip[0:2]):
+                if m != n:
+                    assert False
+            vlan_list = [int(i) for i in vlan_list]
+            if int(vlan) in vlan_list:
+                print("All stations got ip as per vlan")
+                assert True
+            else:
                 assert False
-
-        print("All stations got ip as per vlan")
-        assert True
+            try:
+                lf_test.Client_disconnect(station_names_twog)
+            except:
+                pass
 
     @pytest.mark.wpa2_personal
     @pytest.mark.fiveg
     @pytest.mark.test_invalid_5g
     def test_wpa2p_ssid_5g(self, get_lanforge_data, lf_test, lf_tools, station_names_fiveg, get_configuration,
-                           update_report, test_cases):
+                           get_vlan_list,update_report, test_cases):
         '''
            pytest -m "vlan_combination_test and invalid and wpa2_personal and fiveg and test_invalid_5g
         '''
@@ -93,21 +105,33 @@ class TestInValidVlan(object):
         lf_data = get_configuration["traffic_generator"]["details"]
         upstream_port = lf_data["upstream"]
         port_data = upstream_port.split('.')
+        vlan_list = get_vlan_list
+        print(vlan_list)
         lf_test.Client_disconnect(station_names_fiveg)
-        lf_test.Client_Connect(ssid=ssid_name, security=security,
-                               passkey=security_key, mode=mode, band=band,
-                               station_name=station_names_fiveg, vlan_id=vlan)
+        passes, result = lf_test.Client_Connectivity(ssid=ssid_name, security=security,
+                                                     passkey=security_key, mode=mode, band=band,
+                                                     station_name=station_names_fiveg, vlan_id=vlan, cleanup=False)
+        if result:
+            sta_vlan_ip = lf_tools.json_get("/port/" + port_data[0] + "/" +
+                                            port_data[1] + "/" + port_data[2] + "." + str(vlan) + "?fields=ip")[
+                "interface"]["ip"]
 
-        sta_vlan_ip = lf_tools.json_get("/port/" + port_data[0] + "/" +
-                                        port_data[1] + "/" + port_data[2] + "." + str(vlan) + "?fields=ip")[
-            "interface"]["ip"]
+            sta_ip = lf_tools.json_get("/port/" + port_data[0] + "/" +
+                                       port_data[1] + "/" + station_names_fiveg[0] + "?fields=ip")["interface"]["ip"]
 
-        sta_ip = lf_tools.json_get("/port/" + port_data[0] + "/" +
-                                   port_data[1] + "/" + station_names_fiveg[0] + "?fields=ip")["interface"]["ip"]
-
-        for m, n in zip(sta_ip[0:2], sta_vlan_ip[0:2]):
-            if m != n:
+            sta_ip = sta_ip.split(".")
+            sta_vlan_ip = sta_vlan_ip.split(".")
+            print(sta_ip[:2], sta_vlan_ip[:2])
+            for m, n in zip(sta_ip[0:2], sta_vlan_ip[0:2]):
+                if m != n:
+                    assert False
+            vlan_list = [int(i) for i in vlan_list]
+            if int(vlan) in vlan_list:
+                print("All stations got ip as per vlan")
+                assert True
+            else:
                 assert False
-
-        print("All stations got ip as per vlan")
-        assert True
+            try:
+                lf_test.Client_disconnect(station_names_fiveg)
+            except:
+                pass

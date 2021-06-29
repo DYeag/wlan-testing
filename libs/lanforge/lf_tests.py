@@ -299,14 +299,16 @@ class RunTest:
 
         return self.dataplane_obj
 
-    def gen_test(self, station_names_twog):
-        ping_obj = GenCXProfile()
-        ping_obj.lfclient_host = lanforge_data["ip"]
-        ping_obj.lfclient_port = lanforge_data["port"]
+    def gen_test(self, station_names):
+        print(station_names)
+        ping_obj = GenCXProfile(lanforge_data["ip"], lanforge_data["port"])
+        # ping_obj.lfclient_host =
+        # ping_obj.lfclient_port =
         ping_obj.type = "lfping"
         ping_obj.dest = "8.8.8.8"
-        ping_obj.create(station_names_twog[0])
+        ping_obj.create(station_names[0])
         ping_obj.start_cx()
+        print("generic started")
 
 
 if __name__ == '__main__':
