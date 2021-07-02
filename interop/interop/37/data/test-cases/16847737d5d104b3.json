@@ -1,0 +1,1749 @@
+{
+  "uid" : "16847737d5d104b3",
+  "name" : "test_ToogleWifiMode_5g_WPA2_Personal[setup_profiles0]",
+  "fullName" : "e2e.interOp.android.WifiMode.test_ToggleWifiMode.TestToggleWifiMode#test_ToogleWifiMode_5g_WPA2_Personal",
+  "historyId" : "4c88ed1d7e032e426d52f32904429b5a",
+  "time" : {
+    "start" : 1625190088705,
+    "stop" : 1625190175119,
+    "duration" : 86414
+  },
+  "status" : "failed",
+  "statusMessage" : "AssertionError",
+  "statusTrace" : "request = <FixtureRequest for <Function test_ToogleWifiMode_5g_WPA2_Personal[setup_profiles0]>>\nWifiName = 'ssid_wpa2_5g', WifiPass = 'something'\nsetup_perfectoMobile = (<appium.webdriver.webdriver.WebDriver (session=\"8695a4a1-d8fa-48ea-8777-dcd2e8ac2ba0\")>, <perfecto.client.PerfectoReportiumClient.PerfectoReportiumClient object at 0x7f9fe848ea30>)\nconnData = {'appPackage-android': 'com.android.settings', 'bundleId-iOS-Settings': 'com.apple.Preferences', 'platformName-android': 'Android'}\n\n    def set_APconnMobileDevice_android(request, WifiName, WifiPass, setup_perfectoMobile, connData):\n        print(\"\\n-------------------------------------\")\n        print(\"Select Wifi/AccessPoint Connection\")\n        print(\"-------------------------------------\")\n        print(\"Verifying Wifi/AP Connection Details....\")\n        report = setup_perfectoMobile[1]\n        driver = setup_perfectoMobile[0]\n    \n        report.step_start(\"Switching Driver Context\")\n        print(\"Switching Context to Native\")\n        contexts = driver.contexts\n        driver.switch_to.context(contexts[0])\n    \n        #Open Settings Application\n        openApp(connData[\"appPackage-android\"], setup_perfectoMobile)\n    \n        deviceModelName = getDeviceModelName(setup_perfectoMobile)\n        print (\"Selected Device Model: \" + deviceModelName)\n    \n        if deviceModelName!=(\"Pixel 4\"):\n    \n            report.step_start(\"Set Wifi Network to \" + WifiName)\n            try:\n                print(\"Verifying Connected Wifi Connection\")\n                report.step_start(\"Click Connections\")\n                connElement = driver.find_element_by_xpath(\"//*[@text='Connections']\")\n                connElement.click()\n            except NoSuchElementException:\n                print(\"Exception: Verify Xpath - Update/check Xpath for Click Connections\")\n    \n            try:\n                print(\"Get Connected Wifi Name if any\")\n                report.step_start(\"Get Connected Wifi Name if any\")\n                try:\n                    driver.implicitly_wait(20)\n                    WifiNameElement = driver.find_element_by_xpath(\"//*[@resource-id='android:id/summary']\")\n                    Wifi_AP_Name = WifiNameElement.text\n                    print(\"Current Wifi Status Name: \" + Wifi_AP_Name)\n                except NoSuchElementException:\n                    report.step_start(\"Checking Wifi Radio Button Status\")\n                    try:\n                        driver.implicitly_wait(5)\n                        WifiRadioBtnConnections = driver.find_element_by_xpath(\"//*[@resource-id='android:id/switch_widget' and @content-desc='Wi-Fi' and @text='Off']\")\n                        report.step_start(\"Wifi Radio Button Disabled, Enabling Radio Button..\")\n                        print(\"Wifi Radio Button Disabled, Enabling Radio Button..\")\n                        WifiRadioBtnConnections.click()\n                    except NoSuchElementException:\n                        Wifi_AP_Name=\"Null\"\n                        driver.implicitly_wait(25)\n                        report.step_start(\"Wifi Radio Button Already Enabled\")\n                        print(\"Wifi Radio Button Already Enabled\")\n    \n            except NoSuchElementException:\n                Wifi_AP_Name=\"Null\"\n                print(\"Device not connected to any Wifi\")\n    \n            report.step_start(\"Clicking Wi-Fi\")\n            wifiElement = driver.find_element_by_xpath(\"//*[@text='Wi-Fi']\")\n            wifiElement.click()\n    \n            if Wifi_AP_Name.__eq__(WifiName):\n                print(\"Wifi Name Matches - Already Connected To: \" + Wifi_AP_Name)\n    \n                try:\n                    report.step_start(\"Verify if Wifi is Connected\")\n                    WifiInternetErrMsg = driver.find_element_by_xpath(\"//*[@resource-id='com.android.settings:id/summary' and @text='Connected']/parent::*/android.widget.TextView[@text='\" + WifiName + \"']\")\n                    print(\"Wifi Successfully Connected\")\n    \n                except NoSuchElementException:\n                    print(\"Wifi Connection Error: \" + WifiName)\n    \n            else:\n    \n                #print(\"Set Wifi Radio Button to enabled\")\n                #try:\n                #    report.step_start(\"Set Wifi Radio Button to enabled\")\n                #    wifiRadioBtn = driver.find_element_by_xpath(\"//*[@resource-id='com.android.settings:id/switch_widget' and @text='Wi-Fi, Off']\")\n                #    wifiRadioBtn.click()\n               # except NoSuchElementException:\n               #     report.step_start(\"Set Wifi Radio Button Already enabled\")\n                 #   print(\"Radio button Already Enabled\")\n    \n                print(\"Selecting Wifi: \" + WifiName)\n                try:\n                    report.step_start(\"Selecting Wifi: \" + WifiName)\n>                   wifiSelectionElement = WebDriverWait(driver, 35).until(EC.presence_of_element_located((MobileBy.XPATH, \"//*[@text='\"+ WifiName + \"']\")))\n\n../libs/perfecto_libs/android_lib.py:245: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <selenium.webdriver.support.wait.WebDriverWait (session=\"8695a4a1-d8fa-48ea-8777-dcd2e8ac2ba0\")>\nmethod = <selenium.webdriver.support.expected_conditions.presence_of_element_located object at 0x7f9fe9091fa0>\nmessage = ''\n\n    def until(self, method, message=''):\n        \"\"\"Calls the method provided with the driver as an argument until the \\\n        return value is not False.\"\"\"\n        screen = None\n        stacktrace = None\n    \n        end_time = time.time() + self._timeout\n        while True:\n            try:\n                value = method(self._driver)\n                if value:\n                    return value\n            except self._ignored_exceptions as exc:\n                screen = getattr(exc, 'screen', None)\n                stacktrace = getattr(exc, 'stacktrace', None)\n            time.sleep(self._poll)\n            if time.time() > end_time:\n                break\n>       raise TimeoutException(message, screen, stacktrace)\nE       selenium.common.exceptions.TimeoutException: Message: \nE       Stacktrace:\nE           at sun.reflect.GeneratedConstructorAccessor1387.newInstance (None:-1)\nE           at sun.reflect.DelegatingConstructorAccessorImpl.newInstance (DelegatingConstructorAccessorImpl.java:45)\nE           at java.lang.reflect.Constructor.newInstance (Constructor.java:423)\nE           at org.openqa.selenium.remote.ErrorHandler.createThrowable (ErrorHandler.java:214)\nE           at org.openqa.selenium.remote.ErrorHandler.throwIfResponseFailed (ErrorHandler.java:166)\nE           at org.openqa.selenium.remote.http.JsonHttpResponseCodec.reconstructValue (JsonHttpResponseCodec.java:40)\nE           at org.openqa.selenium.remote.http.AbstractHttpResponseCodec.decode (AbstractHttpResponseCodec.java:80)\nE           at org.openqa.selenium.remote.http.AbstractHttpResponseCodec.decode (AbstractHttpResponseCodec.java:44)\nE           at org.openqa.selenium.remote.HttpCommandExecutor.execute (HttpCommandExecutor.java:158)\nE           at io.appium.java_client.remote.AppiumCommandExecutor.execute (AppiumCommandExecutor.java:239)\nE           at org.openqa.selenium.remote.RemoteWebDriver.execute (RemoteWebDriver.java:552)\nE           at io.appium.java_client.DefaultGenericMobileDriver.execute (DefaultGenericMobileDriver.java:41)\nE           at io.appium.java_client.AppiumDriver.execute (AppiumDriver.java:1)\nE           at io.appium.java_client.android.AndroidDriver.execute (AndroidDriver.java:1)\nE           at org.openqa.selenium.remote.RemoteWebDriver.findElement (RemoteWebDriver.java:323)\nE           at io.appium.java_client.DefaultGenericMobileDriver.findElement (DefaultGenericMobileDriver.java:61)\nE           at io.appium.java_client.AppiumDriver.findElement (AppiumDriver.java:1)\nE           at io.appium.java_client.android.AndroidDriver.findElement (AndroidDriver.java:1)\nE           at org.openqa.selenium.remote.RemoteWebDriver.findElementByXPath (RemoteWebDriver.java:428)\nE           at io.appium.java_client.DefaultGenericMobileDriver.findElementByXPath (DefaultGenericMobileDriver.java:151)\nE           at io.appium.java_client.AppiumDriver.findElementByXPath (AppiumDriver.java:1)\nE           at io.appium.java_client.android.AndroidDriver.findElementByXPath (AndroidDriver.java:1)\nE           at org.openqa.selenium.By$ByXPath.findElement (By.java:353)\nE           at org.openqa.selenium.remote.RemoteWebDriver.findElement (RemoteWebDriver.java:315)\nE           at io.appium.java_client.DefaultGenericMobileDriver.findElement (DefaultGenericMobileDriver.java:57)\nE           at io.appium.java_client.AppiumDriver.findElement (AppiumDriver.java:1)\nE           at io.appium.java_client.android.AndroidDriver.findElement (AndroidDriver.java:1)\nE           at com.perfectomobile.selenium.server.appium.AppiumAndroidDriverWrapper$2.call (AppiumAndroidDriverWrapper.java:78)\nE           at com.nexperience.function.execute.ExecuteCallableCommand.process (ExecuteCallableCommand.java:30)\nE           at com.nexperience.engine.script.command.AbstractScriptCommand.doExecute (AbstractScriptCommand.java:173)\nE           at com.nexperience.engine.script.command.ScriptCommandBase.execute (ScriptCommandBase.java:105)\nE           at com.nexperience.engine.script.tcl.event.CommandTclEvent.processEvent (CommandTclEvent.java:43)\nE           at com.nexperience.engine.script.tcl.event.MaseTclEvent.processEvent (MaseTclEvent.java:56)\nE           at tcl.lang.Notifier.serviceEvent (Notifier.java:457)\nE           at tcl.lang.Notifier.doOneEvent (Notifier.java:610)\nE           at tcl.lang.Notifier.processTclEvents (Notifier.java:786)\nE           at com.nexperience.engine.script.tcl.event.TclEventProcessor.start (TclEventProcessor.java:80)\nE           at com.nexperience.engine.script.tcl.TclInterpreter.startEventProcessing (TclInterpreter.java:552)\nE           at com.nexperience.engine.script.execution.step.StepExecutionEventProcessor.callImpl (StepExecutionEventProcessor.java:85)\nE           at com.nexperience.engine.script.execution.step.StepExecutionEventProcessor.callImpl (StepExecutionEventProcessor.java:21)\nE           at com.nexperience.util.thread.WrappedCallable.call (WrappedCallable.java:31)\nE           at java.util.concurrent.FutureTask.run (FutureTask.java:266)\nE           at java.util.concurrent.ThreadPoolExecutor.runWorker (ThreadPoolExecutor.java:1142)\nE           at java.util.concurrent.ThreadPoolExecutor$Worker.run (ThreadPoolExecutor.java:617)\nE           at java.lang.Thread.run (Thread.java:748)\n\n/usr/local/lib/python3.8/site-packages/selenium/webdriver/support/wait.py:80: TimeoutException\n\nDuring handling of the above exception, another exception occurred:\n\nself = <tests.e2e.interOp.android.WifiMode.test_ToggleWifiMode.TestToggleWifiMode object at 0x7f9fe9df3ca0>\nrequest = <FixtureRequest for <Function test_ToogleWifiMode_5g_WPA2_Personal[setup_profiles0]>>\nget_ToggleWifiMode_data = {'appPackage-android': 'com.android.settings', 'bundleId-iOS-Settings': 'com.apple.Preferences', 'platformName-android': 'Android'}\nsetup_perfectoMobile_android = (<appium.webdriver.webdriver.WebDriver (session=\"8695a4a1-d8fa-48ea-8777-dcd2e8ac2ba0\")>, <perfecto.client.PerfectoReportiumClient.PerfectoReportiumClient object at 0x7f9fe848ea30>)\n\n    @pytest.mark.fiveg\n    @pytest.mark.wpa2_personal\n    def test_ToogleWifiMode_5g_WPA2_Personal(self, request, get_ToggleWifiMode_data, setup_perfectoMobile_android):\n    \n        profile_data = setup_params_general[\"ssid_modes\"][\"wpa2_personal\"][1]\n        ssidName = profile_data[\"ssid_name\"]\n        ssidPassword = profile_data[\"security_key\"]\n        print (\"SSID_NAME: \" + ssidName)\n        print (\"SSID_PASS: \" + ssidPassword)\n    \n        report = setup_perfectoMobile_android[1]\n        driver = setup_perfectoMobile_android[0]\n        connData = get_ToggleWifiMode_data\n    \n        #Set Wifi/AP Mode\n>       set_APconnMobileDevice_android(request, ssidName, ssidPassword, setup_perfectoMobile_android, connData)\n\ne2e/interOp/android/WifiMode/test_ToggleWifiMode.py:61: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nrequest = <FixtureRequest for <Function test_ToogleWifiMode_5g_WPA2_Personal[setup_profiles0]>>\nWifiName = 'ssid_wpa2_5g', WifiPass = 'something'\nsetup_perfectoMobile = (<appium.webdriver.webdriver.WebDriver (session=\"8695a4a1-d8fa-48ea-8777-dcd2e8ac2ba0\")>, <perfecto.client.PerfectoReportiumClient.PerfectoReportiumClient object at 0x7f9fe848ea30>)\nconnData = {'appPackage-android': 'com.android.settings', 'bundleId-iOS-Settings': 'com.apple.Preferences', 'platformName-android': 'Android'}\n\n    def set_APconnMobileDevice_android(request, WifiName, WifiPass, setup_perfectoMobile, connData):\n        print(\"\\n-------------------------------------\")\n        print(\"Select Wifi/AccessPoint Connection\")\n        print(\"-------------------------------------\")\n        print(\"Verifying Wifi/AP Connection Details....\")\n        report = setup_perfectoMobile[1]\n        driver = setup_perfectoMobile[0]\n    \n        report.step_start(\"Switching Driver Context\")\n        print(\"Switching Context to Native\")\n        contexts = driver.contexts\n        driver.switch_to.context(contexts[0])\n    \n        #Open Settings Application\n        openApp(connData[\"appPackage-android\"], setup_perfectoMobile)\n    \n        deviceModelName = getDeviceModelName(setup_perfectoMobile)\n        print (\"Selected Device Model: \" + deviceModelName)\n    \n        if deviceModelName!=(\"Pixel 4\"):\n    \n            report.step_start(\"Set Wifi Network to \" + WifiName)\n            try:\n                print(\"Verifying Connected Wifi Connection\")\n                report.step_start(\"Click Connections\")\n                connElement = driver.find_element_by_xpath(\"//*[@text='Connections']\")\n                connElement.click()\n            except NoSuchElementException:\n                print(\"Exception: Verify Xpath - Update/check Xpath for Click Connections\")\n    \n            try:\n                print(\"Get Connected Wifi Name if any\")\n                report.step_start(\"Get Connected Wifi Name if any\")\n                try:\n                    driver.implicitly_wait(20)\n                    WifiNameElement = driver.find_element_by_xpath(\"//*[@resource-id='android:id/summary']\")\n                    Wifi_AP_Name = WifiNameElement.text\n                    print(\"Current Wifi Status Name: \" + Wifi_AP_Name)\n                except NoSuchElementException:\n                    report.step_start(\"Checking Wifi Radio Button Status\")\n                    try:\n                        driver.implicitly_wait(5)\n                        WifiRadioBtnConnections = driver.find_element_by_xpath(\"//*[@resource-id='android:id/switch_widget' and @content-desc='Wi-Fi' and @text='Off']\")\n                        report.step_start(\"Wifi Radio Button Disabled, Enabling Radio Button..\")\n                        print(\"Wifi Radio Button Disabled, Enabling Radio Button..\")\n                        WifiRadioBtnConnections.click()\n                    except NoSuchElementException:\n                        Wifi_AP_Name=\"Null\"\n                        driver.implicitly_wait(25)\n                        report.step_start(\"Wifi Radio Button Already Enabled\")\n                        print(\"Wifi Radio Button Already Enabled\")\n    \n            except NoSuchElementException:\n                Wifi_AP_Name=\"Null\"\n                print(\"Device not connected to any Wifi\")\n    \n            report.step_start(\"Clicking Wi-Fi\")\n            wifiElement = driver.find_element_by_xpath(\"//*[@text='Wi-Fi']\")\n            wifiElement.click()\n    \n            if Wifi_AP_Name.__eq__(WifiName):\n                print(\"Wifi Name Matches - Already Connected To: \" + Wifi_AP_Name)\n    \n                try:\n                    report.step_start(\"Verify if Wifi is Connected\")\n                    WifiInternetErrMsg = driver.find_element_by_xpath(\"//*[@resource-id='com.android.settings:id/summary' and @text='Connected']/parent::*/android.widget.TextView[@text='\" + WifiName + \"']\")\n                    print(\"Wifi Successfully Connected\")\n    \n                except NoSuchElementException:\n                    print(\"Wifi Connection Error: \" + WifiName)\n    \n            else:\n    \n                #print(\"Set Wifi Radio Button to enabled\")\n                #try:\n                #    report.step_start(\"Set Wifi Radio Button to enabled\")\n                #    wifiRadioBtn = driver.find_element_by_xpath(\"//*[@resource-id='com.android.settings:id/switch_widget' and @text='Wi-Fi, Off']\")\n                #    wifiRadioBtn.click()\n               # except NoSuchElementException:\n               #     report.step_start(\"Set Wifi Radio Button Already enabled\")\n                 #   print(\"Radio button Already Enabled\")\n    \n                print(\"Selecting Wifi: \" + WifiName)\n                try:\n                    report.step_start(\"Selecting Wifi: \" + WifiName)\n                    wifiSelectionElement = WebDriverWait(driver, 35).until(EC.presence_of_element_located((MobileBy.XPATH, \"//*[@text='\"+ WifiName + \"']\")))\n                    wifiSelectionElement.click()\n                except Exception as e:\n                    print(\"Exception on Selecting Wifi Network.  Please check wifi Name or signal\")\n                    request.config.cache.set(key=\"SelectingWifiFailed\", value=str(e))\n>                   assert False\nE                   AssertionError\n\n../libs/perfecto_libs/android_lib.py:250: AssertionError",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ {
+    "name" : "testbed",
+    "time" : {
+      "start" : 1625185494646,
+      "stop" : 1625185494646,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "f1107f56150222cd",
+      "name" : "Testbed Selected : ",
+      "source" : "f1107f56150222cd.attach",
+      "type" : "text/plain",
+      "size" : 7
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "radius_info",
+    "time" : {
+      "start" : 1625185496418,
+      "stop" : 1625185496419,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "163ebbedd1be72f2",
+      "name" : "Radius server Info: ",
+      "source" : "163ebbedd1be72f2.attach",
+      "type" : "text/plain",
+      "size" : 126
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "get_ToggleWifiMode_data",
+    "time" : {
+      "start" : 1625190073728,
+      "stop" : 1625190073728,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_security_flags",
+    "time" : {
+      "start" : 1625185496416,
+      "stop" : 1625185496416,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_perfectoMobile_android",
+    "time" : {
+      "start" : 1625190073728,
+      "stop" : 1625190088704,
+      "duration" : 14976
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_controller",
+    "time" : {
+      "start" : 1625185496195,
+      "stop" : 1625185496324,
+      "duration" : 129
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "b82391cfa95d1081",
+      "name" : "Controller Instantiated: ",
+      "source" : "b82391cfa95d1081.attach",
+      "type" : "text/plain",
+      "size" : 182
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "instantiate_profile",
+    "time" : {
+      "start" : 1625185496415,
+      "stop" : 1625185496416,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_apnos",
+    "time" : {
+      "start" : 1625185494647,
+      "stop" : 1625185494647,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_vlan",
+    "time" : {
+      "start" : 1625185496324,
+      "stop" : 1625185496324,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "c0a12b9d16363cff",
+      "name" : "VLAN Created: ",
+      "source" : "c0a12b9d16363cff.attach",
+      "type" : "text/plain",
+      "size" : 5
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "get_markers",
+    "time" : {
+      "start" : 1625185496416,
+      "stop" : 1625185496418,
+      "duration" : 2
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "a75f2da767f3fbf6",
+      "name" : "Test Cases Requires: ",
+      "source" : "a75f2da767f3fbf6.attach",
+      "type" : "text/plain",
+      "size" : 385
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "get_configuration",
+    "time" : {
+      "start" : 1625185494646,
+      "stop" : 1625185494647,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "ec7767c4600359ff",
+      "name" : "Testbed Selected: ",
+      "source" : "ec7767c4600359ff.attach",
+      "type" : "text/plain",
+      "size" : 7
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "instantiate_access_point",
+    "time" : {
+      "start" : 1625185494647,
+      "stop" : 1625185496194,
+      "duration" : 1547
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "446376a4d124560d",
+      "name" : "added openwrtctl.py to :",
+      "source" : "446376a4d124560d.attach",
+      "type" : "text/plain",
+      "size" : 14
+    }, {
+      "uid" : "29c2ce0bcfe42054",
+      "name" : "APNOS LIbrary: ",
+      "source" : "29c2ce0bcfe42054.attach",
+      "type" : "text/plain",
+      "size" : 314
+    }, {
+      "uid" : "95468e18d6459258",
+      "name" : "openwrt_ctl Setup",
+      "source" : "95468e18d6459258.attach",
+      "type" : "text/plain",
+      "size" : 9
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 3,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "get_equipment_id",
+    "time" : {
+      "start" : 1625185496324,
+      "stop" : 1625185496415,
+      "duration" : 91
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_profiles",
+    "time" : {
+      "start" : 1625189602277,
+      "stop" : 1625190073728,
+      "duration" : 471451
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "a05a0bed83182623",
+      "name" : "RF Profile Created : wifi5",
+      "source" : "a05a0bed83182623.attach",
+      "type" : "text/plain",
+      "size" : 40
+    }, {
+      "uid" : "dc8d12a1d052f318",
+      "name" : "SSID Profile Created",
+      "source" : "dc8d12a1d052f318.attach",
+      "type" : "text/plain",
+      "size" : 2794
+    }, {
+      "uid" : "46622f2d34a9e75c",
+      "name" : "SSID Profile Created",
+      "source" : "46622f2d34a9e75c.attach",
+      "type" : "text/plain",
+      "size" : 2812
+    }, {
+      "uid" : "4f96deaa7db721ca",
+      "name" : "SSID Profile Created",
+      "source" : "4f96deaa7db721ca.attach",
+      "type" : "text/plain",
+      "size" : 2810
+    }, {
+      "uid" : "f3571824ae33bc03",
+      "name" : "SSID Profile Created",
+      "source" : "f3571824ae33bc03.attach",
+      "type" : "text/plain",
+      "size" : 2828
+    }, {
+      "uid" : "deb6b223a4b3f0d5",
+      "name" : "Equipment AP Profile Created",
+      "source" : "deb6b223a4b3f0d5.attach",
+      "type" : "text/plain",
+      "size" : 44
+    }, {
+      "uid" : "b01a79867cfc923c",
+      "name" : "APNOS LIbrary: ",
+      "source" : "b01a79867cfc923c.attach",
+      "type" : "text/plain",
+      "size" : 314
+    }, {
+      "uid" : "9a393c754624ae02",
+      "name" : "openwrt_ctl Setup",
+      "source" : "9a393c754624ae02.attach",
+      "type" : "text/plain",
+      "size" : 9
+    }, {
+      "uid" : "9caeb39e8a88ca7b",
+      "name" : "vif config Output Msg: ",
+      "source" : "9caeb39e8a88ca7b.attach",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "5355df73d8548c28",
+      "name" : "vif config Err Msg: ",
+      "source" : "5355df73d8548c28.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "afa1bcba038c6d6d",
+      "name" : "get_vif_config_ssids ",
+      "source" : "afa1bcba038c6d6d.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "bf0292c3f219543d",
+      "name" : "vif config Output Msg: ",
+      "source" : "bf0292c3f219543d.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "bc92a276c2fec893",
+      "name" : "vif config Err Msg: ",
+      "source" : "bc92a276c2fec893.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "f2ec9ef9b1502d92",
+      "name" : "get_vif_config_ssids ",
+      "source" : "f2ec9ef9b1502d92.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "f63d8cde14475ef6",
+      "name" : "vif config Output Msg: ",
+      "source" : "f63d8cde14475ef6.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "82024062c709bc5",
+      "name" : "vif config Err Msg: ",
+      "source" : "82024062c709bc5.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "3c605c978ff2cf92",
+      "name" : "get_vif_config_ssids ",
+      "source" : "3c605c978ff2cf92.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "f27cb4fc55f7aba5",
+      "name" : "vif config Output Msg: ",
+      "source" : "f27cb4fc55f7aba5.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "8155a8e53fd45541",
+      "name" : "vif config Err Msg: ",
+      "source" : "8155a8e53fd45541.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "902a6cf1e7d21c53",
+      "name" : "get_vif_config_ssids ",
+      "source" : "902a6cf1e7d21c53.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "2eda22336363bbca",
+      "name" : "vif config Output Msg: ",
+      "source" : "2eda22336363bbca.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "c67b84cdeff81f63",
+      "name" : "vif config Err Msg: ",
+      "source" : "c67b84cdeff81f63.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "4d592205a784d792",
+      "name" : "get_vif_config_ssids ",
+      "source" : "4d592205a784d792.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "28b85695c9c1b572",
+      "name" : "vif config Output Msg: ",
+      "source" : "28b85695c9c1b572.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "92e2623b164d7a3",
+      "name" : "vif config Err Msg: ",
+      "source" : "92e2623b164d7a3.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "8dfd4261222da7e8",
+      "name" : "get_vif_config_ssids ",
+      "source" : "8dfd4261222da7e8.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "f03b12508de848b1",
+      "name" : "vif config Output Msg: ",
+      "source" : "f03b12508de848b1.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "d02638aca2b27e11",
+      "name" : "vif config Err Msg: ",
+      "source" : "d02638aca2b27e11.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "d7e829d4df31a",
+      "name" : "get_vif_config_ssids ",
+      "source" : "d7e829d4df31a.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "65ad3808417fc80a",
+      "name" : "vif config Output Msg: ",
+      "source" : "65ad3808417fc80a.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "923cfaafa051aab2",
+      "name" : "vif config Err Msg: ",
+      "source" : "923cfaafa051aab2.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "8eef933485c19a1f",
+      "name" : "get_vif_config_ssids ",
+      "source" : "8eef933485c19a1f.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "affafedbd6ce7e1c",
+      "name" : "vif config Output Msg: ",
+      "source" : "affafedbd6ce7e1c.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "5c8abb9e1d866327",
+      "name" : "vif config Err Msg: ",
+      "source" : "5c8abb9e1d866327.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "a591dc6a95a46a20",
+      "name" : "get_vif_config_ssids ",
+      "source" : "a591dc6a95a46a20.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "c32957ceaa8a18fb",
+      "name" : "vif config Output Msg: ",
+      "source" : "c32957ceaa8a18fb.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "d3a0abbef517f8c7",
+      "name" : "vif config Err Msg: ",
+      "source" : "d3a0abbef517f8c7.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "1ff32331760591e8",
+      "name" : "get_vif_config_ssids ",
+      "source" : "1ff32331760591e8.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "192cefbe86bce605",
+      "name" : "vif config Output Msg: ",
+      "source" : "192cefbe86bce605.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "5db4ae75dd13a4e7",
+      "name" : "vif config Err Msg: ",
+      "source" : "5db4ae75dd13a4e7.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "5f4b294238ea5394",
+      "name" : "get_vif_config_ssids ",
+      "source" : "5f4b294238ea5394.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "1b9a73aa224a31ce",
+      "name" : "vif config Output Msg: ",
+      "source" : "1b9a73aa224a31ce.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "e673be1bc06c946b",
+      "name" : "vif config Err Msg: ",
+      "source" : "e673be1bc06c946b.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "ae15c96f29fd1817",
+      "name" : "get_vif_config_ssids ",
+      "source" : "ae15c96f29fd1817.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "75d51236a062701a",
+      "name" : "vif config Output Msg: ",
+      "source" : "75d51236a062701a.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "55d3f638360ea62e",
+      "name" : "vif config Err Msg: ",
+      "source" : "55d3f638360ea62e.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "ebc905fd9733c269",
+      "name" : "get_vif_config_ssids ",
+      "source" : "ebc905fd9733c269.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "85b3f055de616fcc",
+      "name" : "vif config Output Msg: ",
+      "source" : "85b3f055de616fcc.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "d082c755ae02bed8",
+      "name" : "vif config Err Msg: ",
+      "source" : "d082c755ae02bed8.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "62f7a1bf3918470e",
+      "name" : "get_vif_config_ssids ",
+      "source" : "62f7a1bf3918470e.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "7df767368d8a6b10",
+      "name" : "vif config Output Msg: ",
+      "source" : "7df767368d8a6b10.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "5eff2bde6896db25",
+      "name" : "vif config Err Msg: ",
+      "source" : "5eff2bde6896db25.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "f3ddf3938c6a6782",
+      "name" : "get_vif_config_ssids ",
+      "source" : "f3ddf3938c6a6782.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "be9412c6a63c3445",
+      "name" : "vif config Output Msg: ",
+      "source" : "be9412c6a63c3445.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "d6dd4857177fecc9",
+      "name" : "vif config Err Msg: ",
+      "source" : "d6dd4857177fecc9.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "6f975cd78c542516",
+      "name" : "get_vif_config_ssids ",
+      "source" : "6f975cd78c542516.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "6b09c17a1faf6bc2",
+      "name" : "vif config Output Msg: ",
+      "source" : "6b09c17a1faf6bc2.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "1545a8657b0e0c9c",
+      "name" : "vif config Err Msg: ",
+      "source" : "1545a8657b0e0c9c.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "23157cbf8eeecc93",
+      "name" : "get_vif_config_ssids ",
+      "source" : "23157cbf8eeecc93.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "71c0bc3e2b42d62f",
+      "name" : "vif config Output Msg: ",
+      "source" : "71c0bc3e2b42d62f.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "c0185411c0700da8",
+      "name" : "vif config Err Msg: ",
+      "source" : "c0185411c0700da8.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "4d728f754ac85fd5",
+      "name" : "get_vif_config_ssids ",
+      "source" : "4d728f754ac85fd5.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "1e34150beb87005",
+      "name" : "SSID Profiles in VIF Config and Controller: ",
+      "source" : "1e34150beb87005.attach",
+      "type" : "text/plain",
+      "size" : 228
+    }, {
+      "uid" : "12d740a7b43fac56",
+      "name" : "APNOS LIbrary: ",
+      "source" : "12d740a7b43fac56.attach",
+      "type" : "text/plain",
+      "size" : 314
+    }, {
+      "uid" : "a232cf012102a1cd",
+      "name" : "openwrt_ctl Setup",
+      "source" : "a232cf012102a1cd.attach",
+      "type" : "text/plain",
+      "size" : 9
+    }, {
+      "uid" : "d04e1a53aefac2d4",
+      "name" : "vif state Output Msg: ",
+      "source" : "d04e1a53aefac2d4.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "3318a1258a6e6b97",
+      "name" : "vif state Err Msg: ",
+      "source" : "3318a1258a6e6b97.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "1fe74314a4384592",
+      "name" : "get_vif_state_ssids ",
+      "source" : "1fe74314a4384592.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "a38d57761cee3184",
+      "name" : "vif config Output Msg: ",
+      "source" : "a38d57761cee3184.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "e3fa0b3f13eaf6fb",
+      "name" : "vif config Err Msg: ",
+      "source" : "e3fa0b3f13eaf6fb.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "77f0783649921b8a",
+      "name" : "get_vif_config_ssids ",
+      "source" : "77f0783649921b8a.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "3a118e015e0cfef2",
+      "name" : "vif state Output Msg: ",
+      "source" : "3a118e015e0cfef2.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "d5a88ec125bf1beb",
+      "name" : "vif state Err Msg: ",
+      "source" : "d5a88ec125bf1beb.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "ee5d49aeee824f15",
+      "name" : "get_vif_state_ssids ",
+      "source" : "ee5d49aeee824f15.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "11c62c6e388af75",
+      "name" : "vif config Output Msg: ",
+      "source" : "11c62c6e388af75.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "45bf67e9a9245707",
+      "name" : "vif config Err Msg: ",
+      "source" : "45bf67e9a9245707.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "9cb6c86eda3a61f0",
+      "name" : "get_vif_config_ssids ",
+      "source" : "9cb6c86eda3a61f0.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "1dfe7ab09ffdad61",
+      "name" : "vif state Output Msg: ",
+      "source" : "1dfe7ab09ffdad61.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "d240acc697c5346a",
+      "name" : "vif state Err Msg: ",
+      "source" : "d240acc697c5346a.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "f2fc7b3e0f822867",
+      "name" : "get_vif_state_ssids ",
+      "source" : "f2fc7b3e0f822867.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "3bc63b2bfc4e1d94",
+      "name" : "vif config Output Msg: ",
+      "source" : "3bc63b2bfc4e1d94.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "eeb93bc0539aba12",
+      "name" : "vif config Err Msg: ",
+      "source" : "eeb93bc0539aba12.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "5b2ab73f2aec6232",
+      "name" : "get_vif_config_ssids ",
+      "source" : "5b2ab73f2aec6232.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "1226fa14c111c2d7",
+      "name" : "vif state Output Msg: ",
+      "source" : "1226fa14c111c2d7.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "d11f0efdf5b90366",
+      "name" : "vif state Err Msg: ",
+      "source" : "d11f0efdf5b90366.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "6c66572827ed9a4d",
+      "name" : "get_vif_state_ssids ",
+      "source" : "6c66572827ed9a4d.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "3ceba8741bb77519",
+      "name" : "vif config Output Msg: ",
+      "source" : "3ceba8741bb77519.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "787965f1b46f6d84",
+      "name" : "vif config Err Msg: ",
+      "source" : "787965f1b46f6d84.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "15ae11e91fbbc7fc",
+      "name" : "get_vif_config_ssids ",
+      "source" : "15ae11e91fbbc7fc.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "fbf67cefb0f34a9c",
+      "name" : "vif state Output Msg: ",
+      "source" : "fbf67cefb0f34a9c.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "bd302e1a7e868c3c",
+      "name" : "vif state Err Msg: ",
+      "source" : "bd302e1a7e868c3c.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "ec51a8acb7538041",
+      "name" : "get_vif_state_ssids ",
+      "source" : "ec51a8acb7538041.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "34b4fe32a55cefac",
+      "name" : "vif config Output Msg: ",
+      "source" : "34b4fe32a55cefac.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "3fc3f1a73167e087",
+      "name" : "vif config Err Msg: ",
+      "source" : "3fc3f1a73167e087.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "443db847f9fb584e",
+      "name" : "get_vif_config_ssids ",
+      "source" : "443db847f9fb584e.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "865dc2b97970bb42",
+      "name" : "vif state Output Msg: ",
+      "source" : "865dc2b97970bb42.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "ba2383881570ecfa",
+      "name" : "vif state Err Msg: ",
+      "source" : "ba2383881570ecfa.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "34fc1a15855fb07f",
+      "name" : "get_vif_state_ssids ",
+      "source" : "34fc1a15855fb07f.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "eba6a544b8ad5691",
+      "name" : "vif config Output Msg: ",
+      "source" : "eba6a544b8ad5691.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "831719c56fa27ab7",
+      "name" : "vif config Err Msg: ",
+      "source" : "831719c56fa27ab7.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "2c73b33eac44fbcb",
+      "name" : "get_vif_config_ssids ",
+      "source" : "2c73b33eac44fbcb.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "b0977f64bf25c49a",
+      "name" : "vif state Output Msg: ",
+      "source" : "b0977f64bf25c49a.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "9ece7781531f90cd",
+      "name" : "vif state Err Msg: ",
+      "source" : "9ece7781531f90cd.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "f0db4f2070d12afc",
+      "name" : "get_vif_state_ssids ",
+      "source" : "f0db4f2070d12afc.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "5edb6e65fd88cca",
+      "name" : "vif config Output Msg: ",
+      "source" : "5edb6e65fd88cca.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "f514c47107f0071a",
+      "name" : "vif config Err Msg: ",
+      "source" : "f514c47107f0071a.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "2b64e94efe8e94c3",
+      "name" : "get_vif_config_ssids ",
+      "source" : "2b64e94efe8e94c3.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "b46a43c672170f47",
+      "name" : "vif state Output Msg: ",
+      "source" : "b46a43c672170f47.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "2565e36417d9b3f5",
+      "name" : "vif state Err Msg: ",
+      "source" : "2565e36417d9b3f5.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "cf84f4a80d7c75c0",
+      "name" : "get_vif_state_ssids ",
+      "source" : "cf84f4a80d7c75c0.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "eccb14b6b6aa53ef",
+      "name" : "vif config Output Msg: ",
+      "source" : "eccb14b6b6aa53ef.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "ae2acbd7c4e41260",
+      "name" : "vif config Err Msg: ",
+      "source" : "ae2acbd7c4e41260.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "6fd442d80f8a7b4e",
+      "name" : "get_vif_config_ssids ",
+      "source" : "6fd442d80f8a7b4e.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "53098386a7134023",
+      "name" : "vif state Output Msg: ",
+      "source" : "53098386a7134023.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "a2211d75b84046c7",
+      "name" : "vif state Err Msg: ",
+      "source" : "a2211d75b84046c7.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "34ab7385663f4f03",
+      "name" : "get_vif_state_ssids ",
+      "source" : "34ab7385663f4f03.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "61c2f358f62ad73f",
+      "name" : "vif config Output Msg: ",
+      "source" : "61c2f358f62ad73f.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "8df3d78cf088e918",
+      "name" : "vif config Err Msg: ",
+      "source" : "8df3d78cf088e918.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "aa9c1417f21f53f0",
+      "name" : "get_vif_config_ssids ",
+      "source" : "aa9c1417f21f53f0.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "b14d751533a18cec",
+      "name" : "vif state Output Msg: ",
+      "source" : "b14d751533a18cec.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "c542b57b1a2489ed",
+      "name" : "vif state Err Msg: ",
+      "source" : "c542b57b1a2489ed.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "67d28d51ffce0d7c",
+      "name" : "get_vif_state_ssids ",
+      "source" : "67d28d51ffce0d7c.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "d25704a815a60651",
+      "name" : "vif config Output Msg: ",
+      "source" : "d25704a815a60651.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "c5a680bb4307f65e",
+      "name" : "vif config Err Msg: ",
+      "source" : "c5a680bb4307f65e.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "919b52f518d4acbb",
+      "name" : "get_vif_config_ssids ",
+      "source" : "919b52f518d4acbb.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "e23fd496955892b7",
+      "name" : "vif state Output Msg: ",
+      "source" : "e23fd496955892b7.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "1abea6f8410faf6b",
+      "name" : "vif state Err Msg: ",
+      "source" : "1abea6f8410faf6b.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "262fd8998fc0c4d5",
+      "name" : "get_vif_state_ssids ",
+      "source" : "262fd8998fc0c4d5.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "859bf84f6f24a2ff",
+      "name" : "vif config Output Msg: ",
+      "source" : "859bf84f6f24a2ff.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "4ac19506a00e0946",
+      "name" : "vif config Err Msg: ",
+      "source" : "4ac19506a00e0946.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "88836b678034b4d8",
+      "name" : "get_vif_config_ssids ",
+      "source" : "88836b678034b4d8.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "dec6738c4e248fc9",
+      "name" : "vif state Output Msg: ",
+      "source" : "dec6738c4e248fc9.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "e510bb07c700683e",
+      "name" : "vif state Err Msg: ",
+      "source" : "e510bb07c700683e.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "9341bf98eda9a2f",
+      "name" : "get_vif_state_ssids ",
+      "source" : "9341bf98eda9a2f.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "330f9025b2d6c717",
+      "name" : "vif config Output Msg: ",
+      "source" : "330f9025b2d6c717.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "178c0b93841a71e7",
+      "name" : "vif config Err Msg: ",
+      "source" : "178c0b93841a71e7.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "e9db1d83b7cc910",
+      "name" : "get_vif_config_ssids ",
+      "source" : "e9db1d83b7cc910.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "90aee0f3d7c6bf75",
+      "name" : "vif state Output Msg: ",
+      "source" : "90aee0f3d7c6bf75.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "3e29dbef2832fe43",
+      "name" : "vif state Err Msg: ",
+      "source" : "3e29dbef2832fe43.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "bddeea92964e5899",
+      "name" : "get_vif_state_ssids ",
+      "source" : "bddeea92964e5899.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "aa106972ee57afec",
+      "name" : "vif config Output Msg: ",
+      "source" : "aa106972ee57afec.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "32617b12feb9d103",
+      "name" : "vif config Err Msg: ",
+      "source" : "32617b12feb9d103.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "a4c629b6dd5437e9",
+      "name" : "get_vif_config_ssids ",
+      "source" : "a4c629b6dd5437e9.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "c32a4cd7828672b4",
+      "name" : "vif state Output Msg: ",
+      "source" : "c32a4cd7828672b4.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "85c341c4ed3f71b8",
+      "name" : "vif state Err Msg: ",
+      "source" : "85c341c4ed3f71b8.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "fbfe431489cef0d0",
+      "name" : "get_vif_state_ssids ",
+      "source" : "fbfe431489cef0d0.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "79a93438172d6e0b",
+      "name" : "vif config Output Msg: ",
+      "source" : "79a93438172d6e0b.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "e1e238c871d8d4a0",
+      "name" : "vif config Err Msg: ",
+      "source" : "e1e238c871d8d4a0.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "6dd5c252b814b7c0",
+      "name" : "get_vif_config_ssids ",
+      "source" : "6dd5c252b814b7c0.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "3f3f533872e1b4f7",
+      "name" : "vif state Output Msg: ",
+      "source" : "3f3f533872e1b4f7.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "8155882786762072",
+      "name" : "vif state Err Msg: ",
+      "source" : "8155882786762072.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "2e881cc3b47ca301",
+      "name" : "get_vif_state_ssids ",
+      "source" : "2e881cc3b47ca301.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "cc9ee015eec24b05",
+      "name" : "vif config Output Msg: ",
+      "source" : "cc9ee015eec24b05.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "bdf18d2f57d0d5fd",
+      "name" : "vif config Err Msg: ",
+      "source" : "bdf18d2f57d0d5fd.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "ace31b280336ab6f",
+      "name" : "get_vif_config_ssids ",
+      "source" : "ace31b280336ab6f.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "da1349ec2ac50fed",
+      "name" : "vif state Output Msg: ",
+      "source" : "da1349ec2ac50fed.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "f159e12c1fb826eb",
+      "name" : "vif state Err Msg: ",
+      "source" : "f159e12c1fb826eb.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "fae8a1543c132459",
+      "name" : "get_vif_state_ssids ",
+      "source" : "fae8a1543c132459.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "f675c3c312cdef81",
+      "name" : "vif config Output Msg: ",
+      "source" : "f675c3c312cdef81.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "4ec1545e47ec8c26",
+      "name" : "vif config Err Msg: ",
+      "source" : "4ec1545e47ec8c26.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "b43c90f1311efad1",
+      "name" : "get_vif_config_ssids ",
+      "source" : "b43c90f1311efad1.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "5b6634c80108c2d2",
+      "name" : "vif state Output Msg: ",
+      "source" : "5b6634c80108c2d2.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "5835b7a1795e16c2",
+      "name" : "vif state Err Msg: ",
+      "source" : "5835b7a1795e16c2.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "f3aa4781bcb2a256",
+      "name" : "get_vif_state_ssids ",
+      "source" : "f3aa4781bcb2a256.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "376a8b0e28ef73da",
+      "name" : "vif config Output Msg: ",
+      "source" : "376a8b0e28ef73da.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "8837c4b3da4c02f2",
+      "name" : "vif config Err Msg: ",
+      "source" : "8837c4b3da4c02f2.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "f44e154f1e8e8c6f",
+      "name" : "get_vif_config_ssids ",
+      "source" : "f44e154f1e8e8c6f.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "b407b908c5bb26b1",
+      "name" : "vif state Output Msg: ",
+      "source" : "b407b908c5bb26b1.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "3b869c733aa0965b",
+      "name" : "vif state Err Msg: ",
+      "source" : "3b869c733aa0965b.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "89b15f0d6cba24c1",
+      "name" : "get_vif_state_ssids ",
+      "source" : "89b15f0d6cba24c1.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "f205571b80459deb",
+      "name" : "vif config Output Msg: ",
+      "source" : "f205571b80459deb.attach",
+      "type" : "text/plain",
+      "size" : 13442
+    }, {
+      "uid" : "b5fcfe100080102e",
+      "name" : "vif config Err Msg: ",
+      "source" : "b5fcfe100080102e.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "b215d781c0d0c6f8",
+      "name" : "get_vif_config_ssids ",
+      "source" : "b215d781c0d0c6f8.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "986748c1a9e1670f",
+      "name" : "SSID Profiles in VIF Config and VIF State: ",
+      "source" : "986748c1a9e1670f.attach",
+      "type" : "text/plain",
+      "size" : 150
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 174,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  } ],
+  "testStage" : {
+    "status" : "failed",
+    "statusMessage" : "AssertionError",
+    "statusTrace" : "request = <FixtureRequest for <Function test_ToogleWifiMode_5g_WPA2_Personal[setup_profiles0]>>\nWifiName = 'ssid_wpa2_5g', WifiPass = 'something'\nsetup_perfectoMobile = (<appium.webdriver.webdriver.WebDriver (session=\"8695a4a1-d8fa-48ea-8777-dcd2e8ac2ba0\")>, <perfecto.client.PerfectoReportiumClient.PerfectoReportiumClient object at 0x7f9fe848ea30>)\nconnData = {'appPackage-android': 'com.android.settings', 'bundleId-iOS-Settings': 'com.apple.Preferences', 'platformName-android': 'Android'}\n\n    def set_APconnMobileDevice_android(request, WifiName, WifiPass, setup_perfectoMobile, connData):\n        print(\"\\n-------------------------------------\")\n        print(\"Select Wifi/AccessPoint Connection\")\n        print(\"-------------------------------------\")\n        print(\"Verifying Wifi/AP Connection Details....\")\n        report = setup_perfectoMobile[1]\n        driver = setup_perfectoMobile[0]\n    \n        report.step_start(\"Switching Driver Context\")\n        print(\"Switching Context to Native\")\n        contexts = driver.contexts\n        driver.switch_to.context(contexts[0])\n    \n        #Open Settings Application\n        openApp(connData[\"appPackage-android\"], setup_perfectoMobile)\n    \n        deviceModelName = getDeviceModelName(setup_perfectoMobile)\n        print (\"Selected Device Model: \" + deviceModelName)\n    \n        if deviceModelName!=(\"Pixel 4\"):\n    \n            report.step_start(\"Set Wifi Network to \" + WifiName)\n            try:\n                print(\"Verifying Connected Wifi Connection\")\n                report.step_start(\"Click Connections\")\n                connElement = driver.find_element_by_xpath(\"//*[@text='Connections']\")\n                connElement.click()\n            except NoSuchElementException:\n                print(\"Exception: Verify Xpath - Update/check Xpath for Click Connections\")\n    \n            try:\n                print(\"Get Connected Wifi Name if any\")\n                report.step_start(\"Get Connected Wifi Name if any\")\n                try:\n                    driver.implicitly_wait(20)\n                    WifiNameElement = driver.find_element_by_xpath(\"//*[@resource-id='android:id/summary']\")\n                    Wifi_AP_Name = WifiNameElement.text\n                    print(\"Current Wifi Status Name: \" + Wifi_AP_Name)\n                except NoSuchElementException:\n                    report.step_start(\"Checking Wifi Radio Button Status\")\n                    try:\n                        driver.implicitly_wait(5)\n                        WifiRadioBtnConnections = driver.find_element_by_xpath(\"//*[@resource-id='android:id/switch_widget' and @content-desc='Wi-Fi' and @text='Off']\")\n                        report.step_start(\"Wifi Radio Button Disabled, Enabling Radio Button..\")\n                        print(\"Wifi Radio Button Disabled, Enabling Radio Button..\")\n                        WifiRadioBtnConnections.click()\n                    except NoSuchElementException:\n                        Wifi_AP_Name=\"Null\"\n                        driver.implicitly_wait(25)\n                        report.step_start(\"Wifi Radio Button Already Enabled\")\n                        print(\"Wifi Radio Button Already Enabled\")\n    \n            except NoSuchElementException:\n                Wifi_AP_Name=\"Null\"\n                print(\"Device not connected to any Wifi\")\n    \n            report.step_start(\"Clicking Wi-Fi\")\n            wifiElement = driver.find_element_by_xpath(\"//*[@text='Wi-Fi']\")\n            wifiElement.click()\n    \n            if Wifi_AP_Name.__eq__(WifiName):\n                print(\"Wifi Name Matches - Already Connected To: \" + Wifi_AP_Name)\n    \n                try:\n                    report.step_start(\"Verify if Wifi is Connected\")\n                    WifiInternetErrMsg = driver.find_element_by_xpath(\"//*[@resource-id='com.android.settings:id/summary' and @text='Connected']/parent::*/android.widget.TextView[@text='\" + WifiName + \"']\")\n                    print(\"Wifi Successfully Connected\")\n    \n                except NoSuchElementException:\n                    print(\"Wifi Connection Error: \" + WifiName)\n    \n            else:\n    \n                #print(\"Set Wifi Radio Button to enabled\")\n                #try:\n                #    report.step_start(\"Set Wifi Radio Button to enabled\")\n                #    wifiRadioBtn = driver.find_element_by_xpath(\"//*[@resource-id='com.android.settings:id/switch_widget' and @text='Wi-Fi, Off']\")\n                #    wifiRadioBtn.click()\n               # except NoSuchElementException:\n               #     report.step_start(\"Set Wifi Radio Button Already enabled\")\n                 #   print(\"Radio button Already Enabled\")\n    \n                print(\"Selecting Wifi: \" + WifiName)\n                try:\n                    report.step_start(\"Selecting Wifi: \" + WifiName)\n>                   wifiSelectionElement = WebDriverWait(driver, 35).until(EC.presence_of_element_located((MobileBy.XPATH, \"//*[@text='\"+ WifiName + \"']\")))\n\n../libs/perfecto_libs/android_lib.py:245: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <selenium.webdriver.support.wait.WebDriverWait (session=\"8695a4a1-d8fa-48ea-8777-dcd2e8ac2ba0\")>\nmethod = <selenium.webdriver.support.expected_conditions.presence_of_element_located object at 0x7f9fe9091fa0>\nmessage = ''\n\n    def until(self, method, message=''):\n        \"\"\"Calls the method provided with the driver as an argument until the \\\n        return value is not False.\"\"\"\n        screen = None\n        stacktrace = None\n    \n        end_time = time.time() + self._timeout\n        while True:\n            try:\n                value = method(self._driver)\n                if value:\n                    return value\n            except self._ignored_exceptions as exc:\n                screen = getattr(exc, 'screen', None)\n                stacktrace = getattr(exc, 'stacktrace', None)\n            time.sleep(self._poll)\n            if time.time() > end_time:\n                break\n>       raise TimeoutException(message, screen, stacktrace)\nE       selenium.common.exceptions.TimeoutException: Message: \nE       Stacktrace:\nE           at sun.reflect.GeneratedConstructorAccessor1387.newInstance (None:-1)\nE           at sun.reflect.DelegatingConstructorAccessorImpl.newInstance (DelegatingConstructorAccessorImpl.java:45)\nE           at java.lang.reflect.Constructor.newInstance (Constructor.java:423)\nE           at org.openqa.selenium.remote.ErrorHandler.createThrowable (ErrorHandler.java:214)\nE           at org.openqa.selenium.remote.ErrorHandler.throwIfResponseFailed (ErrorHandler.java:166)\nE           at org.openqa.selenium.remote.http.JsonHttpResponseCodec.reconstructValue (JsonHttpResponseCodec.java:40)\nE           at org.openqa.selenium.remote.http.AbstractHttpResponseCodec.decode (AbstractHttpResponseCodec.java:80)\nE           at org.openqa.selenium.remote.http.AbstractHttpResponseCodec.decode (AbstractHttpResponseCodec.java:44)\nE           at org.openqa.selenium.remote.HttpCommandExecutor.execute (HttpCommandExecutor.java:158)\nE           at io.appium.java_client.remote.AppiumCommandExecutor.execute (AppiumCommandExecutor.java:239)\nE           at org.openqa.selenium.remote.RemoteWebDriver.execute (RemoteWebDriver.java:552)\nE           at io.appium.java_client.DefaultGenericMobileDriver.execute (DefaultGenericMobileDriver.java:41)\nE           at io.appium.java_client.AppiumDriver.execute (AppiumDriver.java:1)\nE           at io.appium.java_client.android.AndroidDriver.execute (AndroidDriver.java:1)\nE           at org.openqa.selenium.remote.RemoteWebDriver.findElement (RemoteWebDriver.java:323)\nE           at io.appium.java_client.DefaultGenericMobileDriver.findElement (DefaultGenericMobileDriver.java:61)\nE           at io.appium.java_client.AppiumDriver.findElement (AppiumDriver.java:1)\nE           at io.appium.java_client.android.AndroidDriver.findElement (AndroidDriver.java:1)\nE           at org.openqa.selenium.remote.RemoteWebDriver.findElementByXPath (RemoteWebDriver.java:428)\nE           at io.appium.java_client.DefaultGenericMobileDriver.findElementByXPath (DefaultGenericMobileDriver.java:151)\nE           at io.appium.java_client.AppiumDriver.findElementByXPath (AppiumDriver.java:1)\nE           at io.appium.java_client.android.AndroidDriver.findElementByXPath (AndroidDriver.java:1)\nE           at org.openqa.selenium.By$ByXPath.findElement (By.java:353)\nE           at org.openqa.selenium.remote.RemoteWebDriver.findElement (RemoteWebDriver.java:315)\nE           at io.appium.java_client.DefaultGenericMobileDriver.findElement (DefaultGenericMobileDriver.java:57)\nE           at io.appium.java_client.AppiumDriver.findElement (AppiumDriver.java:1)\nE           at io.appium.java_client.android.AndroidDriver.findElement (AndroidDriver.java:1)\nE           at com.perfectomobile.selenium.server.appium.AppiumAndroidDriverWrapper$2.call (AppiumAndroidDriverWrapper.java:78)\nE           at com.nexperience.function.execute.ExecuteCallableCommand.process (ExecuteCallableCommand.java:30)\nE           at com.nexperience.engine.script.command.AbstractScriptCommand.doExecute (AbstractScriptCommand.java:173)\nE           at com.nexperience.engine.script.command.ScriptCommandBase.execute (ScriptCommandBase.java:105)\nE           at com.nexperience.engine.script.tcl.event.CommandTclEvent.processEvent (CommandTclEvent.java:43)\nE           at com.nexperience.engine.script.tcl.event.MaseTclEvent.processEvent (MaseTclEvent.java:56)\nE           at tcl.lang.Notifier.serviceEvent (Notifier.java:457)\nE           at tcl.lang.Notifier.doOneEvent (Notifier.java:610)\nE           at tcl.lang.Notifier.processTclEvents (Notifier.java:786)\nE           at com.nexperience.engine.script.tcl.event.TclEventProcessor.start (TclEventProcessor.java:80)\nE           at com.nexperience.engine.script.tcl.TclInterpreter.startEventProcessing (TclInterpreter.java:552)\nE           at com.nexperience.engine.script.execution.step.StepExecutionEventProcessor.callImpl (StepExecutionEventProcessor.java:85)\nE           at com.nexperience.engine.script.execution.step.StepExecutionEventProcessor.callImpl (StepExecutionEventProcessor.java:21)\nE           at com.nexperience.util.thread.WrappedCallable.call (WrappedCallable.java:31)\nE           at java.util.concurrent.FutureTask.run (FutureTask.java:266)\nE           at java.util.concurrent.ThreadPoolExecutor.runWorker (ThreadPoolExecutor.java:1142)\nE           at java.util.concurrent.ThreadPoolExecutor$Worker.run (ThreadPoolExecutor.java:617)\nE           at java.lang.Thread.run (Thread.java:748)\n\n/usr/local/lib/python3.8/site-packages/selenium/webdriver/support/wait.py:80: TimeoutException\n\nDuring handling of the above exception, another exception occurred:\n\nself = <tests.e2e.interOp.android.WifiMode.test_ToggleWifiMode.TestToggleWifiMode object at 0x7f9fe9df3ca0>\nrequest = <FixtureRequest for <Function test_ToogleWifiMode_5g_WPA2_Personal[setup_profiles0]>>\nget_ToggleWifiMode_data = {'appPackage-android': 'com.android.settings', 'bundleId-iOS-Settings': 'com.apple.Preferences', 'platformName-android': 'Android'}\nsetup_perfectoMobile_android = (<appium.webdriver.webdriver.WebDriver (session=\"8695a4a1-d8fa-48ea-8777-dcd2e8ac2ba0\")>, <perfecto.client.PerfectoReportiumClient.PerfectoReportiumClient object at 0x7f9fe848ea30>)\n\n    @pytest.mark.fiveg\n    @pytest.mark.wpa2_personal\n    def test_ToogleWifiMode_5g_WPA2_Personal(self, request, get_ToggleWifiMode_data, setup_perfectoMobile_android):\n    \n        profile_data = setup_params_general[\"ssid_modes\"][\"wpa2_personal\"][1]\n        ssidName = profile_data[\"ssid_name\"]\n        ssidPassword = profile_data[\"security_key\"]\n        print (\"SSID_NAME: \" + ssidName)\n        print (\"SSID_PASS: \" + ssidPassword)\n    \n        report = setup_perfectoMobile_android[1]\n        driver = setup_perfectoMobile_android[0]\n        connData = get_ToggleWifiMode_data\n    \n        #Set Wifi/AP Mode\n>       set_APconnMobileDevice_android(request, ssidName, ssidPassword, setup_perfectoMobile_android, connData)\n\ne2e/interOp/android/WifiMode/test_ToggleWifiMode.py:61: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nrequest = <FixtureRequest for <Function test_ToogleWifiMode_5g_WPA2_Personal[setup_profiles0]>>\nWifiName = 'ssid_wpa2_5g', WifiPass = 'something'\nsetup_perfectoMobile = (<appium.webdriver.webdriver.WebDriver (session=\"8695a4a1-d8fa-48ea-8777-dcd2e8ac2ba0\")>, <perfecto.client.PerfectoReportiumClient.PerfectoReportiumClient object at 0x7f9fe848ea30>)\nconnData = {'appPackage-android': 'com.android.settings', 'bundleId-iOS-Settings': 'com.apple.Preferences', 'platformName-android': 'Android'}\n\n    def set_APconnMobileDevice_android(request, WifiName, WifiPass, setup_perfectoMobile, connData):\n        print(\"\\n-------------------------------------\")\n        print(\"Select Wifi/AccessPoint Connection\")\n        print(\"-------------------------------------\")\n        print(\"Verifying Wifi/AP Connection Details....\")\n        report = setup_perfectoMobile[1]\n        driver = setup_perfectoMobile[0]\n    \n        report.step_start(\"Switching Driver Context\")\n        print(\"Switching Context to Native\")\n        contexts = driver.contexts\n        driver.switch_to.context(contexts[0])\n    \n        #Open Settings Application\n        openApp(connData[\"appPackage-android\"], setup_perfectoMobile)\n    \n        deviceModelName = getDeviceModelName(setup_perfectoMobile)\n        print (\"Selected Device Model: \" + deviceModelName)\n    \n        if deviceModelName!=(\"Pixel 4\"):\n    \n            report.step_start(\"Set Wifi Network to \" + WifiName)\n            try:\n                print(\"Verifying Connected Wifi Connection\")\n                report.step_start(\"Click Connections\")\n                connElement = driver.find_element_by_xpath(\"//*[@text='Connections']\")\n                connElement.click()\n            except NoSuchElementException:\n                print(\"Exception: Verify Xpath - Update/check Xpath for Click Connections\")\n    \n            try:\n                print(\"Get Connected Wifi Name if any\")\n                report.step_start(\"Get Connected Wifi Name if any\")\n                try:\n                    driver.implicitly_wait(20)\n                    WifiNameElement = driver.find_element_by_xpath(\"//*[@resource-id='android:id/summary']\")\n                    Wifi_AP_Name = WifiNameElement.text\n                    print(\"Current Wifi Status Name: \" + Wifi_AP_Name)\n                except NoSuchElementException:\n                    report.step_start(\"Checking Wifi Radio Button Status\")\n                    try:\n                        driver.implicitly_wait(5)\n                        WifiRadioBtnConnections = driver.find_element_by_xpath(\"//*[@resource-id='android:id/switch_widget' and @content-desc='Wi-Fi' and @text='Off']\")\n                        report.step_start(\"Wifi Radio Button Disabled, Enabling Radio Button..\")\n                        print(\"Wifi Radio Button Disabled, Enabling Radio Button..\")\n                        WifiRadioBtnConnections.click()\n                    except NoSuchElementException:\n                        Wifi_AP_Name=\"Null\"\n                        driver.implicitly_wait(25)\n                        report.step_start(\"Wifi Radio Button Already Enabled\")\n                        print(\"Wifi Radio Button Already Enabled\")\n    \n            except NoSuchElementException:\n                Wifi_AP_Name=\"Null\"\n                print(\"Device not connected to any Wifi\")\n    \n            report.step_start(\"Clicking Wi-Fi\")\n            wifiElement = driver.find_element_by_xpath(\"//*[@text='Wi-Fi']\")\n            wifiElement.click()\n    \n            if Wifi_AP_Name.__eq__(WifiName):\n                print(\"Wifi Name Matches - Already Connected To: \" + Wifi_AP_Name)\n    \n                try:\n                    report.step_start(\"Verify if Wifi is Connected\")\n                    WifiInternetErrMsg = driver.find_element_by_xpath(\"//*[@resource-id='com.android.settings:id/summary' and @text='Connected']/parent::*/android.widget.TextView[@text='\" + WifiName + \"']\")\n                    print(\"Wifi Successfully Connected\")\n    \n                except NoSuchElementException:\n                    print(\"Wifi Connection Error: \" + WifiName)\n    \n            else:\n    \n                #print(\"Set Wifi Radio Button to enabled\")\n                #try:\n                #    report.step_start(\"Set Wifi Radio Button to enabled\")\n                #    wifiRadioBtn = driver.find_element_by_xpath(\"//*[@resource-id='com.android.settings:id/switch_widget' and @text='Wi-Fi, Off']\")\n                #    wifiRadioBtn.click()\n               # except NoSuchElementException:\n               #     report.step_start(\"Set Wifi Radio Button Already enabled\")\n                 #   print(\"Radio button Already Enabled\")\n    \n                print(\"Selecting Wifi: \" + WifiName)\n                try:\n                    report.step_start(\"Selecting Wifi: \" + WifiName)\n                    wifiSelectionElement = WebDriverWait(driver, 35).until(EC.presence_of_element_located((MobileBy.XPATH, \"//*[@text='\"+ WifiName + \"']\")))\n                    wifiSelectionElement.click()\n                except Exception as e:\n                    print(\"Exception on Selecting Wifi Network.  Please check wifi Name or signal\")\n                    request.config.cache.set(key=\"SelectingWifiFailed\", value=str(e))\n>                   assert False\nE                   AssertionError\n\n../libs/perfecto_libs/android_lib.py:250: AssertionError",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "db718445e87a897a",
+      "name" : "log",
+      "source" : "db718445e87a897a.txt",
+      "type" : "text/plain",
+      "size" : 7391
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : true,
+    "hasContent" : true
+  },
+  "afterStages" : [ {
+    "name" : "testbed::0",
+    "time" : {
+      "start" : 1625199082373,
+      "stop" : 1625199082373,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "radius_info::0",
+    "time" : {
+      "start" : 1625199082332,
+      "stop" : 1625199082332,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_ToggleWifiMode_data::0",
+    "time" : {
+      "start" : 1625190198759,
+      "stop" : 1625190198759,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_security_flags::0",
+    "time" : {
+      "start" : 1625199082338,
+      "stop" : 1625199082338,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_perfectoMobile_android::1",
+    "time" : {
+      "start" : 1625190175156,
+      "stop" : 1625190175156,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_perfectoMobile_android::teardown",
+    "time" : {
+      "start" : 1625190175156,
+      "stop" : 1625190198758,
+      "duration" : 23602
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_controller::1",
+    "time" : {
+      "start" : 1625199082351,
+      "stop" : 1625199082351,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_controller::teardown_controller",
+    "time" : {
+      "start" : 1625199082351,
+      "stop" : 1625199082352,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "3b9e7cd5f579819b",
+      "name" : "Controller Teardown: ",
+      "source" : "3b9e7cd5f579819b.attach",
+      "type" : "text/plain",
+      "size" : 182
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "instantiate_profile::0",
+    "time" : {
+      "start" : 1625199082341,
+      "stop" : 1625199082341,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_apnos::0",
+    "time" : {
+      "start" : 1625199082358,
+      "stop" : 1625199082358,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_vlan::0",
+    "time" : {
+      "start" : 1625199082347,
+      "stop" : 1625199082347,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_markers::0",
+    "time" : {
+      "start" : 1625199082334,
+      "stop" : 1625199082334,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_configuration::0",
+    "time" : {
+      "start" : 1625199082366,
+      "stop" : 1625199082366,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "instantiate_access_point::0",
+    "time" : {
+      "start" : 1625199082354,
+      "stop" : 1625199082354,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_equipment_id::0",
+    "time" : {
+      "start" : 1625199082344,
+      "stop" : 1625199082345,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_profiles::1",
+    "time" : {
+      "start" : 1625190574644,
+      "stop" : 1625190574644,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_profiles::teardown_session",
+    "time" : {
+      "start" : 1625190574644,
+      "stop" : 1625190598812,
+      "duration" : 24168
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "3a99c018ee3b5cab",
+      "name" : "Tear Down in Profiles ",
+      "source" : "3a99c018ee3b5cab.attach",
+      "type" : "text/plain",
+      "size" : 25
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  } ],
+  "labels" : [ {
+    "name" : "feature",
+    "value" : "NAT MODE CLIENT CONNECTIVITY"
+  }, {
+    "name" : "tag",
+    "value" : "android"
+  }, {
+    "name" : "tag",
+    "value" : "ToggleWifiMode"
+  }, {
+    "name" : "tag",
+    "value" : "interop"
+  }, {
+    "name" : "tag",
+    "value" : "fiveg"
+  }, {
+    "name" : "tag",
+    "value" : "sanity"
+  }, {
+    "name" : "tag",
+    "value" : "interop_and"
+  }, {
+    "name" : "tag",
+    "value" : "@pytest.mark.usefixtures('setup_profiles')"
+  }, {
+    "name" : "tag",
+    "value" : "wpa2_personal"
+  }, {
+    "name" : "parentSuite",
+    "value" : "e2e.interOp.android.WifiMode"
+  }, {
+    "name" : "suite",
+    "value" : "test_ToggleWifiMode"
+  }, {
+    "name" : "subSuite",
+    "value" : "TestToggleWifiMode"
+  }, {
+    "name" : "host",
+    "value" : "interop-ci-37-zv6cn"
+  }, {
+    "name" : "thread",
+    "value" : "6-MainThread"
+  }, {
+    "name" : "framework",
+    "value" : "pytest"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "package",
+    "value" : "e2e.interOp.android.WifiMode.test_ToggleWifiMode"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ {
+    "name" : "setup_profiles",
+    "value" : "{'mode': 'NAT', 'ssid_modes': {'wpa': [{'ssid_name': 'ssid_wpa_2g', 'appliedRadios': ['is2dot4GHz'], 'security_key': 'something', 'profile_name': 'interop-SSID-wpa-0-NAT', 'mode': 'NAT', 'vlan': 1}, {'ssid_name': 'ssid_wpa_5g', 'appliedRadios': ['is5GHzU', 'is5GHz', 'is5GHzL'], 'security_key': 'something', 'profile_name': 'interop-SSID-wpa-1-NAT', 'mode': 'NAT', 'vlan': 1}], 'wpa2_personal': [{'ssid_name': 'ssid_wpa2_2g', 'appliedRadios': ['is2dot4GHz'], 'security_key': 'something', 'profile_name': 'interop-SSID-wpa2_personal-0-NAT', 'mode': 'NAT', 'vlan': 1}, {'ssid_name': 'ssid_wpa2_5g', 'appliedRadios': ['is5GHzU', 'is5GHz', 'is5GHzL'], 'security_key': 'something', 'profile_name': 'interop-SSID-wpa2_personal-1-NAT', 'mode': 'NAT', 'vlan': 1}]}, 'rf': {}, 'radius': False}"
+  } ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ {
+      "name" : "Product defects",
+      "matchedStatuses" : [ ],
+      "flaky" : false
+    } ],
+    "history" : {
+      "statistic" : {
+        "failed" : 2,
+        "broken" : 4,
+        "skipped" : 0,
+        "passed" : 1,
+        "unknown" : 0,
+        "total" : 7
+      },
+      "items" : [ {
+        "uid" : "9e7699505aa0fc6c",
+        "status" : "failed",
+        "statusDetails" : "AssertionError",
+        "time" : {
+          "start" : 1625102301685,
+          "stop" : 1625102350629,
+          "duration" : 48944
+        }
+      }, {
+        "uid" : "1e600022a02316aa",
+        "status" : "broken",
+        "statusDetails" : "TypeError: object of type 'TypeError' has no len()",
+        "time" : {
+          "start" : 1625017176867,
+          "stop" : 1625017307680,
+          "duration" : 130813
+        }
+      }, {
+        "uid" : "4a71be1fa9941add",
+        "status" : "broken",
+        "statusDetails" : "TypeError: object of type 'TypeError' has no len()",
+        "time" : {
+          "start" : 1624983118710,
+          "stop" : 1624983249442,
+          "duration" : 130732
+        }
+      }, {
+        "uid" : "8397859c10d451e2",
+        "status" : "broken",
+        "statusDetails" : "TypeError: object of type 'TypeError' has no len()",
+        "time" : {
+          "start" : 1624964644951,
+          "stop" : 1624964784219,
+          "duration" : 139268
+        }
+      }, {
+        "uid" : "d1aa8bfcdd0c7be7",
+        "status" : "broken",
+        "statusDetails" : "selenium.common.exceptions.TimeoutException: Message: \nStacktrace:\n    at sun.reflect.GeneratedConstructorAccessor1063.newInstance (None:-1)\n    at sun.reflect.DelegatingConstructorAccessorImpl.newInstance (DelegatingConstructorAccessorImpl.java:45)\n    at java.lang.reflect.Constructor.newInstance (Constructor.java:423)\n    at org.openqa.selenium.remote.ErrorHandler.createThrowable (ErrorHandler.java:214)\n    at org.openqa.selenium.remote.ErrorHandler.throwIfResponseFailed (ErrorHandler.java:166)\n    at org.openqa.selenium.remote.http.JsonHttpResponseCodec.reconstructValue (JsonHttpResponseCodec.java:40)\n    at org.openqa.selenium.remote.http.AbstractHttpResponseCodec.decode (AbstractHttpResponseCodec.java:80)\n    at org.openqa.selenium.remote.http.AbstractHttpResponseCodec.decode (AbstractHttpResponseCodec.java:44)\n    at org.openqa.selenium.remote.HttpCommandExecutor.execute (HttpCommandExecutor.java:158)\n    at io.appium.java_client.remote.AppiumCommandExecutor.execute (AppiumCommandExecutor.java:239)\n    at org.openqa.selenium.remote.RemoteWebDriver.execute (RemoteWebDriver.java:552)\n    at io.appium.java_client.DefaultGenericMobileDriver.execute (DefaultGenericMobileDriver.java:41)\n    at io.appium.java_client.AppiumDriver.execute (AppiumDriver.java:1)\n    at io.appium.java_client.android.AndroidDriver.execute (AndroidDriver.java:1)\n    at org.openqa.selenium.remote.RemoteWebDriver.findElement (RemoteWebDriver.java:323)\n    at io.appium.java_client.DefaultGenericMobileDriver.findElement (DefaultGenericMobileDriver.java:61)\n    at io.appium.java_client.AppiumDriver.findElement (AppiumDriver.java:1)\n    at io.appium.java_client.android.AndroidDriver.findElement (AndroidDriver.java:1)\n    at org.openqa.selenium.remote.RemoteWebDriver.findElementByXPath (RemoteWebDriver.java:428)\n    at io.appium.java_client.DefaultGenericMobileDriver.findElementByXPath (DefaultGenericMobileDriver.java:151)\n    at io.appium.java_client.AppiumDriver.findElementByXPath (AppiumDriver.java:1)\n    at io.appium.java_client.android.AndroidDriver.findElementByXPath (AndroidDriver.java:1)\n    at org.openqa.selenium.By$ByXPath.findElement (By.java:353)\n    at org.openqa.selenium.remote.RemoteWebDriver.findElement (RemoteWebDriver.java:315)\n    at io.appium.java_client.DefaultGenericMobileDriver.findElement (DefaultGenericMobileDriver.java:57)\n    at io.appium.java_client.AppiumDriver.findElement (AppiumDriver.java:1)\n    at io.appium.java_client.android.AndroidDriver.findElement (AndroidDriver.java:1)\n    at com.perfectomobile.selenium.server.appium.AppiumAndroidDriverWrapper$2.call (AppiumAndroidDriverWrapper.java:78)\n    at com.nexperience.function.execute.ExecuteCallableCommand.process (ExecuteCallableCommand.java:30)\n    at com.nexperience.engine.script.command.AbstractScriptCommand.doExecute (AbstractScriptCommand.java:173)\n    at com.nexperience.engine.script.command.ScriptCommandBase.execute (ScriptCommandBase.java:105)\n    at com.nexperience.engine.script.tcl.event.CommandTclEvent.processEvent (CommandTclEvent.java:43)\n    at com.nexperience.engine.script.tcl.event.MaseTclEvent.processEvent (MaseTclEvent.java:56)\n    at tcl.lang.Notifier.serviceEvent (Notifier.java:457)\n    at tcl.lang.Notifier.doOneEvent (Notifier.java:610)\n    at tcl.lang.Notifier.processTclEvents (Notifier.java:786)\n    at com.nexperience.engine.script.tcl.event.TclEventProcessor.start (TclEventProcessor.java:80)\n    at com.nexperience.engine.script.tcl.TclInterpreter.startEventProcessing (TclInterpreter.java:552)\n    at com.nexperience.engine.script.execution.step.StepExecutionEventProcessor.callImpl (StepExecutionEventProcessor.java:85)\n    at com.nexperience.engine.script.execution.step.StepExecutionEventProcessor.callImpl (StepExecutionEventProcessor.java:21)\n    at com.nexperience.util.thread.WrappedCallable.call (WrappedCallable.java:31)\n    at java.util.concurrent.FutureTask.run (FutureTask.java:266)\n    at java.util.concurrent.ThreadPoolExecutor.runWorker (ThreadPoolExecutor.java:1142)\n    at java.util.concurrent.ThreadPoolExecutor$Worker.run (ThreadPoolExecutor.java:617)\n    at java.lang.Thread.run (Thread.java:748)",
+        "time" : {
+          "start" : 1624953392314,
+          "stop" : 1624953446068,
+          "duration" : 53754
+        }
+      }, {
+        "uid" : "c1f337ac33eeeec3",
+        "status" : "passed",
+        "time" : {
+          "start" : 1624443074875,
+          "stop" : 1624443222237,
+          "duration" : 147362
+        }
+      } ]
+    },
+    "tags" : [ "@pytest.mark.usefixtures('setup_profiles')", "ToggleWifiMode", "android", "interop", "sanity", "interop_and", "wpa2_personal", "fiveg" ]
+  },
+  "source" : "16847737d5d104b3.json",
+  "parameterValues" : [ "{'mode': 'NAT', 'ssid_modes': {'wpa': [{'ssid_name': 'ssid_wpa_2g', 'appliedRadios': ['is2dot4GHz'], 'security_key': 'something', 'profile_name': 'interop-SSID-wpa-0-NAT', 'mode': 'NAT', 'vlan': 1}, {'ssid_name': 'ssid_wpa_5g', 'appliedRadios': ['is5GHzU', 'is5GHz', 'is5GHzL'], 'security_key': 'something', 'profile_name': 'interop-SSID-wpa-1-NAT', 'mode': 'NAT', 'vlan': 1}], 'wpa2_personal': [{'ssid_name': 'ssid_wpa2_2g', 'appliedRadios': ['is2dot4GHz'], 'security_key': 'something', 'profile_name': 'interop-SSID-wpa2_personal-0-NAT', 'mode': 'NAT', 'vlan': 1}, {'ssid_name': 'ssid_wpa2_5g', 'appliedRadios': ['is5GHzU', 'is5GHz', 'is5GHzL'], 'security_key': 'something', 'profile_name': 'interop-SSID-wpa2_personal-1-NAT', 'mode': 'NAT', 'vlan': 1}]}, 'rf': {}, 'radius': False}" ]
+}
