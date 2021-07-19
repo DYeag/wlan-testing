@@ -1,0 +1,1633 @@
+{
+  "uid" : "cc8388521c45b531",
+  "name" : "test_wpa2_only_eap_2g_NAT[push_ap_profile0-setup_profiles0]",
+  "fullName" : "e2e.interOp.iOS.OpenRoamingPassPoint.test_OpenRoaming_NatMode.TestOpenRoamingNAT#test_wpa2_only_eap_2g_NAT",
+  "historyId" : "e07cc245d5378883551b615dbfded617",
+  "time" : {
+    "start" : 1626664886515,
+    "stop" : 1626664965992,
+    "duration" : 79477
+  },
+  "description" : "\n             EAP Passpoint BRIDGE Mode\n             pytest -m \"interop_iOS and eap_passpoint and bridge and wpa2_only_eap and twog\"\n        ",
+  "descriptionHtml" : "<pre><code>         EAP Passpoint BRIDGE Mode\n         pytest -m &quot;interop_iOS and eap_passpoint and bridge and wpa2_only_eap and twog&quot;\n</code></pre>\n",
+  "status" : "failed",
+  "statusMessage" : "AssertionError",
+  "statusTrace" : "request = <FixtureRequest for <Function test_wpa2_only_eap_2g_NAT[push_ap_profile0-setup_profiles0]>>\nWifiNameSSID = 'passpoint_profile_download', WifiPass = ''\nsetup_perfectoMobile = (<appium.webdriver.webdriver.WebDriver (session=\"0cca8f51-00af-4929-a1df-69acc6753d58\")>, <perfecto.client.PerfectoReportiumClient.PerfectoReportiumClient object at 0x7f3be0640ca0>)\nconnData = {'BtnRunSpeedTest': \"//*[text()='RUN SPEED TEST']\", 'UploadMbps': \"//*[@id='knowledge-verticals-internetspeedtest__upl...[@class='spiqle']\", 'appPackage-android': 'com.android.settings', 'bundleId-iOS-Safari': 'com.apple.mobilesafari', ...}\n\n    def set_APconnMobileDevice_iOS(request, WifiNameSSID, WifiPass, setup_perfectoMobile, connData):\n        consoleOutput = \"\"\n    \n        print(\"\\n-------------------------------------\")\n        print(\"Select Wifi/AccessPoint Connection\")\n        print(\"-------------------------------------\")\n    \n        reportFlag = True\n    \n        print(\"Verifying Wifi/AP Connection Details....\")\n        report = setup_perfectoMobile[1]\n        driver = setup_perfectoMobile[0]\n    \n        report.step_start(\"Switching Driver Context\")\n        print(\"Switching Context to Native\")\n        #contexts = driver.contexts\n        #print(contexts)\n        driver.switch_to.context('NATIVE_APP')\n        #driver.switch_to.context(contexts[0])\n    \n        print(WifiNameSSID)\n        report.step_start(\"Set Wifi Network to \" + WifiNameSSID)\n        #Open Settings Application\n        openApp(connData[\"bundleId-iOS-Settings\"], setup_perfectoMobile)\n    \n        try:\n            print(\"Verifying Connected Wifi Connection\")\n            report.step_start(\"Verifying Connected Wifi Connection\")\n            element = driver.find_element_by_xpath(\"//XCUIElementTypeCell[@name='Wi-Fi']/XCUIElementTypeStaticText[2]\")\n            Wifi_AP_Name = element.text\n        except NoSuchElementException:\n            print(\"Exception: Verify Xpath - UpdateXpath\")\n            #NEED to fail if Wifi AP NAME isn't in the approved list AKA 5g & 2g.\n            #print(\"Wifi Name Matches - Already Connected To: \" + Wifi_AP_Name)\n            #print(\"Wifi Name Matches - Already Connected To: \" + WifiName)\n    \n        if Wifi_AP_Name.__eq__(WifiNameSSID):\n            print(\"Wifi Name Matches - Already Connected To: \" + Wifi_AP_Name)\n    \n            #Verify if Ap is connected with Wifi\n            report.step_start(\"Verify Wifi Connection Status..\")\n            #print(\"Click Wifi Connection..\")\n            element.click()\n    \n            #Verifies if AP is connected to Wifi status\n            #print(\"Verify Wifi Connection Status..\")\n            try:\n                report.step_start(\"Verify Wifi Connected Status\")\n                WifiXpath = \"//*[@label='selected']/parent::*/parent::*/XCUIElementTypeStaticText[@label='\"+ Wifi_AP_Name + \"']\"\n                elementWifName = driver.find_element_by_xpath(WifiXpath)\n            except NoSuchElementException:\n                reportFlag = False\n                assert reportFlag\n    \n            #Check AP Internet Error Msg\n            print(\"Checking Internet Connection Error..\")\n            report.step_start(\"Checking Internet Connection Error..\")\n    \n            try:\n                WifiInternetErrMsg = driver.find_element_by_xpath(\"//*[@label='No Internet Connection']\").text\n            except NoSuchElementException:\n                print(\"No Error with Wifi-AP Connection: \" + Wifi_AP_Name)\n    \n        else:\n            print(\"Selecting Wifi: \" + WifiNameSSID)\n            #consoleOutput+=str(WifiName)+ \"\\n\"\n            report.step_start(\"Selecting Wifi...: \" + WifiNameSSID)\n            element = driver.find_element_by_xpath(\"//XCUIElementTypeCell[@name='Wi-Fi']/XCUIElementTypeStaticText[2]\")\n            element.click()\n            try:\n>               wifiXpath2 = WebDriverWait(driver, 30).until(EC.presence_of_element_located((MobileBy.XPATH, \"//*[@label='\"+ WifiNameSSID + \"']\")))\n\n../libs/perfecto_libs/iOS_lib.py:126: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <selenium.webdriver.support.wait.WebDriverWait (session=\"0cca8f51-00af-4929-a1df-69acc6753d58\")>\nmethod = <selenium.webdriver.support.expected_conditions.presence_of_element_located object at 0x7f3be0640520>\nmessage = ''\n\n    def until(self, method, message=''):\n        \"\"\"Calls the method provided with the driver as an argument until the \\\n        return value is not False.\"\"\"\n        screen = None\n        stacktrace = None\n    \n        end_time = time.time() + self._timeout\n        while True:\n            try:\n                value = method(self._driver)\n                if value:\n                    return value\n            except self._ignored_exceptions as exc:\n                screen = getattr(exc, 'screen', None)\n                stacktrace = getattr(exc, 'stacktrace', None)\n            time.sleep(self._poll)\n            if time.time() > end_time:\n                break\n>       raise TimeoutException(message, screen, stacktrace)\nE       selenium.common.exceptions.TimeoutException: Message: \nE       Stacktrace:\nE           at sun.reflect.GeneratedConstructorAccessor1105.newInstance (None:-1)\nE           at sun.reflect.DelegatingConstructorAccessorImpl.newInstance (DelegatingConstructorAccessorImpl.java:45)\nE           at java.lang.reflect.Constructor.newInstance (Constructor.java:423)\nE           at org.openqa.selenium.remote.http.W3CHttpResponseCodec.createException (W3CHttpResponseCodec.java:187)\nE           at org.openqa.selenium.remote.http.W3CHttpResponseCodec.decode (W3CHttpResponseCodec.java:122)\nE           at org.openqa.selenium.remote.http.W3CHttpResponseCodec.decode (W3CHttpResponseCodec.java:49)\nE           at org.openqa.selenium.remote.HttpCommandExecutor.execute (HttpCommandExecutor.java:158)\nE           at io.appium.java_client.remote.AppiumCommandExecutor.execute (AppiumCommandExecutor.java:239)\nE           at org.openqa.selenium.remote.RemoteWebDriver.execute (RemoteWebDriver.java:552)\nE           at io.appium.java_client.DefaultGenericMobileDriver.execute (DefaultGenericMobileDriver.java:41)\nE           at io.appium.java_client.AppiumDriver.execute (AppiumDriver.java:1)\nE           at io.appium.java_client.ios.IOSDriver.execute (IOSDriver.java:1)\nE           at org.openqa.selenium.remote.RemoteWebDriver.findElement (RemoteWebDriver.java:323)\nE           at io.appium.java_client.DefaultGenericMobileDriver.findElement (DefaultGenericMobileDriver.java:61)\nE           at io.appium.java_client.AppiumDriver.findElement (AppiumDriver.java:1)\nE           at io.appium.java_client.ios.IOSDriver.findElement (IOSDriver.java:1)\nE           at org.openqa.selenium.remote.RemoteWebDriver.findElementByXPath (RemoteWebDriver.java:428)\nE           at io.appium.java_client.DefaultGenericMobileDriver.findElementByXPath (DefaultGenericMobileDriver.java:151)\nE           at io.appium.java_client.AppiumDriver.findElementByXPath (AppiumDriver.java:1)\nE           at io.appium.java_client.ios.IOSDriver.findElementByXPath (IOSDriver.java:1)\nE           at org.openqa.selenium.By$ByXPath.findElement (By.java:353)\nE           at org.openqa.selenium.remote.RemoteWebDriver.findElement (RemoteWebDriver.java:315)\nE           at io.appium.java_client.DefaultGenericMobileDriver.findElement (DefaultGenericMobileDriver.java:57)\nE           at io.appium.java_client.AppiumDriver.findElement (AppiumDriver.java:1)\nE           at io.appium.java_client.ios.IOSDriver.findElement (IOSDriver.java:1)\nE           at com.perfectomobile.selenium.server.appium.AppiumIOSDriverWrapper$2.call (AppiumIOSDriverWrapper.java:94)\nE           at com.nexperience.function.execute.ExecuteCallableCommand.process (ExecuteCallableCommand.java:30)\nE           at com.nexperience.engine.script.command.AbstractScriptCommand.doExecute (AbstractScriptCommand.java:173)\nE           at com.nexperience.engine.script.command.ScriptCommandBase.execute (ScriptCommandBase.java:105)\nE           at com.nexperience.engine.script.tcl.event.CommandTclEvent.processEvent (CommandTclEvent.java:43)\nE           at com.nexperience.engine.script.tcl.event.MaseTclEvent.processEvent (MaseTclEvent.java:56)\nE           at tcl.lang.Notifier.serviceEvent (Notifier.java:457)\nE           at tcl.lang.Notifier.doOneEvent (Notifier.java:610)\nE           at tcl.lang.Notifier.processTclEvents (Notifier.java:786)\nE           at com.nexperience.engine.script.tcl.event.TclEventProcessor.start (TclEventProcessor.java:80)\nE           at com.nexperience.engine.script.tcl.TclInterpreter.startEventProcessing (TclInterpreter.java:552)\nE           at com.nexperience.engine.script.execution.step.StepExecutionEventProcessor.callImpl (StepExecutionEventProcessor.java:85)\nE           at com.nexperience.engine.script.execution.step.StepExecutionEventProcessor.callImpl (StepExecutionEventProcessor.java:21)\nE           at com.nexperience.util.thread.WrappedCallable.call (WrappedCallable.java:31)\nE           at java.util.concurrent.FutureTask.run (FutureTask.java:266)\nE           at java.util.concurrent.ThreadPoolExecutor.runWorker (ThreadPoolExecutor.java:1142)\nE           at java.util.concurrent.ThreadPoolExecutor$Worker.run (ThreadPoolExecutor.java:617)\nE           at java.lang.Thread.run (Thread.java:748)\n\n/usr/local/lib/python3.8/site-packages/selenium/webdriver/support/wait.py:80: TimeoutException\n\nDuring handling of the above exception, another exception occurred:\n\nself = <tests.e2e.interOp.iOS.OpenRoamingPassPoint.test_OpenRoaming_NatMode.TestOpenRoamingNAT object at 0x7f3be43784f0>\npasspoint_profile_info = {'access_network': {'Access Network Type': 'Free Public Network', 'Authentication Type': 'Acceptance of Terms & Condit...e': 'Disabled'}, 'allowed_ssids': [12259, 12260, 12261, 12262], 'hessid': None, 'interworking_hs2dot0': 'Enabled', ...}\npush_ap_profile = {'equipment_ap': {'sdk': True}, 'passpoint_profile_download': {'vif_config': True, 'vif_state': True}, 'ssid_wpa2_only_eap_passpoint_2g': {'vif_config': True, 'vif_state': True}}\nrequest = <FixtureRequest for <Function test_wpa2_only_eap_2g_NAT[push_ap_profile0-setup_profiles0]>>\nget_APToMobileDevice_data = {'BtnRunSpeedTest': \"//*[text()='RUN SPEED TEST']\", 'UploadMbps': \"//*[@id='knowledge-verticals-internetspeedtest__upl...[@class='spiqle']\", 'appPackage-android': 'com.android.settings', 'bundleId-iOS-Safari': 'com.apple.mobilesafari', ...}\nsetup_perfectoMobile_iOS = (<appium.webdriver.webdriver.WebDriver (session=\"0cca8f51-00af-4929-a1df-69acc6753d58\")>, <perfecto.client.PerfectoReportiumClient.PerfectoReportiumClient object at 0x7f3be0640ca0>)\n\n    @pytest.mark.wpa2_only_eap\n    @pytest.mark.twog\n    @pytest.mark.parametrize(\n        'push_ap_profile',\n        [{\"ssid_names\": [\"ssid_wpa2_only_eap_passpoint_2g\", \"passpoint_profile_download\"]}],\n        indirect=True,\n        scope=\"function\"\n    )\n    @pytest.mark.usefixtures(\"push_ap_profile\")\n    def test_wpa2_only_eap_2g_NAT(self, passpoint_profile_info, push_ap_profile, request, get_APToMobileDevice_data, setup_perfectoMobile_iOS):\n        \"\"\"\n             EAP Passpoint BRIDGE Mode\n             pytest -m \"interop_iOS and eap_passpoint and bridge and wpa2_only_eap and twog\"\n        \"\"\"\n        result = push_ap_profile['ssid_wpa2_only_eap_passpoint_2g']['vif_config']\n        if result:\n            allure.attach(name=\"Config push to AP for ssid_wpa2_only_eap_passpoint_2g successful \", body=\"\")\n        else:\n            allure.attach(name=\"Config push to AP for ssid_wpa2_only_eap_passpoint_2g failed\", body=\"\")\n        assert result\n        result = push_ap_profile['ssid_wpa2_only_eap_passpoint_2g']['vif_state']\n        if result:\n            allure.attach(name=\"Config apply to AP for ssid_wpa2_only_eap_passpoint_2g successful \", body=\"\")\n        else:\n            allure.attach(name=\"Config apply to AP for ssid_wpa2_only_eap_passpoint_2g failed\", body=\"\")\n        assert result\n    \n        print(\"SSID to download profile :: \", setup_params_eap[\"ssid_modes\"][\"open\"][0][\"ssid_name\"])\n        print(\"SSID to validate connectivity :: \", setup_params_eap[\"ssid_modes\"][\"wpa2_only_eap\"][0][\"ssid_name\"])\n        print(\"Profile download URL :: \", passpoint_profile_info[\"profile_download_url_ios\"])\n        print(\"Profile name to remove :: \", passpoint_profile_info[\"profile_name_on_device\"])\n    \n        report = setup_perfectoMobile_iOS[1]\n        driver = setup_perfectoMobile_iOS[0]\n        connData = get_APToMobileDevice_data\n    \n        downloadProfileSSID = setup_params_eap[\"ssid_modes\"][\"open\"][0][\"ssid_name\"]\n        downloadProfileSSIDPass = \"\"\n        #profileDownloadURL = passpoint_profile_info[\"profile_download_url_ios\"]\n        profileDownloadURL = \"https://onboard.almondlabs.net/ttls/AmeriBand-Profile.mobileconfig\"\n        profileName = passpoint_profile_info[\"profile_name_on_device\"]\n        profileNameSSID = setup_params_eap[\"ssid_modes\"][\"wpa2_eap\"][1][\"ssid_name\"]\n    \n        #Setting Perfecto ReportClient....\n        #SSID to download profile ::  passpoint_profile_download\n        #SSID to validate connectivity ::  ssid_wpa2_eap_passpoint_5g\n        #Profile download URL ::  https://onboard.almondlabs.net/ios.html\n        #Profile name to remove ::  AmeriBand\n    \n        #Delete Profile Under Settings\n        deleteOpenRoamingInstalledProfile(request, profileName, setup_perfectoMobile_iOS, connData)\n    \n        #Set Wifi/AP Mode\n>       set_APconnMobileDevice_iOS(request, downloadProfileSSID, downloadProfileSSIDPass, setup_perfectoMobile_iOS, connData)\n\ne2e/interOp/iOS/OpenRoamingPassPoint/test_OpenRoaming_NatMode.py:256: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nrequest = <FixtureRequest for <Function test_wpa2_only_eap_2g_NAT[push_ap_profile0-setup_profiles0]>>\nWifiNameSSID = 'passpoint_profile_download', WifiPass = ''\nsetup_perfectoMobile = (<appium.webdriver.webdriver.WebDriver (session=\"0cca8f51-00af-4929-a1df-69acc6753d58\")>, <perfecto.client.PerfectoReportiumClient.PerfectoReportiumClient object at 0x7f3be0640ca0>)\nconnData = {'BtnRunSpeedTest': \"//*[text()='RUN SPEED TEST']\", 'UploadMbps': \"//*[@id='knowledge-verticals-internetspeedtest__upl...[@class='spiqle']\", 'appPackage-android': 'com.android.settings', 'bundleId-iOS-Safari': 'com.apple.mobilesafari', ...}\n\n    def set_APconnMobileDevice_iOS(request, WifiNameSSID, WifiPass, setup_perfectoMobile, connData):\n        consoleOutput = \"\"\n    \n        print(\"\\n-------------------------------------\")\n        print(\"Select Wifi/AccessPoint Connection\")\n        print(\"-------------------------------------\")\n    \n        reportFlag = True\n    \n        print(\"Verifying Wifi/AP Connection Details....\")\n        report = setup_perfectoMobile[1]\n        driver = setup_perfectoMobile[0]\n    \n        report.step_start(\"Switching Driver Context\")\n        print(\"Switching Context to Native\")\n        #contexts = driver.contexts\n        #print(contexts)\n        driver.switch_to.context('NATIVE_APP')\n        #driver.switch_to.context(contexts[0])\n    \n        print(WifiNameSSID)\n        report.step_start(\"Set Wifi Network to \" + WifiNameSSID)\n        #Open Settings Application\n        openApp(connData[\"bundleId-iOS-Settings\"], setup_perfectoMobile)\n    \n        try:\n            print(\"Verifying Connected Wifi Connection\")\n            report.step_start(\"Verifying Connected Wifi Connection\")\n            element = driver.find_element_by_xpath(\"//XCUIElementTypeCell[@name='Wi-Fi']/XCUIElementTypeStaticText[2]\")\n            Wifi_AP_Name = element.text\n        except NoSuchElementException:\n            print(\"Exception: Verify Xpath - UpdateXpath\")\n            #NEED to fail if Wifi AP NAME isn't in the approved list AKA 5g & 2g.\n            #print(\"Wifi Name Matches - Already Connected To: \" + Wifi_AP_Name)\n            #print(\"Wifi Name Matches - Already Connected To: \" + WifiName)\n    \n        if Wifi_AP_Name.__eq__(WifiNameSSID):\n            print(\"Wifi Name Matches - Already Connected To: \" + Wifi_AP_Name)\n    \n            #Verify if Ap is connected with Wifi\n            report.step_start(\"Verify Wifi Connection Status..\")\n            #print(\"Click Wifi Connection..\")\n            element.click()\n    \n            #Verifies if AP is connected to Wifi status\n            #print(\"Verify Wifi Connection Status..\")\n            try:\n                report.step_start(\"Verify Wifi Connected Status\")\n                WifiXpath = \"//*[@label='selected']/parent::*/parent::*/XCUIElementTypeStaticText[@label='\"+ Wifi_AP_Name + \"']\"\n                elementWifName = driver.find_element_by_xpath(WifiXpath)\n            except NoSuchElementException:\n                reportFlag = False\n                assert reportFlag\n    \n            #Check AP Internet Error Msg\n            print(\"Checking Internet Connection Error..\")\n            report.step_start(\"Checking Internet Connection Error..\")\n    \n            try:\n                WifiInternetErrMsg = driver.find_element_by_xpath(\"//*[@label='No Internet Connection']\").text\n            except NoSuchElementException:\n                print(\"No Error with Wifi-AP Connection: \" + Wifi_AP_Name)\n    \n        else:\n            print(\"Selecting Wifi: \" + WifiNameSSID)\n            #consoleOutput+=str(WifiName)+ \"\\n\"\n            report.step_start(\"Selecting Wifi...: \" + WifiNameSSID)\n            element = driver.find_element_by_xpath(\"//XCUIElementTypeCell[@name='Wi-Fi']/XCUIElementTypeStaticText[2]\")\n            element.click()\n            try:\n                wifiXpath2 = WebDriverWait(driver, 30).until(EC.presence_of_element_located((MobileBy.XPATH, \"//*[@label='\"+ WifiNameSSID + \"']\")))\n                wifiXpath2.click()\n            except Exception as e:\n                print(\"Exception on Selecting Wifi Network.  Please check wifi Name or signal\")\n                request.config.cache.set(key=\"SelectingWifiFailed\", value=str(e))\n                #allure.attach(name=\"Raj\", body=\"hello world\")\n>               assert False\nE               AssertionError\n\n../libs/perfecto_libs/iOS_lib.py:132: AssertionError",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ {
+    "name" : "setup_profiles",
+    "time" : {
+      "start" : 1626667122173,
+      "stop" : 1626667211908,
+      "duration" : 89735
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "63ba12666d2684e",
+      "name" : "RF Profile Created : wifi5",
+      "source" : "63ba12666d2684e.attach",
+      "type" : "text/plain",
+      "size" : 40
+    }, {
+      "uid" : "cbb2fb400193a49f",
+      "name" : "SSID Profile Created",
+      "source" : "cbb2fb400193a49f.attach",
+      "type" : "text/plain",
+      "size" : 2799
+    }, {
+      "uid" : "caedd5d878a07b78",
+      "name" : "SSID Profile Created",
+      "source" : "caedd5d878a07b78.attach",
+      "type" : "text/plain",
+      "size" : 2817
+    }, {
+      "uid" : "f4d13fc8b28a06cb",
+      "name" : "SSID Profile Created",
+      "source" : "f4d13fc8b28a06cb.attach",
+      "type" : "text/plain",
+      "size" : 2815
+    }, {
+      "uid" : "c7a538600ef59db",
+      "name" : "SSID Profile Created",
+      "source" : "c7a538600ef59db.attach",
+      "type" : "text/plain",
+      "size" : 2833
+    }, {
+      "uid" : "dd3e3f531c3f0f31",
+      "name" : "Equipment AP Profile Created",
+      "source" : "dd3e3f531c3f0f31.attach",
+      "type" : "text/plain",
+      "size" : 44
+    }, {
+      "uid" : "8b4754498a3daa4d",
+      "name" : "APNOS LIbrary: ",
+      "source" : "8b4754498a3daa4d.attach",
+      "type" : "text/plain",
+      "size" : 297
+    }, {
+      "uid" : "800890c820bc43ca",
+      "name" : "openwrt_ctl Setup",
+      "source" : "800890c820bc43ca.attach",
+      "type" : "text/plain",
+      "size" : 9
+    }, {
+      "uid" : "3f950170b0f1ab65",
+      "name" : "vif config Output Msg: ",
+      "source" : "3f950170b0f1ab65.attach",
+      "type" : "text/plain",
+      "size" : 3
+    }, {
+      "uid" : "e1ffe251a00bb53",
+      "name" : "vif config Err Msg: ",
+      "source" : "e1ffe251a00bb53.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "ff635181c3cc5943",
+      "name" : "get_vif_config_ssids ",
+      "source" : "ff635181c3cc5943.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "18e2a57701361047",
+      "name" : "vif config Output Msg: ",
+      "source" : "18e2a57701361047.attach",
+      "type" : "text/plain",
+      "size" : 3
+    }, {
+      "uid" : "b9d8e5b62dab01de",
+      "name" : "vif config Err Msg: ",
+      "source" : "b9d8e5b62dab01de.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "585ea1f0ddd43da0",
+      "name" : "get_vif_config_ssids ",
+      "source" : "585ea1f0ddd43da0.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "ac6ca35e7c5f2e",
+      "name" : "vif config Output Msg: ",
+      "source" : "ac6ca35e7c5f2e.attach",
+      "type" : "text/plain",
+      "size" : 3
+    }, {
+      "uid" : "9f9444a63164d589",
+      "name" : "vif config Err Msg: ",
+      "source" : "9f9444a63164d589.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "20d9b0e944e293ff",
+      "name" : "get_vif_config_ssids ",
+      "source" : "20d9b0e944e293ff.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "ea8c2270bbc3abdf",
+      "name" : "vif config Output Msg: ",
+      "source" : "ea8c2270bbc3abdf.attach",
+      "type" : "text/plain",
+      "size" : 3
+    }, {
+      "uid" : "2efeeb70e782fe97",
+      "name" : "vif config Err Msg: ",
+      "source" : "2efeeb70e782fe97.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "7c66476e9252c337",
+      "name" : "get_vif_config_ssids ",
+      "source" : "7c66476e9252c337.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "2289a36c5c68c41d",
+      "name" : "vif config Output Msg: ",
+      "source" : "2289a36c5c68c41d.attach",
+      "type" : "text/plain",
+      "size" : 3
+    }, {
+      "uid" : "d0ed8bc067890741",
+      "name" : "vif config Err Msg: ",
+      "source" : "d0ed8bc067890741.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "4fd79f01f6662817",
+      "name" : "get_vif_config_ssids ",
+      "source" : "4fd79f01f6662817.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "4ce11baaa795fc7a",
+      "name" : "vif config Output Msg: ",
+      "source" : "4ce11baaa795fc7a.attach",
+      "type" : "text/plain",
+      "size" : 3
+    }, {
+      "uid" : "4916794fe897195a",
+      "name" : "vif config Err Msg: ",
+      "source" : "4916794fe897195a.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "190ef6c822d5bc2b",
+      "name" : "get_vif_config_ssids ",
+      "source" : "190ef6c822d5bc2b.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "9b5da522542cfba8",
+      "name" : "vif config Output Msg: ",
+      "source" : "9b5da522542cfba8.attach",
+      "type" : "text/plain",
+      "size" : 6878
+    }, {
+      "uid" : "d141ddbfed574b80",
+      "name" : "vif config Err Msg: ",
+      "source" : "d141ddbfed574b80.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "6721128f69b23d26",
+      "name" : "get_vif_config_ssids ",
+      "source" : "6721128f69b23d26.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "72b436bbfdb451e3",
+      "name" : "SSID Profiles in VIF Config and Controller: ",
+      "source" : "72b436bbfdb451e3.attach",
+      "type" : "text/plain",
+      "size" : 166
+    }, {
+      "uid" : "1b96a3fa6eba108a",
+      "name" : "APNOS LIbrary: ",
+      "source" : "1b96a3fa6eba108a.attach",
+      "type" : "text/plain",
+      "size" : 297
+    }, {
+      "uid" : "53884bf1437963ff",
+      "name" : "openwrt_ctl Setup",
+      "source" : "53884bf1437963ff.attach",
+      "type" : "text/plain",
+      "size" : 9
+    }, {
+      "uid" : "867eb08f5d4b8d49",
+      "name" : "vif state Output Msg: ",
+      "source" : "867eb08f5d4b8d49.attach",
+      "type" : "text/plain",
+      "size" : 7394
+    }, {
+      "uid" : "6642b2d65b36b0d0",
+      "name" : "vif state Err Msg: ",
+      "source" : "6642b2d65b36b0d0.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "b8b80975d8c501ab",
+      "name" : "get_vif_state_ssids ",
+      "source" : "b8b80975d8c501ab.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "e61f9964ed7b43e3",
+      "name" : "vif config Output Msg: ",
+      "source" : "e61f9964ed7b43e3.attach",
+      "type" : "text/plain",
+      "size" : 6878
+    }, {
+      "uid" : "efc7d9fbfb0e9503",
+      "name" : "vif config Err Msg: ",
+      "source" : "efc7d9fbfb0e9503.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "74d36858a1b60b17",
+      "name" : "get_vif_config_ssids ",
+      "source" : "74d36858a1b60b17.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "a1e8b837d1c6ccb7",
+      "name" : "SSID Profiles in VIF Config and VIF State: ",
+      "source" : "a1e8b837d1c6ccb7.attach",
+      "type" : "text/plain",
+      "size" : 148
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 39,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "instantiate_access_point",
+    "time" : {
+      "start" : 1626660912804,
+      "stop" : 1626660914382,
+      "duration" : 1578
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "6f809ec4ff888a7a",
+      "name" : "added openwrtctl.py to :",
+      "source" : "6f809ec4ff888a7a.attach",
+      "type" : "text/plain",
+      "size" : 14
+    }, {
+      "uid" : "2a1b546b794b9cfc",
+      "name" : "APNOS LIbrary: ",
+      "source" : "2a1b546b794b9cfc.attach",
+      "type" : "text/plain",
+      "size" : 297
+    }, {
+      "uid" : "3373d6584eb9a0b2",
+      "name" : "openwrt_ctl Setup",
+      "source" : "3373d6584eb9a0b2.attach",
+      "type" : "text/plain",
+      "size" : 9
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 3,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "setup_controller",
+    "time" : {
+      "start" : 1626660914382,
+      "stop" : 1626660914526,
+      "duration" : 144
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "7e411d1a2ac8c081",
+      "name" : "Controller Instantiated: ",
+      "source" : "7e411d1a2ac8c081.attach",
+      "type" : "text/plain",
+      "size" : 182
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "get_apnos",
+    "time" : {
+      "start" : 1626660912804,
+      "stop" : 1626660912804,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "testbed",
+    "time" : {
+      "start" : 1626660912803,
+      "stop" : 1626660912803,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "d25e2fd28e23fbe4",
+      "name" : "Testbed Selected : ",
+      "source" : "d25e2fd28e23fbe4.attach",
+      "type" : "text/plain",
+      "size" : 7
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "get_APToMobileDevice_data",
+    "time" : {
+      "start" : 1626664855287,
+      "stop" : 1626664855287,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_markers",
+    "time" : {
+      "start" : 1626660914641,
+      "stop" : 1626660914642,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "adf721c54e5b12fd",
+      "name" : "Test Cases Requires: ",
+      "source" : "adf721c54e5b12fd.attach",
+      "type" : "text/plain",
+      "size" : 385
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "passpoint_operator_info",
+    "time" : {
+      "start" : 1626661999069,
+      "stop" : 1626661999070,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "3cc9ea49183d313e",
+      "name" : "Passpoint operator Info: ",
+      "source" : "3cc9ea49183d313e.attach",
+      "type" : "text/plain",
+      "size" : 242
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "passpoint_radius_accounting_server_info",
+    "time" : {
+      "start" : 1626661999070,
+      "stop" : 1626661999071,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "d7aa54491110af73",
+      "name" : "Passpoint RADIUS account server Info: ",
+      "source" : "d7aa54491110af73.attach",
+      "type" : "text/plain",
+      "size" : 63
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "passpoint_venue_info",
+    "time" : {
+      "start" : 1626661999070,
+      "stop" : 1626661999070,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "3fdd59d66a26f71a",
+      "name" : "Passpoint venue Info: ",
+      "source" : "3fdd59d66a26f71a.attach",
+      "type" : "text/plain",
+      "size" : 264
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "passpoint_provider_info",
+    "time" : {
+      "start" : 1626661999069,
+      "stop" : 1626661999069,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "b4cf9e9f3f648b30",
+      "name" : "Passpoint Provider Info: ",
+      "source" : "b4cf9e9f3f648b30.attach",
+      "type" : "text/plain",
+      "size" : 350
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "setup_vlan",
+    "time" : {
+      "start" : 1626660914526,
+      "stop" : 1626660914526,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "43b71506625e9c21",
+      "name" : "VLAN Created: ",
+      "source" : "43b71506625e9c21.attach",
+      "type" : "text/plain",
+      "size" : 5
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "get_configuration",
+    "time" : {
+      "start" : 1626660912803,
+      "stop" : 1626660912804,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "6cc992ce78f356e4",
+      "name" : "Testbed Selected: ",
+      "source" : "6cc992ce78f356e4.attach",
+      "type" : "text/plain",
+      "size" : 7
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "passpoint_radius_server_info",
+    "time" : {
+      "start" : 1626661999070,
+      "stop" : 1626661999070,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "81ef7283c2927106",
+      "name" : "Passpoint RADIUS server Info: ",
+      "source" : "81ef7283c2927106.attach",
+      "type" : "text/plain",
+      "size" : 137
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "setup_perfectoMobile_iOS",
+    "time" : {
+      "start" : 1626664855287,
+      "stop" : 1626664886514,
+      "duration" : 31227
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_equipment_id",
+    "time" : {
+      "start" : 1626660914526,
+      "stop" : 1626660914640,
+      "duration" : 114
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_profiles",
+    "time" : {
+      "start" : 1626663736839,
+      "stop" : 1626663758382,
+      "duration" : 21543
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "a229334e812a05b6",
+      "name" : "RF Profile Created : wifi5",
+      "source" : "a229334e812a05b6.attach",
+      "type" : "text/plain",
+      "size" : 12259
+    }, {
+      "uid" : "39ae16bfeff38750",
+      "name" : "Radius Profile Created",
+      "source" : "39ae16bfeff38750.attach",
+      "type" : "text/plain",
+      "size" : 182
+    }, {
+      "uid" : "6e4961ca9896df8f",
+      "name" : "SSID Profile Created",
+      "source" : "6e4961ca9896df8f.attach",
+      "type" : "text/plain",
+      "size" : 2820
+    }, {
+      "uid" : "4338680fde26d75f",
+      "name" : "SSID Profile Created",
+      "source" : "4338680fde26d75f.attach",
+      "type" : "text/plain",
+      "size" : 2836
+    }, {
+      "uid" : "7681db70903965d6",
+      "name" : "SSID Profile Created",
+      "source" : "7681db70903965d6.attach",
+      "type" : "text/plain",
+      "size" : 2832
+    }, {
+      "uid" : "b9cb084df1114df3",
+      "name" : "SSID Profile Created",
+      "source" : "b9cb084df1114df3.attach",
+      "type" : "text/plain",
+      "size" : 2850
+    }, {
+      "uid" : "56197b4570ab8608",
+      "name" : "SSID Profile Created",
+      "source" : "56197b4570ab8608.attach",
+      "type" : "text/plain",
+      "size" : 2846
+    }, {
+      "uid" : "faa843052dff29a9",
+      "name" : "Passpoint OSU ID provider Profile Created",
+      "source" : "faa843052dff29a9.attach",
+      "type" : "text/plain",
+      "size" : 1527
+    }, {
+      "uid" : "ca1c22acdffa969e",
+      "name" : "Passpoint Operator Profile Created",
+      "source" : "ca1c22acdffa969e.attach",
+      "type" : "text/plain",
+      "size" : 1667
+    }, {
+      "uid" : "2174e957e615c289",
+      "name" : "Passpoint Venue Profile Created",
+      "source" : "2174e957e615c289.attach",
+      "type" : "text/plain",
+      "size" : 1488
+    }, {
+      "uid" : "2c835dfab2bf48b4",
+      "name" : "Passpoint Profile Created",
+      "source" : "2c835dfab2bf48b4.attach",
+      "type" : "text/plain",
+      "size" : 2627
+    }, {
+      "uid" : "5f3b45ef3ba8b4d1",
+      "name" : "Updating SSID profile",
+      "source" : "5f3b45ef3ba8b4d1.attach",
+      "type" : "text/plain",
+      "size" : 149
+    }, {
+      "uid" : "a08e2bcaaa835902",
+      "name" : "Updating SSID profile",
+      "source" : "a08e2bcaaa835902.attach",
+      "type" : "text/plain",
+      "size" : 145
+    }, {
+      "uid" : "c8dc91d463a954d9",
+      "name" : "Updating SSID profile",
+      "source" : "c8dc91d463a954d9.attach",
+      "type" : "text/plain",
+      "size" : 159
+    }, {
+      "uid" : "ef7cbd81409bd2b9",
+      "name" : "Updating SSID profile",
+      "source" : "ef7cbd81409bd2b9.attach",
+      "type" : "text/plain",
+      "size" : 155
+    }, {
+      "uid" : "c50b12733b5dae25",
+      "name" : "Equipment AP Profile Created",
+      "source" : "c50b12733b5dae25.attach",
+      "type" : "text/plain",
+      "size" : 50
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 16,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "passpoint_profile_info",
+    "time" : {
+      "start" : 1626661999068,
+      "stop" : 1626661999068,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "4b3618ffe86b66b9",
+      "name" : "Passpoint profile Info: ",
+      "source" : "4b3618ffe86b66b9.attach",
+      "type" : "text/plain",
+      "size" : 928
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "get_security_flags",
+    "time" : {
+      "start" : 1626660914641,
+      "stop" : 1626660914641,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "push_ap_profile",
+    "time" : {
+      "start" : 1626664598212,
+      "stop" : 1626664855287,
+      "duration" : 257075
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "9c2f89f901e13ffc",
+      "name" : "Equipment AP Profile Updated",
+      "source" : "9c2f89f901e13ffc.attach",
+      "type" : "text/plain",
+      "size" : 30
+    }, {
+      "uid" : "f421a33e083f05e6",
+      "name" : "Pushing profiles on AP  :: ",
+      "source" : "f421a33e083f05e6.attach",
+      "type" : "text/plain",
+      "size" : 131
+    }, {
+      "uid" : "cf03df3061f66c22",
+      "name" : "APNOS LIbrary: ",
+      "source" : "cf03df3061f66c22.attach",
+      "type" : "text/plain",
+      "size" : 297
+    }, {
+      "uid" : "b5dc8f753f78fd03",
+      "name" : "openwrt_ctl Setup",
+      "source" : "b5dc8f753f78fd03.attach",
+      "type" : "text/plain",
+      "size" : 9
+    }, {
+      "uid" : "e1a354df4593f7fb",
+      "name" : "vif config Output Msg: ",
+      "source" : "e1a354df4593f7fb.attach",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "10e25f34c555123e",
+      "name" : "vif config Err Msg: ",
+      "source" : "10e25f34c555123e.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "eabf809d68df3298",
+      "name" : "get_vif_config_ssids ",
+      "source" : "eabf809d68df3298.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "1b8c1827eb1361e6",
+      "name" : "vif state Output Msg: ",
+      "source" : "1b8c1827eb1361e6.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "60d35195d0712302",
+      "name" : "vif state Err Msg: ",
+      "source" : "60d35195d0712302.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "972fb62750a47955",
+      "name" : "get_vif_state_ssids ",
+      "source" : "972fb62750a47955.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "660e3ec355c1595e",
+      "name" : "vif config Output Msg: ",
+      "source" : "660e3ec355c1595e.attach",
+      "type" : "text/plain",
+      "size" : 7798
+    }, {
+      "uid" : "ba22a7e27437ac60",
+      "name" : "vif config Err Msg: ",
+      "source" : "ba22a7e27437ac60.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "946961460078ff66",
+      "name" : "get_vif_config_ssids ",
+      "source" : "946961460078ff66.attach",
+      "type" : "text/plain",
+      "size" : 130
+    }, {
+      "uid" : "53a3d871d9beefc6",
+      "name" : "vif state Output Msg: ",
+      "source" : "53a3d871d9beefc6.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "9663d9153e2fe973",
+      "name" : "vif state Err Msg: ",
+      "source" : "9663d9153e2fe973.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "66c16d53d208d6ac",
+      "name" : "get_vif_state_ssids ",
+      "source" : "66c16d53d208d6ac.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "50f86ce37b98b364",
+      "name" : "vif config Output Msg: ",
+      "source" : "50f86ce37b98b364.attach",
+      "type" : "text/plain",
+      "size" : 7798
+    }, {
+      "uid" : "81b2ca05ff124858",
+      "name" : "vif config Err Msg: ",
+      "source" : "81b2ca05ff124858.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "6227e25a74665251",
+      "name" : "get_vif_config_ssids ",
+      "source" : "6227e25a74665251.attach",
+      "type" : "text/plain",
+      "size" : 130
+    }, {
+      "uid" : "c77bc83c428c2b16",
+      "name" : "vif state Output Msg: ",
+      "source" : "c77bc83c428c2b16.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "e52bb29794985040",
+      "name" : "vif state Err Msg: ",
+      "source" : "e52bb29794985040.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "7a661d4d02e903c2",
+      "name" : "get_vif_state_ssids ",
+      "source" : "7a661d4d02e903c2.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "cfb43ab6807ddbda",
+      "name" : "vif config Output Msg: ",
+      "source" : "cfb43ab6807ddbda.attach",
+      "type" : "text/plain",
+      "size" : 4091
+    }, {
+      "uid" : "d3275b42e33f59c8",
+      "name" : "vif config Err Msg: ",
+      "source" : "d3275b42e33f59c8.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "da486d7133e6eb2f",
+      "name" : "get_vif_config_ssids ",
+      "source" : "da486d7133e6eb2f.attach",
+      "type" : "text/plain",
+      "size" : 65
+    }, {
+      "uid" : "f4cb43407bd4c8b3",
+      "name" : "vif state Output Msg: ",
+      "source" : "f4cb43407bd4c8b3.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "d5b51c445daf17a3",
+      "name" : "vif state Err Msg: ",
+      "source" : "d5b51c445daf17a3.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "d43c852ebe806d2c",
+      "name" : "get_vif_state_ssids ",
+      "source" : "d43c852ebe806d2c.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "71267c83f40dc6bb",
+      "name" : "vif config Output Msg: ",
+      "source" : "71267c83f40dc6bb.attach",
+      "type" : "text/plain",
+      "size" : 4091
+    }, {
+      "uid" : "25f87262f75f3ede",
+      "name" : "vif config Err Msg: ",
+      "source" : "25f87262f75f3ede.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "6dfa063cfe3eb6a3",
+      "name" : "get_vif_config_ssids ",
+      "source" : "6dfa063cfe3eb6a3.attach",
+      "type" : "text/plain",
+      "size" : 65
+    }, {
+      "uid" : "490f421cafe94137",
+      "name" : "vif state Output Msg: ",
+      "source" : "490f421cafe94137.attach",
+      "type" : "text/plain",
+      "size" : 4348
+    }, {
+      "uid" : "7b1d3463dc998466",
+      "name" : "vif state Err Msg: ",
+      "source" : "7b1d3463dc998466.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "48f36f309c78e06e",
+      "name" : "get_vif_state_ssids ",
+      "source" : "48f36f309c78e06e.attach",
+      "type" : "text/plain",
+      "size" : 65
+    }, {
+      "uid" : "eeae85abf0039293",
+      "name" : "vifC status on AP :: ",
+      "source" : "eeae85abf0039293.attach",
+      "type" : "text/plain",
+      "size" : 65
+    }, {
+      "uid" : "ceda7b1d65323d19",
+      "name" : "vifS status on AP :: ",
+      "source" : "ceda7b1d65323d19.attach",
+      "type" : "text/plain",
+      "size" : 65
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 36,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "instantiate_profile",
+    "time" : {
+      "start" : 1626660914641,
+      "stop" : 1626660914641,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "testStage" : {
+    "description" : "\n             EAP Passpoint BRIDGE Mode\n             pytest -m \"interop_iOS and eap_passpoint and bridge and wpa2_only_eap and twog\"\n        ",
+    "status" : "failed",
+    "statusMessage" : "AssertionError",
+    "statusTrace" : "request = <FixtureRequest for <Function test_wpa2_only_eap_2g_NAT[push_ap_profile0-setup_profiles0]>>\nWifiNameSSID = 'passpoint_profile_download', WifiPass = ''\nsetup_perfectoMobile = (<appium.webdriver.webdriver.WebDriver (session=\"0cca8f51-00af-4929-a1df-69acc6753d58\")>, <perfecto.client.PerfectoReportiumClient.PerfectoReportiumClient object at 0x7f3be0640ca0>)\nconnData = {'BtnRunSpeedTest': \"//*[text()='RUN SPEED TEST']\", 'UploadMbps': \"//*[@id='knowledge-verticals-internetspeedtest__upl...[@class='spiqle']\", 'appPackage-android': 'com.android.settings', 'bundleId-iOS-Safari': 'com.apple.mobilesafari', ...}\n\n    def set_APconnMobileDevice_iOS(request, WifiNameSSID, WifiPass, setup_perfectoMobile, connData):\n        consoleOutput = \"\"\n    \n        print(\"\\n-------------------------------------\")\n        print(\"Select Wifi/AccessPoint Connection\")\n        print(\"-------------------------------------\")\n    \n        reportFlag = True\n    \n        print(\"Verifying Wifi/AP Connection Details....\")\n        report = setup_perfectoMobile[1]\n        driver = setup_perfectoMobile[0]\n    \n        report.step_start(\"Switching Driver Context\")\n        print(\"Switching Context to Native\")\n        #contexts = driver.contexts\n        #print(contexts)\n        driver.switch_to.context('NATIVE_APP')\n        #driver.switch_to.context(contexts[0])\n    \n        print(WifiNameSSID)\n        report.step_start(\"Set Wifi Network to \" + WifiNameSSID)\n        #Open Settings Application\n        openApp(connData[\"bundleId-iOS-Settings\"], setup_perfectoMobile)\n    \n        try:\n            print(\"Verifying Connected Wifi Connection\")\n            report.step_start(\"Verifying Connected Wifi Connection\")\n            element = driver.find_element_by_xpath(\"//XCUIElementTypeCell[@name='Wi-Fi']/XCUIElementTypeStaticText[2]\")\n            Wifi_AP_Name = element.text\n        except NoSuchElementException:\n            print(\"Exception: Verify Xpath - UpdateXpath\")\n            #NEED to fail if Wifi AP NAME isn't in the approved list AKA 5g & 2g.\n            #print(\"Wifi Name Matches - Already Connected To: \" + Wifi_AP_Name)\n            #print(\"Wifi Name Matches - Already Connected To: \" + WifiName)\n    \n        if Wifi_AP_Name.__eq__(WifiNameSSID):\n            print(\"Wifi Name Matches - Already Connected To: \" + Wifi_AP_Name)\n    \n            #Verify if Ap is connected with Wifi\n            report.step_start(\"Verify Wifi Connection Status..\")\n            #print(\"Click Wifi Connection..\")\n            element.click()\n    \n            #Verifies if AP is connected to Wifi status\n            #print(\"Verify Wifi Connection Status..\")\n            try:\n                report.step_start(\"Verify Wifi Connected Status\")\n                WifiXpath = \"//*[@label='selected']/parent::*/parent::*/XCUIElementTypeStaticText[@label='\"+ Wifi_AP_Name + \"']\"\n                elementWifName = driver.find_element_by_xpath(WifiXpath)\n            except NoSuchElementException:\n                reportFlag = False\n                assert reportFlag\n    \n            #Check AP Internet Error Msg\n            print(\"Checking Internet Connection Error..\")\n            report.step_start(\"Checking Internet Connection Error..\")\n    \n            try:\n                WifiInternetErrMsg = driver.find_element_by_xpath(\"//*[@label='No Internet Connection']\").text\n            except NoSuchElementException:\n                print(\"No Error with Wifi-AP Connection: \" + Wifi_AP_Name)\n    \n        else:\n            print(\"Selecting Wifi: \" + WifiNameSSID)\n            #consoleOutput+=str(WifiName)+ \"\\n\"\n            report.step_start(\"Selecting Wifi...: \" + WifiNameSSID)\n            element = driver.find_element_by_xpath(\"//XCUIElementTypeCell[@name='Wi-Fi']/XCUIElementTypeStaticText[2]\")\n            element.click()\n            try:\n>               wifiXpath2 = WebDriverWait(driver, 30).until(EC.presence_of_element_located((MobileBy.XPATH, \"//*[@label='\"+ WifiNameSSID + \"']\")))\n\n../libs/perfecto_libs/iOS_lib.py:126: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <selenium.webdriver.support.wait.WebDriverWait (session=\"0cca8f51-00af-4929-a1df-69acc6753d58\")>\nmethod = <selenium.webdriver.support.expected_conditions.presence_of_element_located object at 0x7f3be0640520>\nmessage = ''\n\n    def until(self, method, message=''):\n        \"\"\"Calls the method provided with the driver as an argument until the \\\n        return value is not False.\"\"\"\n        screen = None\n        stacktrace = None\n    \n        end_time = time.time() + self._timeout\n        while True:\n            try:\n                value = method(self._driver)\n                if value:\n                    return value\n            except self._ignored_exceptions as exc:\n                screen = getattr(exc, 'screen', None)\n                stacktrace = getattr(exc, 'stacktrace', None)\n            time.sleep(self._poll)\n            if time.time() > end_time:\n                break\n>       raise TimeoutException(message, screen, stacktrace)\nE       selenium.common.exceptions.TimeoutException: Message: \nE       Stacktrace:\nE           at sun.reflect.GeneratedConstructorAccessor1105.newInstance (None:-1)\nE           at sun.reflect.DelegatingConstructorAccessorImpl.newInstance (DelegatingConstructorAccessorImpl.java:45)\nE           at java.lang.reflect.Constructor.newInstance (Constructor.java:423)\nE           at org.openqa.selenium.remote.http.W3CHttpResponseCodec.createException (W3CHttpResponseCodec.java:187)\nE           at org.openqa.selenium.remote.http.W3CHttpResponseCodec.decode (W3CHttpResponseCodec.java:122)\nE           at org.openqa.selenium.remote.http.W3CHttpResponseCodec.decode (W3CHttpResponseCodec.java:49)\nE           at org.openqa.selenium.remote.HttpCommandExecutor.execute (HttpCommandExecutor.java:158)\nE           at io.appium.java_client.remote.AppiumCommandExecutor.execute (AppiumCommandExecutor.java:239)\nE           at org.openqa.selenium.remote.RemoteWebDriver.execute (RemoteWebDriver.java:552)\nE           at io.appium.java_client.DefaultGenericMobileDriver.execute (DefaultGenericMobileDriver.java:41)\nE           at io.appium.java_client.AppiumDriver.execute (AppiumDriver.java:1)\nE           at io.appium.java_client.ios.IOSDriver.execute (IOSDriver.java:1)\nE           at org.openqa.selenium.remote.RemoteWebDriver.findElement (RemoteWebDriver.java:323)\nE           at io.appium.java_client.DefaultGenericMobileDriver.findElement (DefaultGenericMobileDriver.java:61)\nE           at io.appium.java_client.AppiumDriver.findElement (AppiumDriver.java:1)\nE           at io.appium.java_client.ios.IOSDriver.findElement (IOSDriver.java:1)\nE           at org.openqa.selenium.remote.RemoteWebDriver.findElementByXPath (RemoteWebDriver.java:428)\nE           at io.appium.java_client.DefaultGenericMobileDriver.findElementByXPath (DefaultGenericMobileDriver.java:151)\nE           at io.appium.java_client.AppiumDriver.findElementByXPath (AppiumDriver.java:1)\nE           at io.appium.java_client.ios.IOSDriver.findElementByXPath (IOSDriver.java:1)\nE           at org.openqa.selenium.By$ByXPath.findElement (By.java:353)\nE           at org.openqa.selenium.remote.RemoteWebDriver.findElement (RemoteWebDriver.java:315)\nE           at io.appium.java_client.DefaultGenericMobileDriver.findElement (DefaultGenericMobileDriver.java:57)\nE           at io.appium.java_client.AppiumDriver.findElement (AppiumDriver.java:1)\nE           at io.appium.java_client.ios.IOSDriver.findElement (IOSDriver.java:1)\nE           at com.perfectomobile.selenium.server.appium.AppiumIOSDriverWrapper$2.call (AppiumIOSDriverWrapper.java:94)\nE           at com.nexperience.function.execute.ExecuteCallableCommand.process (ExecuteCallableCommand.java:30)\nE           at com.nexperience.engine.script.command.AbstractScriptCommand.doExecute (AbstractScriptCommand.java:173)\nE           at com.nexperience.engine.script.command.ScriptCommandBase.execute (ScriptCommandBase.java:105)\nE           at com.nexperience.engine.script.tcl.event.CommandTclEvent.processEvent (CommandTclEvent.java:43)\nE           at com.nexperience.engine.script.tcl.event.MaseTclEvent.processEvent (MaseTclEvent.java:56)\nE           at tcl.lang.Notifier.serviceEvent (Notifier.java:457)\nE           at tcl.lang.Notifier.doOneEvent (Notifier.java:610)\nE           at tcl.lang.Notifier.processTclEvents (Notifier.java:786)\nE           at com.nexperience.engine.script.tcl.event.TclEventProcessor.start (TclEventProcessor.java:80)\nE           at com.nexperience.engine.script.tcl.TclInterpreter.startEventProcessing (TclInterpreter.java:552)\nE           at com.nexperience.engine.script.execution.step.StepExecutionEventProcessor.callImpl (StepExecutionEventProcessor.java:85)\nE           at com.nexperience.engine.script.execution.step.StepExecutionEventProcessor.callImpl (StepExecutionEventProcessor.java:21)\nE           at com.nexperience.util.thread.WrappedCallable.call (WrappedCallable.java:31)\nE           at java.util.concurrent.FutureTask.run (FutureTask.java:266)\nE           at java.util.concurrent.ThreadPoolExecutor.runWorker (ThreadPoolExecutor.java:1142)\nE           at java.util.concurrent.ThreadPoolExecutor$Worker.run (ThreadPoolExecutor.java:617)\nE           at java.lang.Thread.run (Thread.java:748)\n\n/usr/local/lib/python3.8/site-packages/selenium/webdriver/support/wait.py:80: TimeoutException\n\nDuring handling of the above exception, another exception occurred:\n\nself = <tests.e2e.interOp.iOS.OpenRoamingPassPoint.test_OpenRoaming_NatMode.TestOpenRoamingNAT object at 0x7f3be43784f0>\npasspoint_profile_info = {'access_network': {'Access Network Type': 'Free Public Network', 'Authentication Type': 'Acceptance of Terms & Condit...e': 'Disabled'}, 'allowed_ssids': [12259, 12260, 12261, 12262], 'hessid': None, 'interworking_hs2dot0': 'Enabled', ...}\npush_ap_profile = {'equipment_ap': {'sdk': True}, 'passpoint_profile_download': {'vif_config': True, 'vif_state': True}, 'ssid_wpa2_only_eap_passpoint_2g': {'vif_config': True, 'vif_state': True}}\nrequest = <FixtureRequest for <Function test_wpa2_only_eap_2g_NAT[push_ap_profile0-setup_profiles0]>>\nget_APToMobileDevice_data = {'BtnRunSpeedTest': \"//*[text()='RUN SPEED TEST']\", 'UploadMbps': \"//*[@id='knowledge-verticals-internetspeedtest__upl...[@class='spiqle']\", 'appPackage-android': 'com.android.settings', 'bundleId-iOS-Safari': 'com.apple.mobilesafari', ...}\nsetup_perfectoMobile_iOS = (<appium.webdriver.webdriver.WebDriver (session=\"0cca8f51-00af-4929-a1df-69acc6753d58\")>, <perfecto.client.PerfectoReportiumClient.PerfectoReportiumClient object at 0x7f3be0640ca0>)\n\n    @pytest.mark.wpa2_only_eap\n    @pytest.mark.twog\n    @pytest.mark.parametrize(\n        'push_ap_profile',\n        [{\"ssid_names\": [\"ssid_wpa2_only_eap_passpoint_2g\", \"passpoint_profile_download\"]}],\n        indirect=True,\n        scope=\"function\"\n    )\n    @pytest.mark.usefixtures(\"push_ap_profile\")\n    def test_wpa2_only_eap_2g_NAT(self, passpoint_profile_info, push_ap_profile, request, get_APToMobileDevice_data, setup_perfectoMobile_iOS):\n        \"\"\"\n             EAP Passpoint BRIDGE Mode\n             pytest -m \"interop_iOS and eap_passpoint and bridge and wpa2_only_eap and twog\"\n        \"\"\"\n        result = push_ap_profile['ssid_wpa2_only_eap_passpoint_2g']['vif_config']\n        if result:\n            allure.attach(name=\"Config push to AP for ssid_wpa2_only_eap_passpoint_2g successful \", body=\"\")\n        else:\n            allure.attach(name=\"Config push to AP for ssid_wpa2_only_eap_passpoint_2g failed\", body=\"\")\n        assert result\n        result = push_ap_profile['ssid_wpa2_only_eap_passpoint_2g']['vif_state']\n        if result:\n            allure.attach(name=\"Config apply to AP for ssid_wpa2_only_eap_passpoint_2g successful \", body=\"\")\n        else:\n            allure.attach(name=\"Config apply to AP for ssid_wpa2_only_eap_passpoint_2g failed\", body=\"\")\n        assert result\n    \n        print(\"SSID to download profile :: \", setup_params_eap[\"ssid_modes\"][\"open\"][0][\"ssid_name\"])\n        print(\"SSID to validate connectivity :: \", setup_params_eap[\"ssid_modes\"][\"wpa2_only_eap\"][0][\"ssid_name\"])\n        print(\"Profile download URL :: \", passpoint_profile_info[\"profile_download_url_ios\"])\n        print(\"Profile name to remove :: \", passpoint_profile_info[\"profile_name_on_device\"])\n    \n        report = setup_perfectoMobile_iOS[1]\n        driver = setup_perfectoMobile_iOS[0]\n        connData = get_APToMobileDevice_data\n    \n        downloadProfileSSID = setup_params_eap[\"ssid_modes\"][\"open\"][0][\"ssid_name\"]\n        downloadProfileSSIDPass = \"\"\n        #profileDownloadURL = passpoint_profile_info[\"profile_download_url_ios\"]\n        profileDownloadURL = \"https://onboard.almondlabs.net/ttls/AmeriBand-Profile.mobileconfig\"\n        profileName = passpoint_profile_info[\"profile_name_on_device\"]\n        profileNameSSID = setup_params_eap[\"ssid_modes\"][\"wpa2_eap\"][1][\"ssid_name\"]\n    \n        #Setting Perfecto ReportClient....\n        #SSID to download profile ::  passpoint_profile_download\n        #SSID to validate connectivity ::  ssid_wpa2_eap_passpoint_5g\n        #Profile download URL ::  https://onboard.almondlabs.net/ios.html\n        #Profile name to remove ::  AmeriBand\n    \n        #Delete Profile Under Settings\n        deleteOpenRoamingInstalledProfile(request, profileName, setup_perfectoMobile_iOS, connData)\n    \n        #Set Wifi/AP Mode\n>       set_APconnMobileDevice_iOS(request, downloadProfileSSID, downloadProfileSSIDPass, setup_perfectoMobile_iOS, connData)\n\ne2e/interOp/iOS/OpenRoamingPassPoint/test_OpenRoaming_NatMode.py:256: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nrequest = <FixtureRequest for <Function test_wpa2_only_eap_2g_NAT[push_ap_profile0-setup_profiles0]>>\nWifiNameSSID = 'passpoint_profile_download', WifiPass = ''\nsetup_perfectoMobile = (<appium.webdriver.webdriver.WebDriver (session=\"0cca8f51-00af-4929-a1df-69acc6753d58\")>, <perfecto.client.PerfectoReportiumClient.PerfectoReportiumClient object at 0x7f3be0640ca0>)\nconnData = {'BtnRunSpeedTest': \"//*[text()='RUN SPEED TEST']\", 'UploadMbps': \"//*[@id='knowledge-verticals-internetspeedtest__upl...[@class='spiqle']\", 'appPackage-android': 'com.android.settings', 'bundleId-iOS-Safari': 'com.apple.mobilesafari', ...}\n\n    def set_APconnMobileDevice_iOS(request, WifiNameSSID, WifiPass, setup_perfectoMobile, connData):\n        consoleOutput = \"\"\n    \n        print(\"\\n-------------------------------------\")\n        print(\"Select Wifi/AccessPoint Connection\")\n        print(\"-------------------------------------\")\n    \n        reportFlag = True\n    \n        print(\"Verifying Wifi/AP Connection Details....\")\n        report = setup_perfectoMobile[1]\n        driver = setup_perfectoMobile[0]\n    \n        report.step_start(\"Switching Driver Context\")\n        print(\"Switching Context to Native\")\n        #contexts = driver.contexts\n        #print(contexts)\n        driver.switch_to.context('NATIVE_APP')\n        #driver.switch_to.context(contexts[0])\n    \n        print(WifiNameSSID)\n        report.step_start(\"Set Wifi Network to \" + WifiNameSSID)\n        #Open Settings Application\n        openApp(connData[\"bundleId-iOS-Settings\"], setup_perfectoMobile)\n    \n        try:\n            print(\"Verifying Connected Wifi Connection\")\n            report.step_start(\"Verifying Connected Wifi Connection\")\n            element = driver.find_element_by_xpath(\"//XCUIElementTypeCell[@name='Wi-Fi']/XCUIElementTypeStaticText[2]\")\n            Wifi_AP_Name = element.text\n        except NoSuchElementException:\n            print(\"Exception: Verify Xpath - UpdateXpath\")\n            #NEED to fail if Wifi AP NAME isn't in the approved list AKA 5g & 2g.\n            #print(\"Wifi Name Matches - Already Connected To: \" + Wifi_AP_Name)\n            #print(\"Wifi Name Matches - Already Connected To: \" + WifiName)\n    \n        if Wifi_AP_Name.__eq__(WifiNameSSID):\n            print(\"Wifi Name Matches - Already Connected To: \" + Wifi_AP_Name)\n    \n            #Verify if Ap is connected with Wifi\n            report.step_start(\"Verify Wifi Connection Status..\")\n            #print(\"Click Wifi Connection..\")\n            element.click()\n    \n            #Verifies if AP is connected to Wifi status\n            #print(\"Verify Wifi Connection Status..\")\n            try:\n                report.step_start(\"Verify Wifi Connected Status\")\n                WifiXpath = \"//*[@label='selected']/parent::*/parent::*/XCUIElementTypeStaticText[@label='\"+ Wifi_AP_Name + \"']\"\n                elementWifName = driver.find_element_by_xpath(WifiXpath)\n            except NoSuchElementException:\n                reportFlag = False\n                assert reportFlag\n    \n            #Check AP Internet Error Msg\n            print(\"Checking Internet Connection Error..\")\n            report.step_start(\"Checking Internet Connection Error..\")\n    \n            try:\n                WifiInternetErrMsg = driver.find_element_by_xpath(\"//*[@label='No Internet Connection']\").text\n            except NoSuchElementException:\n                print(\"No Error with Wifi-AP Connection: \" + Wifi_AP_Name)\n    \n        else:\n            print(\"Selecting Wifi: \" + WifiNameSSID)\n            #consoleOutput+=str(WifiName)+ \"\\n\"\n            report.step_start(\"Selecting Wifi...: \" + WifiNameSSID)\n            element = driver.find_element_by_xpath(\"//XCUIElementTypeCell[@name='Wi-Fi']/XCUIElementTypeStaticText[2]\")\n            element.click()\n            try:\n                wifiXpath2 = WebDriverWait(driver, 30).until(EC.presence_of_element_located((MobileBy.XPATH, \"//*[@label='\"+ WifiNameSSID + \"']\")))\n                wifiXpath2.click()\n            except Exception as e:\n                print(\"Exception on Selecting Wifi Network.  Please check wifi Name or signal\")\n                request.config.cache.set(key=\"SelectingWifiFailed\", value=str(e))\n                #allure.attach(name=\"Raj\", body=\"hello world\")\n>               assert False\nE               AssertionError\n\n../libs/perfecto_libs/iOS_lib.py:132: AssertionError",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "e72f04f4b4d6363c",
+      "name" : "Config push to AP for ssid_wpa2_only_eap_passpoint_2g successful ",
+      "source" : "e72f04f4b4d6363c.attach",
+      "type" : "application/octet-stream",
+      "size" : 0
+    }, {
+      "uid" : "3f6869588a5afbe0",
+      "name" : "Config apply to AP for ssid_wpa2_only_eap_passpoint_2g successful ",
+      "source" : "3f6869588a5afbe0.attach",
+      "type" : "application/octet-stream",
+      "size" : 0
+    }, {
+      "uid" : "65d2e410b9fbb2c0",
+      "name" : "log",
+      "source" : "65d2e410b9fbb2c0.txt",
+      "type" : "text/plain",
+      "size" : 1451
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 3,
+    "shouldDisplayMessage" : true,
+    "hasContent" : true
+  },
+  "afterStages" : [ {
+    "name" : "setup_profiles::1",
+    "time" : {
+      "start" : 1626667674546,
+      "stop" : 1626667674546,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_profiles::teardown_session",
+    "time" : {
+      "start" : 1626667674546,
+      "stop" : 1626667698957,
+      "duration" : 24411
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "58fcbdc509ba2bb4",
+      "name" : "Tear Down in Profiles ",
+      "source" : "58fcbdc509ba2bb4.attach",
+      "type" : "text/plain",
+      "size" : 25
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "instantiate_access_point::0",
+    "time" : {
+      "start" : 1626668936447,
+      "stop" : 1626668936447,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_controller::1",
+    "time" : {
+      "start" : 1626668936444,
+      "stop" : 1626668936444,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_controller::teardown_controller",
+    "time" : {
+      "start" : 1626668936444,
+      "stop" : 1626668936445,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "7495e6d2acf08161",
+      "name" : "Controller Teardown: ",
+      "source" : "7495e6d2acf08161.attach",
+      "type" : "text/plain",
+      "size" : 182
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "get_apnos::0",
+    "time" : {
+      "start" : 1626668936450,
+      "stop" : 1626668936450,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "testbed::0",
+    "time" : {
+      "start" : 1626668936461,
+      "stop" : 1626668936461,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_APToMobileDevice_data::0",
+    "time" : {
+      "start" : 1626665005462,
+      "stop" : 1626665005462,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_markers::0",
+    "time" : {
+      "start" : 1626668936432,
+      "stop" : 1626668936432,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "passpoint_operator_info::0",
+    "time" : {
+      "start" : 1626668936470,
+      "stop" : 1626668936470,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "passpoint_radius_accounting_server_info::0",
+    "time" : {
+      "start" : 1626668936467,
+      "stop" : 1626668936467,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "passpoint_venue_info::0",
+    "time" : {
+      "start" : 1626668936469,
+      "stop" : 1626668936469,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "passpoint_provider_info::0",
+    "time" : {
+      "start" : 1626668936471,
+      "stop" : 1626668936471,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_vlan::0",
+    "time" : {
+      "start" : 1626668936441,
+      "stop" : 1626668936441,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_configuration::0",
+    "time" : {
+      "start" : 1626668936456,
+      "stop" : 1626668936456,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "passpoint_radius_server_info::0",
+    "time" : {
+      "start" : 1626668936468,
+      "stop" : 1626668936468,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_perfectoMobile_iOS::1",
+    "time" : {
+      "start" : 1626664966114,
+      "stop" : 1626664966114,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_perfectoMobile_iOS::teardown",
+    "time" : {
+      "start" : 1626664966115,
+      "stop" : 1626665005461,
+      "duration" : 39346
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_equipment_id::0",
+    "time" : {
+      "start" : 1626668936439,
+      "stop" : 1626668936439,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_profiles::1",
+    "time" : {
+      "start" : 1626665414975,
+      "stop" : 1626665414975,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_profiles::teardown_session",
+    "time" : {
+      "start" : 1626665414975,
+      "stop" : 1626665440835,
+      "duration" : 25860
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "fef910986087b8a4",
+      "name" : "Tear Down in Profiles ",
+      "source" : "fef910986087b8a4.attach",
+      "type" : "text/plain",
+      "size" : 31
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "passpoint_profile_info::0",
+    "time" : {
+      "start" : 1626668936472,
+      "stop" : 1626668936472,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_security_flags::0",
+    "time" : {
+      "start" : 1626668936435,
+      "stop" : 1626668936435,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "push_ap_profile::0",
+    "time" : {
+      "start" : 1626665005462,
+      "stop" : 1626665005462,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "instantiate_profile::0",
+    "time" : {
+      "start" : 1626668936437,
+      "stop" : 1626668936437,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "labels" : [ {
+    "name" : "feature",
+    "value" : "NAT MODE EAP PASSPOINT SETUP"
+  }, {
+    "name" : "tag",
+    "value" : "wpa2_only_eap"
+  }, {
+    "name" : "tag",
+    "value" : "ios"
+  }, {
+    "name" : "tag",
+    "value" : "sanity"
+  }, {
+    "name" : "tag",
+    "value" : "twog"
+  }, {
+    "name" : "tag",
+    "value" : "openRoaming"
+  }, {
+    "name" : "tag",
+    "value" : "interop"
+  }, {
+    "name" : "tag",
+    "value" : "@pytest.mark.usefixtures('push_ap_profile')"
+  }, {
+    "name" : "tag",
+    "value" : "interop_ios"
+  }, {
+    "name" : "tag",
+    "value" : "nat"
+  }, {
+    "name" : "parentSuite",
+    "value" : "e2e.interOp.iOS.OpenRoamingPassPoint"
+  }, {
+    "name" : "suite",
+    "value" : "test_OpenRoaming_NatMode"
+  }, {
+    "name" : "subSuite",
+    "value" : "TestOpenRoamingNAT"
+  }, {
+    "name" : "host",
+    "value" : "interop-ci-65-ios-jwg8z"
+  }, {
+    "name" : "thread",
+    "value" : "6-MainThread"
+  }, {
+    "name" : "framework",
+    "value" : "pytest"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "package",
+    "value" : "e2e.interOp.iOS.OpenRoamingPassPoint.test_OpenRoaming_NatMode"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ {
+    "name" : "push_ap_profile",
+    "value" : "{'ssid_names': ['passpoint_profile_download', 'ssid_wpa2_only_eap_passpoint_2g']}"
+  }, {
+    "name" : "setup_profiles",
+    "value" : "{'mode': 'NAT', 'ssid_modes': {'open': [{'ssid_name': 'passpoint_profile_download', 'appliedRadios': ['is2dot4GHz'], 'profile_name': 'interop-SSID-open-0-NAT', 'mode': 'NAT', 'vlan': 1}], 'wpa2_eap': [{'ssid_name': 'ssid_wpa2_eap_passpoint_2g', 'appliedRadios': ['is2dot4GHz'], 'profile_name': 'interop-SSID-wpa2_eap-0-NAT', 'mode': 'NAT', 'vlan': 1}, {'ssid_name': 'ssid_wpa2_eap_passpoint_5g', 'appliedRadios': ['is5GHz'], 'profile_name': 'interop-SSID-wpa2_eap-1-NAT', 'mode': 'NAT', 'vlan': 1}], 'wpa2_only_eap': [{'ssid_name': 'ssid_wpa2_only_eap_passpoint_2g', 'appliedRadios': ['is2dot4GHz'], 'profile_name': 'interop-SSID-wpa2_only_eap-0-NAT', 'mode': 'NAT', 'vlan': 1}, {'ssid_name': 'ssid_wpa2_only_eap_passpoint_5g', 'appliedRadios': ['is5GHz'], 'profile_name': 'interop-SSID-wpa2_only_eap-1-NAT', 'mode': 'NAT', 'vlan': 1}]}}"
+  } ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ {
+      "name" : "Product defects",
+      "matchedStatuses" : [ ],
+      "flaky" : false
+    } ],
+    "history" : {
+      "statistic" : {
+        "failed" : 17,
+        "broken" : 1,
+        "skipped" : 0,
+        "passed" : 0,
+        "unknown" : 0,
+        "total" : 18
+      },
+      "items" : [ {
+        "uid" : "ea89971610f2ac12",
+        "status" : "failed",
+        "statusDetails" : "AssertionError",
+        "time" : {
+          "start" : 1626578472259,
+          "stop" : 1626578551535,
+          "duration" : 79276
+        }
+      }, {
+        "uid" : "65741ccc6304439a",
+        "status" : "failed",
+        "statusDetails" : "AssertionError",
+        "time" : {
+          "start" : 1626490078656,
+          "stop" : 1626490156929,
+          "duration" : 78273
+        }
+      }, {
+        "uid" : "630b5541d07a4a17",
+        "status" : "failed",
+        "statusDetails" : "AssertionError",
+        "time" : {
+          "start" : 1626405859108,
+          "stop" : 1626405939154,
+          "duration" : 80046
+        }
+      }, {
+        "uid" : "3800a9105bc06e9f",
+        "status" : "broken",
+        "statusDetails" : "OSError: [Errno 99] Cannot assign requested address",
+        "time" : {
+          "start" : 1626308731885,
+          "stop" : 1626308731885,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "8142039f6ccd5116",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: assert False",
+        "time" : {
+          "start" : 1625799409596,
+          "stop" : 1625799409603,
+          "duration" : 7
+        }
+      }, {
+        "uid" : "86d54dc591d933d7",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: assert False",
+        "time" : {
+          "start" : 1625741719676,
+          "stop" : 1625741719676,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "b304c27078e9f847",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: assert False",
+        "time" : {
+          "start" : 1625627038133,
+          "stop" : 1625627038134,
+          "duration" : 1
+        }
+      }, {
+        "uid" : "6f71e61c2c036879",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: assert False",
+        "time" : {
+          "start" : 1625540748893,
+          "stop" : 1625540748893,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "b80c0ab3afcd8029",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: assert False",
+        "time" : {
+          "start" : 1625453749179,
+          "stop" : 1625453749179,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "d44b3a3b86b6a4f",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: assert False",
+        "time" : {
+          "start" : 1625367785433,
+          "stop" : 1625367785434,
+          "duration" : 1
+        }
+      }, {
+        "uid" : "c4419fea04c1b043",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: assert False",
+        "time" : {
+          "start" : 1625281336332,
+          "stop" : 1625281336332,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "8793c7dfa2abfab9",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: assert False",
+        "time" : {
+          "start" : 1625194945116,
+          "stop" : 1625195165209,
+          "duration" : 220093
+        }
+      }, {
+        "uid" : "757453d203d0a78a",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: assert False",
+        "time" : {
+          "start" : 1625104999034,
+          "stop" : 1625104999034,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "e44851e830107399",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: assert False",
+        "time" : {
+          "start" : 1625022607909,
+          "stop" : 1625022607909,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "93d268de6d19368e",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: assert False",
+        "time" : {
+          "start" : 1624988450984,
+          "stop" : 1624988450985,
+          "duration" : 1
+        }
+      }, {
+        "uid" : "364dc783d2ee7a87",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: assert False",
+        "time" : {
+          "start" : 1624969960090,
+          "stop" : 1624969960091,
+          "duration" : 1
+        }
+      }, {
+        "uid" : "45333e3ab06134f2",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: assert False",
+        "time" : {
+          "start" : 1624958324731,
+          "stop" : 1624958324731,
+          "duration" : 0
+        }
+      } ]
+    },
+    "tags" : [ "wpa2_only_eap", "openRoaming", "nat", "interop_ios", "interop", "sanity", "@pytest.mark.usefixtures('push_ap_profile')", "ios", "twog" ]
+  },
+  "source" : "cc8388521c45b531.json",
+  "parameterValues" : [ "{'ssid_names': ['passpoint_profile_download', 'ssid_wpa2_only_eap_passpoint_2g']}", "{'mode': 'NAT', 'ssid_modes': {'open': [{'ssid_name': 'passpoint_profile_download', 'appliedRadios': ['is2dot4GHz'], 'profile_name': 'interop-SSID-open-0-NAT', 'mode': 'NAT', 'vlan': 1}], 'wpa2_eap': [{'ssid_name': 'ssid_wpa2_eap_passpoint_2g', 'appliedRadios': ['is2dot4GHz'], 'profile_name': 'interop-SSID-wpa2_eap-0-NAT', 'mode': 'NAT', 'vlan': 1}, {'ssid_name': 'ssid_wpa2_eap_passpoint_5g', 'appliedRadios': ['is5GHz'], 'profile_name': 'interop-SSID-wpa2_eap-1-NAT', 'mode': 'NAT', 'vlan': 1}], 'wpa2_only_eap': [{'ssid_name': 'ssid_wpa2_only_eap_passpoint_2g', 'appliedRadios': ['is2dot4GHz'], 'profile_name': 'interop-SSID-wpa2_only_eap-0-NAT', 'mode': 'NAT', 'vlan': 1}, {'ssid_name': 'ssid_wpa2_only_eap_passpoint_5g', 'appliedRadios': ['is5GHz'], 'profile_name': 'interop-SSID-wpa2_only_eap-1-NAT', 'mode': 'NAT', 'vlan': 1}]}}" ]
+}
