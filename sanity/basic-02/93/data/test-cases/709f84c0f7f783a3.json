@@ -1,0 +1,1200 @@
+{
+  "uid" : "709f84c0f7f783a3",
+  "name" : "test_setup_equipment_ap_profile[setup_profiles0]",
+  "fullName" : "e2e.basic.configuration_tests.vlan_mode.test_general_security_modes_configuration.TestVLANModeConnectivitySuiteB#test_setup_equipment_ap_profile",
+  "historyId" : "0d6cb10dbdecf14237400d334fe558b3",
+  "time" : {
+    "start" : 1627272662922,
+    "stop" : 1627272662922,
+    "duration" : 0
+  },
+  "description" : " Equipment AP Suite B ",
+  "descriptionHtml" : "<p>Equipment AP Suite B</p>\n",
+  "status" : "broken",
+  "statusMessage" : "KeyError: '02:03:7f:12:a0:a0'",
+  "statusTrace" : "request = <SubRequest 'setup_profiles' for <Function test_setup_wpa3_personal_2g_ssid_profile[setup_profiles0]>>\nsetup_controller = <controller.controller.Controller object at 0x7f4c8ed91730>\ntestbed = 'basic-02', setup_vlan = 100, get_equipment_id = [3]\ninstantiate_profile = <controller.controller.ProfileUtility object at 0x7f4c7c379fa0>\nget_markers = {'fiveg': True, 'open': True, 'radius': False, 'twog': True, ...}\ncreate_lanforge_chamberview_dut = 'basic-02'\nlf_tools = <lanforge.lf_tools.ChamberView object at 0x7f4c8eb912e0>\nget_security_flags = ['open', 'wpa', 'wep', 'wpa2_personal', 'wpa3_personal', 'wpa3_personal_mixed', ...]\nget_configuration = {'access_point': [{'ip': '10.28.3.100', 'jumphost': True, 'jumphost_tty': '/dev/ttyAP2', 'mode': 'wifi6', ...}], 'cont...'wiphy4'], '2.4G-Station-Name': 'wlan0', '5G-Radio': ['wiphy5'], '5G-Station-Name': 'wlan0', ...}, 'name': 'lanforge'}}\nradius_info = {'ip': '10.10.10.72', 'name': 'basic-02-Automation-Radius-Profile-BRIDGE', 'password': 'password', 'pk_password': 'whatever', ...}\nget_apnos = <class 'apnos.apnos.APNOS'>\n\n    @allure.feature(\"CLIENT CONNECTIVITY SETUP\")\n    @pytest.fixture(scope=\"class\")\n    def setup_profiles(request, setup_controller, testbed, setup_vlan, get_equipment_id,\n                       instantiate_profile, get_markers, create_lanforge_chamberview_dut, lf_tools,\n                       get_security_flags, get_configuration, radius_info, get_apnos):\n        instantiate_profile = instantiate_profile(sdk_client=setup_controller)\n        vlan_id, mode = 0, 0\n        instantiate_profile.cleanup_objects()\n        parameter = dict(request.param)\n        print(parameter)\n        test_cases = {}\n        profile_data = {}\n        if parameter['mode'] not in [\"BRIDGE\", \"NAT\", \"VLAN\"]:\n            print(\"Invalid Mode: \", parameter['mode'])\n            allure.attach(body=parameter['mode'], name=\"Invalid Mode: \")\n            yield test_cases\n    \n        if parameter['mode'] == \"NAT\":\n            mode = \"NAT\"\n            vlan_id = 1\n        if parameter['mode'] == \"BRIDGE\":\n            mode = \"BRIDGE\"\n            vlan_id = 1\n        if parameter['mode'] == \"VLAN\":\n            mode = \"BRIDGE\"\n            vlan_id = setup_vlan\n    \n        instantiate_profile.delete_profile_by_name(profile_name=testbed + \"-Equipment-AP-\" + parameter['mode'])\n    \n        profile_data[\"equipment_ap\"] = {\"profile_name\": testbed + \"-Equipment-AP-\" + parameter['mode']}\n        profile_data[\"ssid\"] = {}\n        for i in parameter[\"ssid_modes\"]:\n            profile_data[\"ssid\"][i] = []\n            for j in range(len(parameter[\"ssid_modes\"][i])):\n                profile_name = testbed + \"-SSID-\" + i + \"-\" + str(j) + \"-\" + parameter['mode']\n                data = parameter[\"ssid_modes\"][i][j]\n                data[\"profile_name\"] = profile_name\n                if \"mode\" not in dict(data).keys():\n                    data[\"mode\"] = mode\n                if \"vlan\" not in dict(data).keys():\n                    data[\"vlan\"] = vlan_id\n                instantiate_profile.delete_profile_by_name(profile_name=profile_name)\n                profile_data[\"ssid\"][i].append(data)\n        #         print(profile_name)\n        # print(profile_data)\n    \n        instantiate_profile.delete_profile_by_name(profile_name=testbed + \"-Automation-Radius-Profile-\" + mode)\n        time.sleep(10)\n        \"\"\"\n          Setting up rf profile\n        \"\"\"\n        rf_profile_data = {\n            \"name\": \"RF-Profile-\" + testbed + \"-\" + parameter['mode'] + \"-\" +\n                    get_configuration['access_point'][0]['mode']\n        }\n    \n        for i in parameter[\"rf\"]:\n            rf_profile_data[i] = parameter['rf'][i]\n        # print(rf_profile_data)\n    \n        try:\n            instantiate_profile.delete_profile_by_name(profile_name=rf_profile_data['name'])\n            instantiate_profile.set_rf_profile(profile_data=rf_profile_data,\n                                               mode=get_configuration['access_point'][0]['mode'])\n            allure.attach(body=str(rf_profile_data),\n                          name=\"RF Profile Created : \" + get_configuration['access_point'][0]['mode'])\n        except Exception as e:\n            print(e)\n            allure.attach(body=str(e), name=\"Exception \")\n    \n        # Radius Profile Creation\n        if parameter[\"radius\"]:\n            radius_info = radius_info\n            radius_info[\"name\"] = testbed + \"-Automation-Radius-Profile-\" + mode\n            instantiate_profile.delete_profile_by_name(profile_name=testbed + \"-Automation-Radius-Profile-\" + mode)\n            try:\n                instantiate_profile.create_radius_profile(radius_info=radius_info)\n                allure.attach(body=str(radius_info),\n                              name=\"Radius Profile Created\")\n                test_cases['radius_profile'] = True\n            except Exception as e:\n                print(e)\n                test_cases['radius_profile'] = False\n    \n        # SSID Profile Creation\n        lf_dut_data = []\n        for mode in profile_data['ssid']:\n            if mode == \"open\":\n                for j in profile_data[\"ssid\"][mode]:\n                    # print(j)\n                    if mode in get_markers.keys() and get_markers[mode]:\n                        try:\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                lf_dut_data.append(j)\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                lf_dut_data.append(j)\n                            for i in range(len(j[\"appliedRadios\"])):\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GU\", \"is5GHzU\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GL\", \"is5GHzL\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5G\", \"is5GHz\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"2G\", \"is2dot4GHz\")\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"open_2g\"] = True\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"open_5g\"] = True\n                            creates_profile = instantiate_profile.create_open_ssid_profile(profile_data=j)\n                            allure.attach(body=str(creates_profile),\n                                          name=\"SSID Profile Created\")\n                        except Exception as e:\n                            print(e)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"open_2g\"] = False\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"open_5g\"] = False\n                            allure.attach(body=str(e),\n                                          name=\"SSID Profile Creation Failed\")\n    \n            if mode == \"wpa\":\n                for j in profile_data[\"ssid\"][mode]:\n                    # print(j)\n                    if mode in get_markers.keys() and get_markers[mode]:\n                        try:\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                lf_dut_data.append(j)\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                lf_dut_data.append(j)\n                            for i in range(len(j[\"appliedRadios\"])):\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GU\", \"is5GHzU\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GL\", \"is5GHzL\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5G\", \"is5GHz\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"2G\", \"is2dot4GHz\")\n                            creates_profile = instantiate_profile.create_wpa_ssid_profile(profile_data=j)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"wpa_2g\"] = True\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"wpa_5g\"] = True\n                            allure.attach(body=str(creates_profile),\n                                          name=\"SSID Profile Created\")\n                        except Exception as e:\n                            print(e)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"wpa_2g\"] = False\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"wpa_5g\"] = False\n                            allure.attach(body=str(e),\n                                          name=\"SSID Profile Creation Failed\")\n    \n            if mode == \"wpa2_personal\":\n                for j in profile_data[\"ssid\"][mode]:\n                    # print(j)\n    \n                    if mode in get_markers.keys() and get_markers[mode]:\n                        try:\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                lf_dut_data.append(j)\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                lf_dut_data.append(j)\n                            for i in range(len(j[\"appliedRadios\"])):\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GU\", \"is5GHzU\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GL\", \"is5GHzL\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5G\", \"is5GHz\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"2G\", \"is2dot4GHz\")\n                            creates_profile = instantiate_profile.create_wpa2_personal_ssid_profile(profile_data=j)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"wpa2_personal_2g\"] = True\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"wpa2_personal_5g\"] = True\n                            allure.attach(body=str(creates_profile),\n                                          name=\"SSID Profile Created\")\n                        except Exception as e:\n                            print(e)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"wpa2_personal_2g\"] = False\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"wpa2_personal_5g\"] = False\n                            allure.attach(body=str(e),\n                                          name=\"SSID Profile Creation Failed\")\n    \n            if mode == \"wpa_wpa2_personal_mixed\":\n                for j in profile_data[\"ssid\"][mode]:\n                    # print(j)\n                    if mode in get_markers.keys() and get_markers[mode]:\n                        try:\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                lf_dut_data.append(j)\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                lf_dut_data.append(j)\n                            for i in range(len(j[\"appliedRadios\"])):\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GU\", \"is5GHzU\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GL\", \"is5GHzL\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5G\", \"is5GHz\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"2G\", \"is2dot4GHz\")\n    \n                            creates_profile = instantiate_profile.create_wpa_wpa2_personal_mixed_ssid_profile(\n                                profile_data=j)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"wpa_wpa2_personal_mixed_2g\"] = True\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"wpa_wpa2_personal_mixed_5g\"] = True\n                            allure.attach(body=str(creates_profile),\n                                          name=\"SSID Profile Created\")\n                        except Exception as e:\n                            print(e)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"wpa_wpa2_personal_mixed_2g\"] = False\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"wpa_wpa2_personal_mixed_5g\"] = False\n                            allure.attach(body=str(e),\n                                          name=\"SSID Profile Creation Failed\")\n    \n            if mode == \"wpa3_personal\":\n                for j in profile_data[\"ssid\"][mode]:\n                    print(j)\n                    if mode in get_markers.keys() and get_markers[mode]:\n                        try:\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                lf_dut_data.append(j)\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                lf_dut_data.append(j)\n                            for i in range(len(j[\"appliedRadios\"])):\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GU\", \"is5GHzU\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GL\", \"is5GHzL\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5G\", \"is5GHz\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"2G\", \"is2dot4GHz\")\n    \n                            creates_profile = instantiate_profile.create_wpa3_personal_ssid_profile(profile_data=j)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"wpa3_personal_2g\"] = True\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"wpa3_personal_5g\"] = True\n                            allure.attach(body=str(creates_profile),\n                                          name=\"SSID Profile Created\")\n                        except Exception as e:\n                            print(e)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"wpa3_personal_2g\"] = False\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"wpa3_personal_5g\"] = False\n                            allure.attach(body=str(e),\n                                          name=\"SSID Profile Creation Failed\")\n            if mode == \"wpa3_personal_mixed\":\n                for j in profile_data[\"ssid\"][mode]:\n                    print(j)\n                    if mode in get_markers.keys() and get_markers[mode]:\n                        try:\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                lf_dut_data.append(j)\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                lf_dut_data.append(j)\n                            for i in range(len(j[\"appliedRadios\"])):\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GU\", \"is5GHzU\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GL\", \"is5GHzL\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5G\", \"is5GHz\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"2G\", \"is2dot4GHz\")\n                            creates_profile = instantiate_profile.create_wpa3_personal_mixed_ssid_profile(\n                                    profile_data=j)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"wpa3_personal_mixed_2g\"] = True\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"wpa3_personal_mixed_5g\"] = True\n                            allure.attach(body=str(creates_profile),\n                                          name=\"SSID Profile Created\")\n                        except Exception as e:\n                            print(e)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"wpa3_personal_mixed_2g\"] = False\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"wpa3_personal_mixed_5g\"] = False\n                            allure.attach(body=str(e),\n                                          name=\"SSID Profile Creation Failed\")\n    \n            if mode == \"wpa_enterprise\":\n                for j in profile_data[\"ssid\"][mode]:\n    \n                    if mode in get_markers.keys() and get_markers[mode]:\n                        try:\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                lf_dut_data.append(j)\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                lf_dut_data.append(j)\n                            for i in range(len(j[\"appliedRadios\"])):\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GU\", \"is5GHzU\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GL\", \"is5GHzL\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5G\", \"is5GHz\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"2G\", \"is2dot4GHz\")\n                            creates_profile = instantiate_profile.create_wpa_enterprise_ssid_profile(profile_data=j)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"wpa_enterprise_2g\"] = True\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"wpa_enterprise_5g\"] = True\n                            allure.attach(body=str(creates_profile),\n                                          name=\"SSID Profile Created\")\n    \n                        except Exception as e:\n                            print(e)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"wpa_enterprise_2g\"] = False\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"wpa_enterprise_5g\"] = False\n                            allure.attach(body=str(e),\n                                          name=\"SSID Profile Creation Failed\")\n            if mode == \"wpa2_enterprise\":\n                for j in profile_data[\"ssid\"][mode]:\n                    # print(j)\n                    if mode in get_markers.keys() and get_markers[mode]:\n                        try:\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                lf_dut_data.append(j)\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                lf_dut_data.append(j)\n                            for i in range(len(j[\"appliedRadios\"])):\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GU\", \"is5GHzU\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GL\", \"is5GHzL\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5G\", \"is5GHz\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"2G\", \"is2dot4GHz\")\n                            creates_profile = instantiate_profile.create_wpa2_enterprise_ssid_profile(profile_data=j)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"wpa2_enterprise_2g\"] = True\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"wpa2_enterprise_5g\"] = True\n                            allure.attach(body=str(creates_profile),\n                                          name=\"SSID Profile Created\")\n                        except Exception as e:\n                            print(e)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"wpa2_enterprise_2g\"] = False\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"wpa2_enterprise_5g\"] = False\n                            allure.attach(body=str(e),\n                                          name=\"SSID Profile Creation Failed\")\n            if mode == \"wpa3_enterprise\":\n                for j in profile_data[\"ssid\"][mode]:\n                    # print(j)\n                    if mode in get_markers.keys() and get_markers[mode]:\n                        try:\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                lf_dut_data.append(j)\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                lf_dut_data.append(j)\n                            for i in range(len(j[\"appliedRadios\"])):\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GU\", \"is5GHzU\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GL\", \"is5GHzL\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5G\", \"is5GHz\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"2G\", \"is2dot4GHz\")\n                            creates_profile = instantiate_profile.create_wpa3_enterprise_ssid_profile(profile_data=j)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"wpa3_enterprise_2g\"] = True\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"wpa3_enterprise_5g\"] = True\n                            allure.attach(body=str(creates_profile),\n                                          name=\"SSID Profile Created\")\n                        except Exception as e:\n                            print(e)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"wpa3_enterprise_2g\"] = False\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"wpa3_enterprise_5g\"] = False\n                            allure.attach(body=str(e),\n                                          name=\"SSID Profile Creation Failed\")\n    \n            if mode == \"wpa_wpa2_enterprise_mixed\":\n                for j in profile_data[\"ssid\"][mode]:\n                    # print(j)\n                    if mode in get_markers.keys() and get_markers[mode]:\n                        try:\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                lf_dut_data.append(j)\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                lf_dut_data.append(j)\n                            for i in range(len(j[\"appliedRadios\"])):\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GU\", \"is5GHzU\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GL\", \"is5GHzL\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5G\", \"is5GHz\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"2G\", \"is2dot4GHz\")\n                            creates_profile = instantiate_profile.create_wpa_wpa2_enterprise_mixed_ssid_profile(\n                                profile_data=j)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"wpa_wpa2_enterprise_mixed_2g\"] = True\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"wpa_wpa2_enterprise_mixed_5g\"] = True\n                            allure.attach(body=str(creates_profile),\n                                          name=\"SSID Profile Created\")\n                        except Exception as e:\n                            print(e)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"wpa_wpa2_enterprise_mixed_2g\"] = False\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"wpa_wpa2_enterprise_mixed_5g\"] = False\n                            allure.attach(body=str(e),\n                                          name=\"SSID Profile Creation Failed\")\n            if mode == \"wpa3_enterprise_mixed\":\n                for j in profile_data[\"ssid\"][mode]:\n                    # print(j)\n                    if mode in get_markers.keys() and get_markers[mode]:\n                        try:\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                lf_dut_data.append(j)\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                lf_dut_data.append(j)\n                            for i in range(len(j[\"appliedRadios\"])):\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GU\", \"is5GHzU\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GL\", \"is5GHzL\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5G\", \"is5GHz\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"2G\", \"is2dot4GHz\")\n                            creates_profile = instantiate_profile.create_wpa3_enterprise_mixed_ssid_profile(\n                                profile_data=j)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"wpa3_enterprise_mixed_2g\"] = True\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"wpa3_enterprise_mixed_5g\"] = True\n                            allure.attach(body=str(creates_profile),\n                                          name=\"SSID Profile Created\")\n                        except Exception as e:\n                            print(e)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"wpa3_enterprise_mixed_2g\"] = False\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"wpa3_enterprise_mixed_5g\"] = False\n                            allure.attach(body=str(e),\n                                          name=\"SSID Profile Creation Failed\")\n    \n            if mode == \"wep\":\n                for j in profile_data[\"ssid\"][mode]:\n                    # print(j)\n                    if mode in get_markers.keys() and get_markers[mode]:\n                        try:\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                lf_dut_data.append(j)\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                lf_dut_data.append(j)\n                            for i in range(len(j[\"appliedRadios\"])):\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GU\", \"is5GHzU\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5GL\", \"is5GHzL\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"5G\", \"is5GHz\")\n                                j[\"appliedRadios\"][i] = j[\"appliedRadios\"][i].replace(\"2G\", \"is2dot4GHz\")\n                            creates_profile = instantiate_profile.create_wep_ssid_profile(profile_data=j)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"wwep_2g\"] = True\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"wep_5g\"] = True\n                            allure.attach(body=str(creates_profile),\n                                          name=\"SSID Profile Created\")\n                        except Exception as e:\n                            print(e)\n                            if j[\"appliedRadios\"].__contains__(\"2G\"):\n                                test_cases[\"wwep_2g\"] = False\n                            if j[\"appliedRadios\"].__contains__(\"5G\"):\n                                test_cases[\"wep_5g\"] = False\n                            allure.attach(body=str(e),\n                                          name=\"SSID Profile Creation Failed\")\n        # Equipment AP Profile Creation\n        try:\n            instantiate_profile.set_ap_profile(profile_data=profile_data['equipment_ap'])\n            test_cases[\"equipment_ap\"] = True\n            allure.attach(body=str(profile_data['equipment_ap']),\n                          name=\"Equipment AP Profile Created\")\n        except Exception as e:\n            print(e)\n            test_cases[\"equipment_ap\"] = False\n            allure.attach(body=str(e),\n                          name=\"Equipment AP Profile Creation Failed\")\n    \n        # Push the Equipment AP Profile to AP\n        try:\n            for i in get_equipment_id:\n                instantiate_profile.push_profile_old_method(equipment_id=i)\n        except Exception as e:\n            print(e)\n            print(\"failed to create AP Profile\")\n    \n        ap_ssh = get_apnos(get_configuration['access_point'][0], pwd=\"../libs/apnos/\")\n        # ssid_names = []\n        # for i in instantiate_profile.profile_creation_ids[\"ssid\"]:\n        #     ssid_names.append(instantiate_profile.get_ssid_name_by_profile_id(profile_id=i))\n        # ssid_names.sort()\n        ssid_names = []\n        for i in lf_dut_data:\n            ssid_names.append(i[\"ssid_name\"])\n        ssid_names.sort()\n        # This loop will check the VIF Config with cloud profile\n        vif_config = []\n        test_cases['vifc'] = False\n        for i in range(0, 18):\n            vif_config = list(ap_ssh.get_vif_config_ssids())\n            vif_config.sort()\n            print(vif_config)\n            print(ssid_names)\n            if ssid_names == vif_config:\n                test_cases['vifc'] = True\n                break\n            time.sleep(10)\n        allure.attach(body=str(\"VIF Config: \" + str(vif_config) + \"\\n\" + \"SSID Pushed from Controller: \" + str(ssid_names)),\n                      name=\"SSID Profiles in VIF Config and Controller: \")\n        ap_ssh = get_apnos(get_configuration['access_point'][0], pwd=\"../libs/apnos/\")\n    \n        # This loop will check the VIF Config with VIF State\n        test_cases['vifs'] = False\n        for i in range(0, 18):\n            vif_state = list(ap_ssh.get_vif_state_ssids())\n            vif_state.sort()\n            vif_config = list(ap_ssh.get_vif_config_ssids())\n            vif_config.sort()\n            print(vif_config)\n            print(vif_state)\n            if vif_state == vif_config:\n                test_cases['vifs'] = True\n                break\n            time.sleep(10)\n        allure.attach(body=str(\"VIF Config: \" + str(vif_config) + \"\\n\" + \"VIF State: \" + str(vif_state)),\n                      name=\"SSID Profiles in VIF Config and VIF State: \")\n    \n        ap_logs = ap_ssh.logread()\n        allure.attach(body=ap_logs, name=\"AP LOgs: \")\n        ssid_info = ap_ssh.get_ssid_info()\n        ssid_data = []\n        print(ssid_info)\n        band_mapping = ap_ssh.get_bssid_band_mapping()\n        print(band_mapping)\n        idx_mapping = {}\n        for i in range(0, len(ssid_info)):\n            if ssid_info[i][1] == \"OPEN\":\n                ssid_info[i].append(\"\")\n            if ssid_info[i][1] == \"OPEN\":\n                ssid = [\"ssid_idx=\" + str(i) + \" ssid=\" + ssid_info[i][3] + \" security=OPEN\" +\n                        \" password=\" + ssid_info[i][2] + \" bssid=\" + ssid_info[i][0]]\n                idx_mapping[str(i)] = [ssid_info[i][3], ssid_info[i][2], ssid_info[i][1], band_mapping[ssid_info[i][0]],\n                                       ssid_info[i][0]]\n    \n            if ssid_info[i][1] == \"WPA\":\n                ssid = [\"ssid_idx=\" + str(i) + \" ssid=\" + ssid_info[i][3] + \" security=WPA\" +\n                        \" password=\" + ssid_info[i][2] + \" bssid=\" + ssid_info[i][0]]\n                idx_mapping[str(i)] = [ssid_info[i][3], ssid_info[i][2], ssid_info[i][1], band_mapping[ssid_info[i][0]],\n                                       ssid_info[i][0]]\n            if ssid_info[i][1] == \"WPA2\":\n                ssid = [\"ssid_idx=\" + str(i) + \" ssid=\" + ssid_info[i][3] + \" security=WPA2\" +\n                        \" password=\" + ssid_info[i][2] + \" bssid=\" + ssid_info[i][0]]\n                idx_mapping[str(i)] = [ssid_info[i][3], ssid_info[i][2], ssid_info[i][1], band_mapping[ssid_info[i][0]],\n                                       ssid_info[i][0]]\n            if ssid_info[i][1] == \"WPA3_PERSONAL\":\n                ssid = [\"ssid_idx=\" + str(i) + \" ssid=\" + ssid_info[i][3] + \" security=WPA3\" +\n                        \" password=\" + ssid_info[i][2] + \" bssid=\" + ssid_info[i][0]]\n>               idx_mapping[str(i)] = [ssid_info[i][3], ssid_info[i][2], ssid_info[i][1], band_mapping[ssid_info[i][0]],\n                                       ssid_info[i][0]]\nE               KeyError: '02:03:7f:12:a0:a0'\n\ne2e/basic/conftest.py:597: KeyError",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ {
+    "name" : "lf_tools",
+    "time" : {
+      "start" : 1627269775847,
+      "stop" : 1627269784479,
+      "duration" : 8632
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "check_ap_firmware_cloud",
+    "time" : {
+      "start" : 1627269764842,
+      "stop" : 1627269764933,
+      "duration" : 91
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_markers",
+    "time" : {
+      "start" : 1627269775844,
+      "stop" : 1627269775847,
+      "duration" : 3
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "fe4cdcf103ab1a8f",
+      "name" : "Test Cases Requires: ",
+      "source" : "fe4cdcf103ab1a8f.attach",
+      "type" : "text/plain",
+      "size" : 378
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "upgrade_firmware",
+    "time" : {
+      "start" : 1627269764934,
+      "stop" : 1627269767517,
+      "duration" : 2583
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "82c38c627e4961ca",
+      "name" : "APNOS LIbrary: ",
+      "source" : "82c38c627e4961ca.attach",
+      "type" : "text/plain",
+      "size" : 313
+    }, {
+      "uid" : "a5d6a55357e55c23",
+      "name" : "openwrt_ctl Setup",
+      "source" : "a5d6a55357e55c23.attach",
+      "type" : "text/plain",
+      "size" : 9
+    }, {
+      "uid" : "493062fbac78754",
+      "name" : "get_active_firmware ",
+      "source" : "493062fbac78754.attach",
+      "type" : "text/plain",
+      "size" : 33
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 3,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "get_security_flags",
+    "time" : {
+      "start" : 1627269775844,
+      "stop" : 1627269775844,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "instantiate_access_point",
+    "time" : {
+      "start" : 1627269763111,
+      "stop" : 1627269764659,
+      "duration" : 1548
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "2db8dc04fa2e5178",
+      "name" : "added openwrtctl.py to :",
+      "source" : "2db8dc04fa2e5178.attach",
+      "type" : "text/plain",
+      "size" : 14
+    }, {
+      "uid" : "7455edf34cda9f12",
+      "name" : "APNOS LIbrary: ",
+      "source" : "7455edf34cda9f12.attach",
+      "type" : "text/plain",
+      "size" : 313
+    }, {
+      "uid" : "b755ad797f9e1a66",
+      "name" : "openwrt_ctl Setup",
+      "source" : "b755ad797f9e1a66.attach",
+      "type" : "text/plain",
+      "size" : 9
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 3,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "instantiate_profile",
+    "time" : {
+      "start" : 1627269775844,
+      "stop" : 1627269775844,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_test_run",
+    "time" : {
+      "start" : 1627269767517,
+      "stop" : 1627269770090,
+      "duration" : 2573
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "68f3c30f2b10bb7",
+      "name" : "APNOS LIbrary: ",
+      "source" : "68f3c30f2b10bb7.attach",
+      "type" : "text/plain",
+      "size" : 313
+    }, {
+      "uid" : "554e492f0d1f4911",
+      "name" : "openwrt_ctl Setup",
+      "source" : "554e492f0d1f4911.attach",
+      "type" : "text/plain",
+      "size" : 9
+    }, {
+      "uid" : "307854f6b0029dac",
+      "name" : "get_active_firmware ",
+      "source" : "307854f6b0029dac.attach",
+      "type" : "text/plain",
+      "size" : 33
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 3,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "instantiate_firmware",
+    "time" : {
+      "start" : 1627269764779,
+      "stop" : 1627269764779,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "testbed",
+    "time" : {
+      "start" : 1627269763110,
+      "stop" : 1627269763111,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "383e9928f696cfc2",
+      "name" : "Testbed Selected : ",
+      "source" : "383e9928f696cfc2.attach",
+      "type" : "text/plain",
+      "size" : 8
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "should_upgrade_firmware",
+    "time" : {
+      "start" : 1627269764933,
+      "stop" : 1627269764933,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_equipment_id",
+    "time" : {
+      "start" : 1627269764779,
+      "stop" : 1627269764841,
+      "duration" : 62
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_controller",
+    "time" : {
+      "start" : 1627269764660,
+      "stop" : 1627269764778,
+      "duration" : 118
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "efda09724f92a3aa",
+      "name" : "Controller Instantiated: ",
+      "source" : "efda09724f92a3aa.attach",
+      "type" : "text/plain",
+      "size" : 182
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "setup_vlan",
+    "time" : {
+      "start" : 1627269775844,
+      "stop" : 1627269775844,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "3000513142295803",
+      "name" : "VLAN Created: ",
+      "source" : "3000513142295803.attach",
+      "type" : "text/plain",
+      "size" : 5
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "update_report",
+    "time" : {
+      "start" : 1627269770090,
+      "stop" : 1627269770090,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "should_upload_firmware",
+    "time" : {
+      "start" : 1627269764933,
+      "stop" : 1627269764933,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_profiles",
+    "time" : {
+      "start" : 1627272605274,
+      "stop" : 1627272662353,
+      "duration" : 57079
+    },
+    "status" : "broken",
+    "statusMessage" : "KeyError: '02:03:7f:12:a0:a0'\n",
+    "statusTrace" : "  File \"/usr/local/lib/python3.8/site-packages/pluggy/callers.py\", line 187, in _multicall\n    res = hook_impl.function(*args)\n  File \"/usr/local/lib/python3.8/site-packages/_pytest/fixtures.py\", line 1126, in pytest_fixture_setup\n    result = call_fixture_func(fixturefunc, request, kwargs)\n  File \"/usr/local/lib/python3.8/site-packages/_pytest/fixtures.py\", line 925, in call_fixture_func\n    fixture_result = next(generator)\n  File \"/wlan-testing/tests/e2e/basic/conftest.py\", line 597, in setup_profiles\n    idx_mapping[str(i)] = [ssid_info[i][3], ssid_info[i][2], ssid_info[i][1], band_mapping[ssid_info[i][0]],\n",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "839b632fcfbefa41",
+      "name" : "RF Profile Created : wifi6",
+      "source" : "839b632fcfbefa41.attach",
+      "type" : "text/plain",
+      "size" : 42
+    }, {
+      "uid" : "83b6df607b5db4d7",
+      "name" : "SSID Profile Created",
+      "source" : "83b6df607b5db4d7.attach",
+      "type" : "text/plain",
+      "size" : 2820
+    }, {
+      "uid" : "a4dd5aea583fa6fc",
+      "name" : "SSID Profile Created",
+      "source" : "a4dd5aea583fa6fc.attach",
+      "type" : "text/plain",
+      "size" : 2816
+    }, {
+      "uid" : "bdfc1c5cc36ed67b",
+      "name" : "SSID Profile Created",
+      "source" : "bdfc1c5cc36ed67b.attach",
+      "type" : "text/plain",
+      "size" : 2829
+    }, {
+      "uid" : "e070bd893482457a",
+      "name" : "SSID Profile Created",
+      "source" : "e070bd893482457a.attach",
+      "type" : "text/plain",
+      "size" : 2825
+    }, {
+      "uid" : "948474908087568b",
+      "name" : "SSID Profile Created",
+      "source" : "948474908087568b.attach",
+      "type" : "text/plain",
+      "size" : 2832
+    }, {
+      "uid" : "948d100bdc31678a",
+      "name" : "SSID Profile Created",
+      "source" : "948d100bdc31678a.attach",
+      "type" : "text/plain",
+      "size" : 2828
+    }, {
+      "uid" : "105496e8f6200a79",
+      "name" : "Equipment AP Profile Created",
+      "source" : "105496e8f6200a79.attach",
+      "type" : "text/plain",
+      "size" : 46
+    }, {
+      "uid" : "bad47275ec05aeb7",
+      "name" : "APNOS LIbrary: ",
+      "source" : "bad47275ec05aeb7.attach",
+      "type" : "text/plain",
+      "size" : 313
+    }, {
+      "uid" : "de1031f39a684e5e",
+      "name" : "openwrt_ctl Setup",
+      "source" : "de1031f39a684e5e.attach",
+      "type" : "text/plain",
+      "size" : 9
+    }, {
+      "uid" : "c2ee2b5e66e3b17b",
+      "name" : "vif config Output Msg: ",
+      "source" : "c2ee2b5e66e3b17b.attach",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "ed9254ef667d3e97",
+      "name" : "vif config Err Msg: ",
+      "source" : "ed9254ef667d3e97.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "167d4149b070d47",
+      "name" : "get_vif_config_ssids ",
+      "source" : "167d4149b070d47.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "de42c50143bc89a7",
+      "name" : "vif config Output Msg: ",
+      "source" : "de42c50143bc89a7.attach",
+      "type" : "text/plain",
+      "size" : 10224
+    }, {
+      "uid" : "b383b9dfe0a2c90",
+      "name" : "vif config Err Msg: ",
+      "source" : "b383b9dfe0a2c90.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "15fe441c320ef635",
+      "name" : "get_vif_config_ssids ",
+      "source" : "15fe441c320ef635.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "320453ba32ba1267",
+      "name" : "SSID Profiles in VIF Config and Controller: ",
+      "source" : "320453ba32ba1267.attach",
+      "type" : "text/plain",
+      "size" : 290
+    }, {
+      "uid" : "6ddf0cf73f147e06",
+      "name" : "APNOS LIbrary: ",
+      "source" : "6ddf0cf73f147e06.attach",
+      "type" : "text/plain",
+      "size" : 313
+    }, {
+      "uid" : "1a6e94c64bc34173",
+      "name" : "openwrt_ctl Setup",
+      "source" : "1a6e94c64bc34173.attach",
+      "type" : "text/plain",
+      "size" : 9
+    }, {
+      "uid" : "23f463cdd0f8e835",
+      "name" : "vif state Output Msg: ",
+      "source" : "23f463cdd0f8e835.attach",
+      "type" : "text/plain",
+      "size" : 62
+    }, {
+      "uid" : "866598c10cb7a683",
+      "name" : "vif state Err Msg: ",
+      "source" : "866598c10cb7a683.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "6f5a31acf33c17c",
+      "name" : "get_vif_state_ssids ",
+      "source" : "6f5a31acf33c17c.attach",
+      "type" : "text/plain",
+      "size" : 2
+    }, {
+      "uid" : "9d0316fe35897db5",
+      "name" : "vif config Output Msg: ",
+      "source" : "9d0316fe35897db5.attach",
+      "type" : "text/plain",
+      "size" : 10224
+    }, {
+      "uid" : "4369326965946eee",
+      "name" : "vif config Err Msg: ",
+      "source" : "4369326965946eee.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "2e01476bb1a2b3fd",
+      "name" : "get_vif_config_ssids ",
+      "source" : "2e01476bb1a2b3fd.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "74c958e914ba4831",
+      "name" : "vif state Output Msg: ",
+      "source" : "74c958e914ba4831.attach",
+      "type" : "text/plain",
+      "size" : 11494
+    }, {
+      "uid" : "d65456d4de42fb2a",
+      "name" : "vif state Err Msg: ",
+      "source" : "d65456d4de42fb2a.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "a3b907b6ff2d9878",
+      "name" : "get_vif_state_ssids ",
+      "source" : "a3b907b6ff2d9878.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "93b57beb513689bf",
+      "name" : "vif config Output Msg: ",
+      "source" : "93b57beb513689bf.attach",
+      "type" : "text/plain",
+      "size" : 10224
+    }, {
+      "uid" : "30702a169942cfcd",
+      "name" : "vif config Err Msg: ",
+      "source" : "30702a169942cfcd.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "76eabcbbd61e1215",
+      "name" : "get_vif_config_ssids ",
+      "source" : "76eabcbbd61e1215.attach",
+      "type" : "text/plain",
+      "size" : 124
+    }, {
+      "uid" : "621db604786fe60c",
+      "name" : "SSID Profiles in VIF Config and VIF State: ",
+      "source" : "621db604786fe60c.attach",
+      "type" : "text/plain",
+      "size" : 272
+    }, {
+      "uid" : "e05d4db8c2ff1170",
+      "name" : "AP LOgs: ",
+      "source" : "e05d4db8c2ff1170.attach",
+      "type" : "text/plain",
+      "size" : 68394
+    }, {
+      "uid" : "3a0962cb78d2155a",
+      "name" : "vif state Output Msg: ",
+      "source" : "3a0962cb78d2155a.attach",
+      "type" : "text/plain",
+      "size" : 11494
+    }, {
+      "uid" : "1212f70ad2494235",
+      "name" : "vif state Err Msg: ",
+      "source" : "1212f70ad2494235.attach",
+      "type" : "text/plain",
+      "size" : 109
+    }, {
+      "uid" : "e957992b2cd36169",
+      "name" : "iwinfo Output Msg: ",
+      "source" : "e957992b2cd36169.attach",
+      "type" : "text/plain",
+      "size" : 1079
+    }, {
+      "uid" : "806821f893b07d6",
+      "name" : "iwinfo config Err Msg: ",
+      "source" : "806821f893b07d6.attach",
+      "type" : "text/plain",
+      "size" : 109
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 37,
+    "shouldDisplayMessage" : true,
+    "hasContent" : true
+  }, {
+    "name" : "get_latest_firmware",
+    "time" : {
+      "start" : 1627269764933,
+      "stop" : 1627269764933,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "create_lanforge_chamberview_dut",
+    "time" : {
+      "start" : 1627269784479,
+      "stop" : 1627269787435,
+      "duration" : 2956
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "test_cases",
+    "time" : {
+      "start" : 1627269770091,
+      "stop" : 1627269770091,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "radius_info",
+    "time" : {
+      "start" : 1627269787435,
+      "stop" : 1627269787435,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "f3104407f1c1d6ba",
+      "name" : "Radius server Info: ",
+      "source" : "f3104407f1c1d6ba.attach",
+      "type" : "text/plain",
+      "size" : 126
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "get_configuration",
+    "time" : {
+      "start" : 1627269763111,
+      "stop" : 1627269763111,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "531a65cbf9fbee37",
+      "name" : "Testbed Selected: ",
+      "source" : "531a65cbf9fbee37.attach",
+      "type" : "text/plain",
+      "size" : 8
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "get_apnos",
+    "time" : {
+      "start" : 1627269763111,
+      "stop" : 1627269763111,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "afterStages" : [ {
+    "name" : "lf_tools::0",
+    "time" : {
+      "start" : 1627278219989,
+      "stop" : 1627278219989,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "check_ap_firmware_cloud::0",
+    "time" : {
+      "start" : 1627278220087,
+      "stop" : 1627278220087,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_markers::0",
+    "time" : {
+      "start" : 1627278219997,
+      "stop" : 1627278219998,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "upgrade_firmware::0",
+    "time" : {
+      "start" : 1627278220049,
+      "stop" : 1627278220049,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_security_flags::0",
+    "time" : {
+      "start" : 1627278220013,
+      "stop" : 1627278220013,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "instantiate_access_point::0",
+    "time" : {
+      "start" : 1627278220176,
+      "stop" : 1627278220176,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "instantiate_profile::0",
+    "time" : {
+      "start" : 1627278220021,
+      "stop" : 1627278220021,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_test_run::0",
+    "time" : {
+      "start" : 1627278220038,
+      "stop" : 1627278220038,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "instantiate_firmware::0",
+    "time" : {
+      "start" : 1627278220131,
+      "stop" : 1627278220131,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "testbed::0",
+    "time" : {
+      "start" : 1627278220357,
+      "stop" : 1627278220357,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "should_upgrade_firmware::0",
+    "time" : {
+      "start" : 1627278220065,
+      "stop" : 1627278220065,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_equipment_id::0",
+    "time" : {
+      "start" : 1627278220116,
+      "stop" : 1627278220116,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_controller::1",
+    "time" : {
+      "start" : 1627278220167,
+      "stop" : 1627278220167,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_controller::teardown_controller",
+    "time" : {
+      "start" : 1627278220167,
+      "stop" : 1627278220168,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "75acf6532ef2562d",
+      "name" : "Controller Teardown: ",
+      "source" : "75acf6532ef2562d.attach",
+      "type" : "text/plain",
+      "size" : 182
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "setup_vlan::0",
+    "time" : {
+      "start" : 1627278220028,
+      "stop" : 1627278220028,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "update_report::0",
+    "time" : {
+      "start" : 1627278220029,
+      "stop" : 1627278220029,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "should_upload_firmware::0",
+    "time" : {
+      "start" : 1627278220058,
+      "stop" : 1627278220058,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_latest_firmware::0",
+    "time" : {
+      "start" : 1627278220079,
+      "stop" : 1627278220080,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "test_cases::0",
+    "time" : {
+      "start" : 1627278220030,
+      "stop" : 1627278220030,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "radius_info::0",
+    "time" : {
+      "start" : 1627278219968,
+      "stop" : 1627278219968,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_configuration::0",
+    "time" : {
+      "start" : 1627278220298,
+      "stop" : 1627278220298,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_apnos::0",
+    "time" : {
+      "start" : 1627278220205,
+      "stop" : 1627278220205,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "labels" : [ {
+    "name" : "feature",
+    "value" : "VLAN MODE CLIENT CONNECTIVITY"
+  }, {
+    "name" : "tag",
+    "value" : "general"
+  }, {
+    "name" : "tag",
+    "value" : "setup"
+  }, {
+    "name" : "tag",
+    "value" : "vlan"
+  }, {
+    "name" : "tag",
+    "value" : "sanity"
+  }, {
+    "name" : "tag",
+    "value" : "@pytest.mark.usefixtures('setup_profiles')"
+  }, {
+    "name" : "tag",
+    "value" : "suiteB"
+  }, {
+    "name" : "parentSuite",
+    "value" : "e2e.basic.configuration_tests.vlan_mode"
+  }, {
+    "name" : "suite",
+    "value" : "test_general_security_modes_configuration"
+  }, {
+    "name" : "subSuite",
+    "value" : "TestVLANModeConnectivitySuiteB"
+  }, {
+    "name" : "host",
+    "value" : "testing-93-687sn"
+  }, {
+    "name" : "thread",
+    "value" : "6-MainThread"
+  }, {
+    "name" : "framework",
+    "value" : "pytest"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "package",
+    "value" : "e2e.basic.configuration_tests.vlan_mode.test_general_security_modes_configuration"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ {
+    "name" : "setup_profiles",
+    "value" : "{'mode': 'VLAN', 'ssid_modes': {'wpa3_personal': [{'ssid_name': 'ssid_wpa3_p_2g', 'appliedRadios': ['is2dot4GHz'], 'security_key': 'something', 'profile_name': 'basic-02-SSID-wpa3_personal-0-VLAN', 'mode': 'BRIDGE', 'vlan': 100}, {'ssid_name': 'ssid_wpa3_p_5g', 'appliedRadios': ['is5GHz'], 'security_key': 'something', 'profile_name': 'basic-02-SSID-wpa3_personal-1-VLAN', 'mode': 'BRIDGE', 'vlan': 100}], 'wpa3_personal_mixed': [{'ssid_name': 'ssid_wpa3_p_m_2g', 'appliedRadios': ['is2dot4GHz'], 'security_key': 'something', 'profile_name': 'basic-02-SSID-wpa3_personal_mixed-0-VLAN', 'mode': 'BRIDGE', 'vlan': 100}, {'ssid_name': 'ssid_wpa3_p_m_5g', 'appliedRadios': ['is5GHz'], 'security_key': 'something', 'profile_name': 'basic-02-SSID-wpa3_personal_mixed-1-VLAN', 'mode': 'BRIDGE', 'vlan': 100}], 'wpa_wpa2_personal_mixed': [{'ssid_name': 'ssid_wpa_wpa2_p_m_2g', 'appliedRadios': ['is2dot4GHz'], 'security_key': 'something', 'profile_name': 'basic-02-SSID-wpa_wpa2_personal_mixed-0-VLAN', 'mode': 'BRIDGE', 'vlan': 100}, {'ssid_name': 'ssid_wpa_wpa2_p_m_5g', 'appliedRadios': ['is5GHz'], 'security_key': 'something', 'profile_name': 'basic-02-SSID-wpa_wpa2_personal_mixed-1-VLAN', 'mode': 'BRIDGE', 'vlan': 100}]}, 'rf': {}, 'radius': False}"
+  } ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ {
+      "name" : "Test defects",
+      "matchedStatuses" : [ ],
+      "flaky" : false
+    } ],
+    "history" : {
+      "statistic" : {
+        "failed" : 0,
+        "broken" : 3,
+        "skipped" : 0,
+        "passed" : 11,
+        "unknown" : 0,
+        "total" : 14
+      },
+      "items" : [ {
+        "uid" : "c617006fb8bad1b0",
+        "status" : "passed",
+        "time" : {
+          "start" : 1627184621981,
+          "stop" : 1627184621982,
+          "duration" : 1
+        }
+      }, {
+        "uid" : "27b620044a5d86ce",
+        "status" : "broken",
+        "statusDetails" : "socket.timeout: timed out",
+        "time" : {
+          "start" : 1626926371803,
+          "stop" : 1626926371803,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "b8f3660dd6d94eeb",
+        "status" : "passed",
+        "time" : {
+          "start" : 1626236321582,
+          "stop" : 1626236321583,
+          "duration" : 1
+        }
+      }, {
+        "uid" : "874298fb9044a5a",
+        "status" : "passed",
+        "time" : {
+          "start" : 1625584844670,
+          "stop" : 1625584844670,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "f0f3dfac9df17a29",
+        "status" : "passed",
+        "time" : {
+          "start" : 1625383522777,
+          "stop" : 1625383522777,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "c499757bf852c00f",
+        "status" : "passed",
+        "time" : {
+          "start" : 1625297065256,
+          "stop" : 1625297065256,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "915cf1b2aa7f0a0c",
+        "status" : "passed",
+        "time" : {
+          "start" : 1625037873115,
+          "stop" : 1625037873115,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "1825111bd4a3ee16",
+        "status" : "passed",
+        "time" : {
+          "start" : 1624670801084,
+          "stop" : 1624670801084,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "114260f7ffc165",
+        "status" : "passed",
+        "time" : {
+          "start" : 1624606399071,
+          "stop" : 1624606399071,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "98362d76a6263a1b",
+        "status" : "passed",
+        "time" : {
+          "start" : 1624584454789,
+          "stop" : 1624584454790,
+          "duration" : 1
+        }
+      }, {
+        "uid" : "a3807e59926a249d",
+        "status" : "broken",
+        "statusDetails" : "swagger_client.rest.ApiException: (500)\nReason: \nHTTP response headers: HTTPHeaderDict({'Date': 'Thu, 24 Jun 2021 20:24:16 GMT', 'Content-Type': 'application/json', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, PATCH, PUT, HEAD, GET, OPTIONS, DELETE', 'Access-Control-Max-Age': '10', 'Access-Control-Allow-Headers': 'x-requested-with,Content-Type,content-type,Authorization', 'Access-Control-Allow-Credentials': 'true', 'X-Content-Type-Options': 'nosniff', 'X-XSS-Protection': '1; mode=block', 'Strict-Transport-Security': 'max-age=31536000 ; includeSubDomains', 'X-Frame-Options': 'DENY', 'Cache-Control': 'no-cache, no-store, max-age=0, must-revalidate', 'Expires': '0', 'Pragma': 'no-cache', 'vary': 'accept-encoding'})\nHTTP response body: {\n  \"model_type\" : \"JsonSerializedException\",\n  \"exType\" : \"IllegalStateException\",\n  \"error\" : \"Profile with id 1834 is in use by 1 network equipment and cannot be deleted\",\n  \"path\" : \"/portal/profile?profileId=1834\",\n  \"timestamp\" : 1624566256628\n}",
+        "time" : {
+          "start" : 1624566257558,
+          "stop" : 1624566257558,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "952bf4dc893a4e70",
+        "status" : "passed",
+        "time" : {
+          "start" : 1624565883541,
+          "stop" : 1624565883541,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "22730a987722d242",
+        "status" : "passed",
+        "time" : {
+          "start" : 1624542976498,
+          "stop" : 1624542976498,
+          "duration" : 0
+        }
+      } ]
+    },
+    "tags" : [ "general", "@pytest.mark.usefixtures('setup_profiles')", "vlan", "suiteB", "setup", "sanity" ]
+  },
+  "source" : "709f84c0f7f783a3.json",
+  "parameterValues" : [ "{'mode': 'VLAN', 'ssid_modes': {'wpa3_personal': [{'ssid_name': 'ssid_wpa3_p_2g', 'appliedRadios': ['is2dot4GHz'], 'security_key': 'something', 'profile_name': 'basic-02-SSID-wpa3_personal-0-VLAN', 'mode': 'BRIDGE', 'vlan': 100}, {'ssid_name': 'ssid_wpa3_p_5g', 'appliedRadios': ['is5GHz'], 'security_key': 'something', 'profile_name': 'basic-02-SSID-wpa3_personal-1-VLAN', 'mode': 'BRIDGE', 'vlan': 100}], 'wpa3_personal_mixed': [{'ssid_name': 'ssid_wpa3_p_m_2g', 'appliedRadios': ['is2dot4GHz'], 'security_key': 'something', 'profile_name': 'basic-02-SSID-wpa3_personal_mixed-0-VLAN', 'mode': 'BRIDGE', 'vlan': 100}, {'ssid_name': 'ssid_wpa3_p_m_5g', 'appliedRadios': ['is5GHz'], 'security_key': 'something', 'profile_name': 'basic-02-SSID-wpa3_personal_mixed-1-VLAN', 'mode': 'BRIDGE', 'vlan': 100}], 'wpa_wpa2_personal_mixed': [{'ssid_name': 'ssid_wpa_wpa2_p_m_2g', 'appliedRadios': ['is2dot4GHz'], 'security_key': 'something', 'profile_name': 'basic-02-SSID-wpa_wpa2_personal_mixed-0-VLAN', 'mode': 'BRIDGE', 'vlan': 100}, {'ssid_name': 'ssid_wpa_wpa2_p_m_5g', 'appliedRadios': ['is5GHz'], 'security_key': 'something', 'profile_name': 'basic-02-SSID-wpa_wpa2_personal_mixed-1-VLAN', 'mode': 'BRIDGE', 'vlan': 100}]}, 'rf': {}, 'radius': False}" ]
+}
