@@ -283,6 +283,9 @@ class UProfileUtility:
         print("ssid data : ", ssid_data)
         ssid_info = {'name': ssid_data["ssid_name"], "bss-mode": "ap", "wifi-bands": [], "services": ["wifi-frames"]}
         for options in ssid_data:
+            if options == "multi-psk":
+                ssid_info[options] = ssid_data[options]
+                print("hi",ssid_info)
             if options == "rate-limit":
                 ssid_info[options] = ssid_data[options]
         for i in ssid_data["appliedRadios"]:
@@ -372,12 +375,30 @@ if __name__ == '__main__':
         'password': 'openwifi',
     }
     obj = Controller(controller_data=controller)
-    # profile = UProfileUtility(sdk_client=obj)
-    # profile.set_mode(mode="BRIDGE")
-    # profile.set_radio_config()
+    profile = UProfileUtility(sdk_client=obj)
+    profile.set_mode(mode="BRIDGE")
+    profile.set_radio_config()
     # ssid = {"ssid_name": "ssid_wpa2_2g", "appliedRadios": ["2G"], "security": "psk", "security_key": "something",
-    #         "vlan": 100, "rate-limit": {"ingress-rate": 50, "egress-rate": 50}}
+    #        "vlan": 100, "rate-limit": {"ingress-rate": 50, "egress-rate": 50}}
     # profile.add_ssid(ssid_data=ssid)
     # profile.push_config(serial_number="903cb39d6918")
     # print(obj.get_devices())
+    ssid = {"ssid_name": "ssid_wpa2_2g_br",
+     "appliedRadios": ["2G"],
+     "security" : "psk2",
+     "security_key": "something",
+     "multi-psk": [
+         {
+             "key": "aaaaaaaa",
+             "vlan-id": 100
+         },
+         {
+             "key": "bbbbbbbb"
+         }
+     ]
+
+     }
+    profile.add_ssid(ssid_data=ssid)
+    profile.push_config(serial_number="903cb39d6918")
+    print(obj.get_devices())
     obj.logout()
