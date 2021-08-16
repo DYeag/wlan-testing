@@ -38,6 +38,7 @@ from lf_dataplane_test import DataplaneTest
 from lf_ap_auto_test import ApAutoTest
 from csv_to_influx import CSVtoInflux
 from influx2 import RecordInflux
+from lf_multipsk import MultiPsk
 
 
 class RunTest:
@@ -470,6 +471,45 @@ class RunTest:
                              target_csv=self.local_report_path + report_name + "/kpi.csv")
         influx.post_to_influx()
         return self.rvr_obj
+
+    def multipsk(self, ssid="[BLANK]", input_dataset=None, security=None, mode="BRIDGE", vlan_id=100):
+        if mode == "BRIDGE":
+            self.upstream_port = self.upstream_port
+        elif mode == "NAT":
+            self.upstream_port = self.upstream_port
+        elif mode == "VLAN":
+            self.upstream_port = self.upstream_port + "." + str(vlan_id)
+
+        self.multi_obj = MultiPsk(host=self.lanforge_ip,
+                         port=self.lanforge_port,
+                         ssid=ssid,
+                         input=input_dataset,
+                         security=security)
+
+        self.multi_obj.build()
+        self.multi_obj.start()
+        time.sleep(60)
+        self.multi_obj.monitor_vlan_ip()
+        self.multi_obj.get_sta_ip()
+        result = self.multi_obj.compare_ip()
+        print("checking for vlan ips")
+        if result == "Pass":
+            print("Test pass")
+        else:
+            print("Test Fail")
+        print("now checking ip for non vlan port")
+        self.multi_obj.monitor_non_vlan_ip()
+        self.multi_obj.get_non_vlan_sta_ip()
+        result1 = self.multi_obj.compare_nonvlan_ip()
+        if result1 == "Pass":
+            print("Test passed for non vlan ip ")
+        else:
+            print("Test failed for non vlan ip")
+        print("all result gathered")
+        print("clean up")
+        self.multi_obj.postcleanup()
+
+
 
 
 if __name__ == '__main__':
