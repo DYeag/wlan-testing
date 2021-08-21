@@ -71,6 +71,8 @@ class TestNATModeConnectivitySuiteA(object):
                                                      passkey=security_key, mode=mode, band=band,
                                                      station_name=station_names_twog, vlan_id=vlan)
 
+        if not result:
+            pytest.exit("test failed")
         assert result
 
     @pytest.mark.open
@@ -96,6 +98,8 @@ class TestNATModeConnectivitySuiteA(object):
                                                      passkey=security_key, mode=mode, band=band,
                                                      station_name=station_names_fiveg, vlan_id=vlan)
 
+        if not result:
+            pytest.exit("test failed")
         assert result
 
     @pytest.mark.sanity_light
@@ -123,6 +127,8 @@ class TestNATModeConnectivitySuiteA(object):
                                                      station_name=station_names_twog, vlan_id=vlan)
         if not result:
             pytest.xfail("ssid issue")
+        if not result:
+            pytest.exit("test failed")
         assert result
 
     @pytest.mark.sanity_light
@@ -150,6 +156,8 @@ class TestNATModeConnectivitySuiteA(object):
                                                      station_name=station_names_fiveg, vlan_id=vlan)
         if not result:
             pytest.xfail("ssid issue")
+        if not result:
+            pytest.exit("test failed")
         assert result
 
     @pytest.mark.sanity_light
@@ -176,6 +184,8 @@ class TestNATModeConnectivitySuiteA(object):
                                                      passkey=security_key, mode=mode, band=band,
                                                      station_name=station_names_twog, vlan_id=vlan)
 
+        if not result:
+            pytest.exit("test failed")
         assert result
 
     @pytest.mark.sanity_light
@@ -203,6 +213,8 @@ class TestNATModeConnectivitySuiteA(object):
                                                      passkey=security_key, mode=mode, band=band,
                                                      station_name=station_names_fiveg, vlan_id=vlan)
 
+        if not result:
+            pytest.exit("test failed")
         assert result
 
 
@@ -265,6 +277,8 @@ class TestNATModeConnectivitySuiteB(object):
                                                      passkey=security_key, mode=mode, band=band,
                                                      station_name=station_names_twog, vlan_id=vlan)
 
+        if not result:
+            pytest.exit("test failed")
         assert result
 
     @pytest.mark.wpa3_personal
@@ -290,6 +304,8 @@ class TestNATModeConnectivitySuiteB(object):
                                                      passkey=security_key, mode=mode, band=band,
                                                      station_name=station_names_fiveg, vlan_id=vlan)
 
+        if not result:
+            pytest.exit("test failed")
         assert result
 
     @pytest.mark.wpa3_personal_mixed
@@ -317,6 +333,8 @@ class TestNATModeConnectivitySuiteB(object):
                                                      passkey=security_key, mode=mode, band=band,
                                                      station_name=station_names_twog, vlan_id=vlan)
 
+        if not result:
+            pytest.exit("test failed")
         assert result
 
     @pytest.mark.wpa3_personal_mixed
@@ -343,6 +361,8 @@ class TestNATModeConnectivitySuiteB(object):
                                                      passkey=security_key, mode=mode, band=band,
                                                      station_name=station_names_fiveg, vlan_id=vlan)
 
+        if not result:
+            pytest.exit("test failed")
         assert result
 
     @pytest.mark.wpa_wpa2_personal_mixed
@@ -371,6 +391,8 @@ class TestNATModeConnectivitySuiteB(object):
                                                      passkey=security_key, mode=mode, band=band,
                                                      station_name=station_names_twog, vlan_id=vlan)
 
+        if not result:
+            pytest.exit("test failed")
         assert result
 
     @pytest.mark.wpa_wpa2_personal_mixed
@@ -396,6 +418,8 @@ class TestNATModeConnectivitySuiteB(object):
         passes, result = lf_test.Client_Connectivity(ssid=ssid_name, security=security, extra_securities=extra_secu,
                                                      passkey=security_key, mode=mode, band=band,
                                                      station_name=station_names_fiveg, vlan_id=vlan)
+        if not result:
+            pytest.exit("test failed")
         assert result
 
 

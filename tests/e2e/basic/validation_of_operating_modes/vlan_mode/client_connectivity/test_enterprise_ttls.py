@@ -54,6 +54,8 @@ class TestVLANModeEnterpriseTTLSSuiteOne(object):
                                      eap=eap, ttls_passwd=ttls_passwd, identity=identity,
                                      station_name=station_names_twog, vlan_id=vlan)
 
+        if not passes:
+            pytest.exit("test failed")
         assert passes
 
     @pytest.mark.wpa_enterprise
@@ -79,6 +81,8 @@ class TestVLANModeEnterpriseTTLSSuiteOne(object):
                                      eap=eap, ttls_passwd=ttls_passwd, identity=identity,
                                      station_name=station_names_fiveg, vlan_id=vlan)
 
+        if not passes:
+            pytest.exit("test failed")
         assert passes
 
     @pytest.mark.uc_sanity
@@ -106,6 +110,8 @@ class TestVLANModeEnterpriseTTLSSuiteOne(object):
                                      eap=eap, ttls_passwd=ttls_passwd, identity=identity,
                                      station_name=station_names_twog, vlan_id=vlan)
 
+        if not passes:
+            pytest.exit("test failed")
         assert passes
 
     @pytest.mark.uc_sanity
@@ -133,6 +139,8 @@ class TestVLANModeEnterpriseTTLSSuiteOne(object):
                                      eap=eap, ttls_passwd=ttls_passwd, identity=identity,
                                      station_name=station_names_fiveg, vlan_id=vlan)
 
+        if not passes:
+            pytest.exit("test failed")
         assert passes
 
     @pytest.mark.wpa3_enterprise
@@ -157,6 +165,8 @@ class TestVLANModeEnterpriseTTLSSuiteOne(object):
                                      eap=eap, ttls_passwd=ttls_passwd, identity=identity,
                                      station_name=station_names_twog, vlan_id=vlan)
 
+        if not passes:
+            pytest.exit("test failed")
         assert passes
 
     @pytest.mark.wpa3_enterprise
@@ -181,6 +191,8 @@ class TestVLANModeEnterpriseTTLSSuiteOne(object):
                                      eap=eap, ttls_passwd=ttls_passwd, identity=identity,
                                      station_name=station_names_fiveg, vlan_id=vlan)
 
+        if not passes:
+            pytest.exit("test failed")
         assert passes
 
 
@@ -232,6 +244,8 @@ class TestVLANModeEnterpriseTTLSSuiteTwo(object):
                                      eap=eap, ttls_passwd=ttls_passwd, identity=identity,
                                      station_name=station_names_twog, vlan_id=vlan)
 
+        if not passes:
+            pytest.exit("test failed")
         assert passes
 
     @pytest.mark.wpa_wpa2_enterprise_mixed
@@ -257,6 +271,8 @@ class TestVLANModeEnterpriseTTLSSuiteTwo(object):
                                      eap=eap, ttls_passwd=ttls_passwd, identity=identity,
                                      station_name=station_names_fiveg, vlan_id=vlan)
 
+        if not passes:
+            pytest.exit("test failed")
         assert passes
 
     @pytest.mark.wpa3_enterprise_mixed
@@ -281,6 +297,8 @@ class TestVLANModeEnterpriseTTLSSuiteTwo(object):
                                      eap=eap, ttls_passwd=ttls_passwd, identity=identity,
                                      station_name=station_names_twog, vlan_id=vlan)
 
+        if not passes:
+            pytest.exit("test failed")
         assert passes
 
     @pytest.mark.wpa3_enterprise_mixed
@@ -306,4 +324,6 @@ class TestVLANModeEnterpriseTTLSSuiteTwo(object):
                                      eap=eap, ttls_passwd=ttls_passwd, identity=identity,
                                      station_name=station_names_fiveg, vlan_id=vlan)
 
+        if not passes:
+            pytest.exit("test failed")
         assert passes
