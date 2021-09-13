@@ -1,0 +1,931 @@
+{
+  "uid" : "823d5e604c91923d",
+  "name" : "test_PassPointConnection_5g_OPEN[setup_profiles0]",
+  "fullName" : "e2e.interOp.iOS.PassPoint.test_PassPointConnection.TestPassPointConnection#test_PassPointConnection_5g_OPEN",
+  "historyId" : "9d9c14f1c9943a5b5a401e1c585eb553",
+  "time" : {
+    "start" : 1631504809636,
+    "stop" : 1631504854252,
+    "duration" : 44616
+  },
+  "status" : "failed",
+  "statusMessage" : "AssertionError",
+  "statusTrace" : "request = <FixtureRequest for <Function test_PassPointConnection_5g_OPEN[setup_profiles0]>>\nWifiNameSSID = 'ssid_open_5g', WifiPass = '[BLANK]'\nsetup_perfectoMobile = (<appium.webdriver.webdriver.WebDriver (session=\"10c89288-40d6-4ae0-b608-2691f24c35b7\")>, <perfecto.client.PerfectoReportiumClient.PerfectoReportiumClient object at 0x7f930c312f40>)\nconnData = {'bundleId-iOS-Ping': 'com.deftapps.ping', 'bundleId-iOS-Settings': 'com.apple.Preferences', 'netAnalyzer-inter-Con-Xpath': \"//*[@label='Network Connected']/parent::*/XCUIElementTypeButton\"}\n\n    def set_APconnMobileDevice_iOS(request, WifiNameSSID, WifiPass, setup_perfectoMobile, connData):\n        consoleOutput = \"\"\n    \n        print(\"\\n-------------------------------------\")\n        print(\"Select Wifi/AccessPoint Connection\")\n        print(\"-------------------------------------\")\n    \n        reportFlag = True\n    \n        print(\"Verifying Wifi/AP Connection Details....\")\n        report = setup_perfectoMobile[1]\n        driver = setup_perfectoMobile[0]\n    \n        report.step_start(\"Switching Driver Context\")\n        print(\"Switching Context to Native\")\n        #contexts = driver.contexts\n        #print(contexts)\n        driver.switch_to.context('NATIVE_APP')\n        #driver.switch_to.context(contexts[0])\n    \n        print(WifiNameSSID)\n        report.step_start(\"Set Wifi Network to \" + WifiNameSSID)\n        #Open Settings Application\n        openApp(connData[\"bundleId-iOS-Settings\"], setup_perfectoMobile)\n    \n        try:\n            print(\"Verifying Connected Wifi Connection\")\n            report.step_start(\"Verifying Connected Wifi Connection\")\n            element = driver.find_element_by_xpath(\"//XCUIElementTypeCell[@name='Wi-Fi']/XCUIElementTypeStaticText[2]\")\n            Wifi_AP_Name = element.text\n        except NoSuchElementException:\n            print(\"Exception: Verify Xpath - UpdateXpath\")\n            #NEED to fail if Wifi AP NAME isn't in the approved list AKA 5g & 2g.\n            #print(\"Wifi Name Matches - Already Connected To: \" + Wifi_AP_Name)\n            #print(\"Wifi Name Matches - Already Connected To: \" + WifiName)\n    \n        if Wifi_AP_Name.__eq__(WifiNameSSID):\n            print(\"Wifi Name Matches - Already Connected To: \" + Wifi_AP_Name)\n    \n            #Verify if Ap is connected with Wifi\n            report.step_start(\"Verify Wifi Connection Status..\")\n            #print(\"Click Wifi Connection..\")\n            element.click()\n    \n            #Verifies if AP is connected to Wifi status\n            #print(\"Verify Wifi Connection Status..\")\n            try:\n                report.step_start(\"Verify Wifi Connected Status\")\n                WifiXpath = \"//*[@label='selected']/parent::*/parent::*/XCUIElementTypeStaticText[@label='\"+ Wifi_AP_Name + \"']\"\n                elementWifName = driver.find_element_by_xpath(WifiXpath)\n            except NoSuchElementException:\n                reportFlag = False\n                assert reportFlag\n    \n            #Check AP Internet Error Msg\n            print(\"Checking Internet Connection Error..\")\n            report.step_start(\"Checking Internet Connection Error..\")\n    \n            try:\n                #WifiInternetErrMsg = driver.find_element_by_xpath(\"//*[@label='No Internet Connection']\").text\n                NoInternetConnectionMsg = WebDriverWait(driver, 30).until(EC.presence_of_element_located((MobileBy.XPATH, \"//*[@label='No Internet Connection']\")))\n            except Exception as e:\n                print(\"No Error with Wifi-AP Connection: \" + Wifi_AP_Name)\n    \n        else:\n            print(\"Selecting Wifi: \" + WifiNameSSID)\n            #consoleOutput+=str(WifiName)+ \"\\n\"\n            report.step_start(\"Selecting Wifi...: \" + WifiNameSSID)\n            element = driver.find_element_by_xpath(\"//XCUIElementTypeCell[@name='Wi-Fi']/XCUIElementTypeStaticText[2]\")\n            element.click()\n            try:\n>               wifiXpath2 = WebDriverWait(driver, 30).until(EC.presence_of_element_located((MobileBy.XPATH, \"//*[@label='\"+ WifiNameSSID + \"']\")))\n\n../libs/perfecto_libs/iOS_lib.py:127: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <selenium.webdriver.support.wait.WebDriverWait (session=\"10c89288-40d6-4ae0-b608-2691f24c35b7\")>\nmethod = <selenium.webdriver.support.expected_conditions.presence_of_element_located object at 0x7f930c3124f0>\nmessage = ''\n\n    def until(self, method, message=''):\n        \"\"\"Calls the method provided with the driver as an argument until the \\\n        return value is not False.\"\"\"\n        screen = None\n        stacktrace = None\n    \n        end_time = time.time() + self._timeout\n        while True:\n            try:\n                value = method(self._driver)\n                if value:\n                    return value\n            except self._ignored_exceptions as exc:\n                screen = getattr(exc, 'screen', None)\n                stacktrace = getattr(exc, 'stacktrace', None)\n            time.sleep(self._poll)\n            if time.time() > end_time:\n                break\n>       raise TimeoutException(message, screen, stacktrace)\nE       selenium.common.exceptions.TimeoutException: Message: \nE       Stacktrace:\nE           at sun.reflect.GeneratedConstructorAccessor2650.newInstance (None:-1)\nE           at sun.reflect.DelegatingConstructorAccessorImpl.newInstance (DelegatingConstructorAccessorImpl.java:45)\nE           at java.lang.reflect.Constructor.newInstance (Constructor.java:423)\nE           at org.openqa.selenium.remote.http.W3CHttpResponseCodec.createException (W3CHttpResponseCodec.java:187)\nE           at org.openqa.selenium.remote.http.W3CHttpResponseCodec.decode (W3CHttpResponseCodec.java:122)\nE           at org.openqa.selenium.remote.http.W3CHttpResponseCodec.decode (W3CHttpResponseCodec.java:49)\nE           at org.openqa.selenium.remote.HttpCommandExecutor.execute (HttpCommandExecutor.java:158)\nE           at io.appium.java_client.remote.AppiumCommandExecutor.execute (AppiumCommandExecutor.java:239)\nE           at org.openqa.selenium.remote.RemoteWebDriver.execute (RemoteWebDriver.java:552)\nE           at io.appium.java_client.DefaultGenericMobileDriver.execute (DefaultGenericMobileDriver.java:41)\nE           at io.appium.java_client.AppiumDriver.execute (AppiumDriver.java:1)\nE           at io.appium.java_client.ios.IOSDriver.execute (IOSDriver.java:1)\nE           at org.openqa.selenium.remote.RemoteWebDriver.findElement (RemoteWebDriver.java:323)\nE           at io.appium.java_client.DefaultGenericMobileDriver.findElement (DefaultGenericMobileDriver.java:61)\nE           at io.appium.java_client.AppiumDriver.findElement (AppiumDriver.java:1)\nE           at io.appium.java_client.ios.IOSDriver.findElement (IOSDriver.java:1)\nE           at org.openqa.selenium.remote.RemoteWebDriver.findElementByXPath (RemoteWebDriver.java:428)\nE           at io.appium.java_client.DefaultGenericMobileDriver.findElementByXPath (DefaultGenericMobileDriver.java:151)\nE           at io.appium.java_client.AppiumDriver.findElementByXPath (AppiumDriver.java:1)\nE           at io.appium.java_client.ios.IOSDriver.findElementByXPath (IOSDriver.java:1)\nE           at org.openqa.selenium.By$ByXPath.findElement (By.java:353)\nE           at org.openqa.selenium.remote.RemoteWebDriver.findElement (RemoteWebDriver.java:315)\nE           at io.appium.java_client.DefaultGenericMobileDriver.findElement (DefaultGenericMobileDriver.java:57)\nE           at io.appium.java_client.AppiumDriver.findElement (AppiumDriver.java:1)\nE           at io.appium.java_client.ios.IOSDriver.findElement (IOSDriver.java:1)\nE           at com.perfectomobile.selenium.server.appium.AppiumIOSDriverWrapper$2.call (AppiumIOSDriverWrapper.java:94)\nE           at com.nexperience.function.execute.ExecuteCallableCommand.process (ExecuteCallableCommand.java:30)\nE           at com.nexperience.engine.script.command.AbstractScriptCommand.doExecute (AbstractScriptCommand.java:173)\nE           at com.nexperience.engine.script.command.ScriptCommandBase.execute (ScriptCommandBase.java:105)\nE           at com.nexperience.engine.script.tcl.event.CommandTclEvent.processEvent (CommandTclEvent.java:43)\nE           at com.nexperience.engine.script.tcl.event.MaseTclEvent.processEvent (MaseTclEvent.java:56)\nE           at tcl.lang.Notifier.serviceEvent (Notifier.java:457)\nE           at tcl.lang.Notifier.doOneEvent (Notifier.java:610)\nE           at tcl.lang.Notifier.processTclEvents (Notifier.java:786)\nE           at com.nexperience.engine.script.tcl.event.TclEventProcessor.start (TclEventProcessor.java:80)\nE           at com.nexperience.engine.script.tcl.TclInterpreter.startEventProcessing (TclInterpreter.java:552)\nE           at com.nexperience.engine.script.execution.step.StepExecutionEventProcessor.callImpl (StepExecutionEventProcessor.java:85)\nE           at com.nexperience.engine.script.execution.step.StepExecutionEventProcessor.callImpl (StepExecutionEventProcessor.java:21)\nE           at com.nexperience.util.thread.WrappedCallable.call (WrappedCallable.java:31)\nE           at java.util.concurrent.FutureTask.run (FutureTask.java:266)\nE           at java.util.concurrent.ThreadPoolExecutor.runWorker (ThreadPoolExecutor.java:1142)\nE           at java.util.concurrent.ThreadPoolExecutor$Worker.run (ThreadPoolExecutor.java:617)\nE           at java.lang.Thread.run (Thread.java:748)\n\n/usr/local/lib/python3.8/site-packages/selenium/webdriver/support/wait.py:80: TimeoutException\n\nDuring handling of the above exception, another exception occurred:\n\nself = <tests.e2e.interOp.iOS.PassPoint.test_PassPointConnection.TestPassPointConnection object at 0x7f930c3563a0>\nrequest = <FixtureRequest for <Function test_PassPointConnection_5g_OPEN[setup_profiles0]>>\nget_vif_state = ['ssid_open_2g', 'ssid_open_5g', 'ssid_wpa_2g', 'ssid_wpa_5g', 'ssid_wpa2_2g', 'ssid_wpa2_5g', ...]\nsetup_perfectoMobile_iOS = (<appium.webdriver.webdriver.WebDriver (session=\"10c89288-40d6-4ae0-b608-2691f24c35b7\")>, <perfecto.client.PerfectoReportiumClient.PerfectoReportiumClient object at 0x7f930c312f40>)\nget_PassPointConniOS_data = {'bundleId-iOS-Ping': 'com.deftapps.ping', 'bundleId-iOS-Settings': 'com.apple.Preferences', 'netAnalyzer-inter-Con-Xpath': \"//*[@label='Network Connected']/parent::*/XCUIElementTypeButton\"}\n\n    @pytest.mark.fiveg\n    @pytest.mark.open\n    def test_PassPointConnection_5g_OPEN(self, request, get_vif_state, setup_perfectoMobile_iOS,\n                                                  get_PassPointConniOS_data):\n    \n        profile_data = setup_params_general[\"ssid_modes\"][\"open\"][1]\n        ssidName = profile_data[\"ssid_name\"]\n        ssidPassword = \"[BLANK]\"\n        print(\"SSID_NAME: \" + ssidName)\n        print(\"SSID_PASS: \" + ssidPassword)\n    \n        if ssidName not in get_vif_state:\n            allure.attach(name=\"retest,vif state ssid not available:\", body=str(get_vif_state))\n            pytest.xfail(\"SSID NOT AVAILABLE IN VIF STATE\")\n    \n        report = setup_perfectoMobile_iOS[1]\n        driver = setup_perfectoMobile_iOS[0]\n        connData = get_PassPointConniOS_data\n    \n        # Set Wifi Access Mode to #Default-SSID-5gl-perfecto-b/#Default-SSID-2gl-perfecto-b\n>       set_APconnMobileDevice_iOS(request, ssidName, ssidPassword, setup_perfectoMobile_iOS, connData)\n\ne2e/interOp/iOS/PassPoint/test_PassPointConnection.py:195: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nrequest = <FixtureRequest for <Function test_PassPointConnection_5g_OPEN[setup_profiles0]>>\nWifiNameSSID = 'ssid_open_5g', WifiPass = '[BLANK]'\nsetup_perfectoMobile = (<appium.webdriver.webdriver.WebDriver (session=\"10c89288-40d6-4ae0-b608-2691f24c35b7\")>, <perfecto.client.PerfectoReportiumClient.PerfectoReportiumClient object at 0x7f930c312f40>)\nconnData = {'bundleId-iOS-Ping': 'com.deftapps.ping', 'bundleId-iOS-Settings': 'com.apple.Preferences', 'netAnalyzer-inter-Con-Xpath': \"//*[@label='Network Connected']/parent::*/XCUIElementTypeButton\"}\n\n    def set_APconnMobileDevice_iOS(request, WifiNameSSID, WifiPass, setup_perfectoMobile, connData):\n        consoleOutput = \"\"\n    \n        print(\"\\n-------------------------------------\")\n        print(\"Select Wifi/AccessPoint Connection\")\n        print(\"-------------------------------------\")\n    \n        reportFlag = True\n    \n        print(\"Verifying Wifi/AP Connection Details....\")\n        report = setup_perfectoMobile[1]\n        driver = setup_perfectoMobile[0]\n    \n        report.step_start(\"Switching Driver Context\")\n        print(\"Switching Context to Native\")\n        #contexts = driver.contexts\n        #print(contexts)\n        driver.switch_to.context('NATIVE_APP')\n        #driver.switch_to.context(contexts[0])\n    \n        print(WifiNameSSID)\n        report.step_start(\"Set Wifi Network to \" + WifiNameSSID)\n        #Open Settings Application\n        openApp(connData[\"bundleId-iOS-Settings\"], setup_perfectoMobile)\n    \n        try:\n            print(\"Verifying Connected Wifi Connection\")\n            report.step_start(\"Verifying Connected Wifi Connection\")\n            element = driver.find_element_by_xpath(\"//XCUIElementTypeCell[@name='Wi-Fi']/XCUIElementTypeStaticText[2]\")\n            Wifi_AP_Name = element.text\n        except NoSuchElementException:\n            print(\"Exception: Verify Xpath - UpdateXpath\")\n            #NEED to fail if Wifi AP NAME isn't in the approved list AKA 5g & 2g.\n            #print(\"Wifi Name Matches - Already Connected To: \" + Wifi_AP_Name)\n            #print(\"Wifi Name Matches - Already Connected To: \" + WifiName)\n    \n        if Wifi_AP_Name.__eq__(WifiNameSSID):\n            print(\"Wifi Name Matches - Already Connected To: \" + Wifi_AP_Name)\n    \n            #Verify if Ap is connected with Wifi\n            report.step_start(\"Verify Wifi Connection Status..\")\n            #print(\"Click Wifi Connection..\")\n            element.click()\n    \n            #Verifies if AP is connected to Wifi status\n            #print(\"Verify Wifi Connection Status..\")\n            try:\n                report.step_start(\"Verify Wifi Connected Status\")\n                WifiXpath = \"//*[@label='selected']/parent::*/parent::*/XCUIElementTypeStaticText[@label='\"+ Wifi_AP_Name + \"']\"\n                elementWifName = driver.find_element_by_xpath(WifiXpath)\n            except NoSuchElementException:\n                reportFlag = False\n                assert reportFlag\n    \n            #Check AP Internet Error Msg\n            print(\"Checking Internet Connection Error..\")\n            report.step_start(\"Checking Internet Connection Error..\")\n    \n            try:\n                #WifiInternetErrMsg = driver.find_element_by_xpath(\"//*[@label='No Internet Connection']\").text\n                NoInternetConnectionMsg = WebDriverWait(driver, 30).until(EC.presence_of_element_located((MobileBy.XPATH, \"//*[@label='No Internet Connection']\")))\n            except Exception as e:\n                print(\"No Error with Wifi-AP Connection: \" + Wifi_AP_Name)\n    \n        else:\n            print(\"Selecting Wifi: \" + WifiNameSSID)\n            #consoleOutput+=str(WifiName)+ \"\\n\"\n            report.step_start(\"Selecting Wifi...: \" + WifiNameSSID)\n            element = driver.find_element_by_xpath(\"//XCUIElementTypeCell[@name='Wi-Fi']/XCUIElementTypeStaticText[2]\")\n            element.click()\n            try:\n                wifiXpath2 = WebDriverWait(driver, 30).until(EC.presence_of_element_located((MobileBy.XPATH, \"//*[@label='\"+ WifiNameSSID + \"']\")))\n                wifiXpath2.click()\n            except Exception as e:\n                print(\"Exception on Selecting Wifi Network.  Please check wifi Name or signal\")\n                request.config.cache.set(key=\"SelectingWifiFailed\", value=str(e))\n                #allure.attach(name=\"Raj\", body=\"hello world\")\n>               assert False\nE               AssertionError\n\n../libs/perfecto_libs/iOS_lib.py:133: AssertionError",
+  "flaky" : true,
+  "newFailed" : false,
+  "beforeStages" : [ {
+    "name" : "get_vif_state",
+    "time" : {
+      "start" : 1631504305774,
+      "stop" : 1631504305774,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_controller",
+    "time" : {
+      "start" : 1631500939843,
+      "stop" : 1631500939843,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "radius_info",
+    "time" : {
+      "start" : 1631500940470,
+      "stop" : 1631500940470,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "instantiate_profile",
+    "time" : {
+      "start" : 1631500939844,
+      "stop" : 1631500939844,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "fixtures_ver",
+    "time" : {
+      "start" : 1631500936170,
+      "stop" : 1631500936243,
+      "duration" : 73
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "radius_accounting_info",
+    "time" : {
+      "start" : 1631500940471,
+      "stop" : 1631500940471,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "test_access_point",
+    "time" : {
+      "start" : 1631500936170,
+      "stop" : 1631500936170,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "add_env_properties",
+    "time" : {
+      "start" : 1631500936244,
+      "stop" : 1631500939843,
+      "duration" : 3599
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "create_lanforge_chamberview_dut",
+    "time" : {
+      "start" : 1631500939845,
+      "stop" : 1631500940159,
+      "duration" : 314
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_equipment_id",
+    "time" : {
+      "start" : 1631500939844,
+      "stop" : 1631500939844,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_configuration",
+    "time" : {
+      "start" : 1631500936169,
+      "stop" : 1631500936169,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "testbed",
+    "time" : {
+      "start" : 1631500936169,
+      "stop" : 1631500936169,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_perfectoMobile_iOS",
+    "time" : {
+      "start" : 1631504783914,
+      "stop" : 1631504809634,
+      "duration" : 25720
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_markers",
+    "time" : {
+      "start" : 1631500939844,
+      "stop" : 1631500939845,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "lf_tools",
+    "time" : {
+      "start" : 1631500940159,
+      "stop" : 1631500940470,
+      "duration" : 311
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_security_flags",
+    "time" : {
+      "start" : 1631500939844,
+      "stop" : 1631500939844,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "add_allure_environment_property",
+    "time" : {
+      "start" : 1631500936169,
+      "stop" : 1631500936169,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_profiles",
+    "time" : {
+      "start" : 1631504203400,
+      "stop" : 1631504305774,
+      "duration" : 102374
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "20f89924df4f2ba1",
+      "name" : "ucentral_config: ",
+      "source" : "20f89924df4f2ba1.attach",
+      "type" : "text/plain",
+      "size" : 2046
+    }, {
+      "uid" : "57227e84f7e09f8b",
+      "name" : "Time Took to apply Config: 4.186829328536987",
+      "source" : "57227e84f7e09f8b.attach",
+      "type" : "application/octet-stream",
+      "size" : 0
+    }, {
+      "uid" : "24b25de631c9519d",
+      "name" : "Success : Active Config in AP: ",
+      "source" : "24b25de631c9519d.attach",
+      "type" : "text/plain",
+      "size" : 2046
+    }, {
+      "uid" : "1f2982520cde1216",
+      "name" : "iwinfo: ",
+      "source" : "1f2982520cde1216.attach",
+      "type" : "text/plain",
+      "size" : 2184
+    }, {
+      "uid" : "b2a51ee5c4460903",
+      "name" : "AP Logs: ",
+      "source" : "b2a51ee5c4460903.attach",
+      "type" : "text/plain",
+      "size" : 72314
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 5,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "get_apnos",
+    "time" : {
+      "start" : 1631500936170,
+      "stop" : 1631500936170,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_PassPointConniOS_data",
+    "time" : {
+      "start" : 1631504809634,
+      "stop" : 1631504809635,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "afterStages" : [ {
+    "name" : "get_vif_state::0",
+    "time" : {
+      "start" : 1631505021830,
+      "stop" : 1631505021830,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_controller::1",
+    "time" : {
+      "start" : 1631509127783,
+      "stop" : 1631509127783,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_controller::disconnect",
+    "time" : {
+      "start" : 1631509127783,
+      "stop" : 1631509128181,
+      "duration" : 398
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "radius_info::0",
+    "time" : {
+      "start" : 1631509127719,
+      "stop" : 1631509127719,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "instantiate_profile::0",
+    "time" : {
+      "start" : 1631509127768,
+      "stop" : 1631509127768,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "fixtures_ver::0",
+    "time" : {
+      "start" : 1631509128205,
+      "stop" : 1631509128206,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "radius_accounting_info::0",
+    "time" : {
+      "start" : 1631509127714,
+      "stop" : 1631509127714,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "test_access_point::0",
+    "time" : {
+      "start" : 1631509128212,
+      "stop" : 1631509128212,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "create_lanforge_chamberview_dut::0",
+    "time" : {
+      "start" : 1631509127730,
+      "stop" : 1631509127730,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_equipment_id::0",
+    "time" : {
+      "start" : 1631509127773,
+      "stop" : 1631509127773,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_configuration::0",
+    "time" : {
+      "start" : 1631509128289,
+      "stop" : 1631509128290,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "testbed::0",
+    "time" : {
+      "start" : 1631509128325,
+      "stop" : 1631509128326,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_perfectoMobile_iOS::1",
+    "time" : {
+      "start" : 1631504854448,
+      "stop" : 1631504854448,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_perfectoMobile_iOS::teardown",
+    "time" : {
+      "start" : 1631504854448,
+      "stop" : 1631504886577,
+      "duration" : 32129
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_markers::0",
+    "time" : {
+      "start" : 1631509127738,
+      "stop" : 1631509127738,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "lf_tools::0",
+    "time" : {
+      "start" : 1631509127725,
+      "stop" : 1631509127726,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_security_flags::0",
+    "time" : {
+      "start" : 1631509127763,
+      "stop" : 1631509127763,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "add_allure_environment_property::0",
+    "time" : {
+      "start" : 1631509128329,
+      "stop" : 1631509128329,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_profiles::1",
+    "time" : {
+      "start" : 1631505021830,
+      "stop" : 1631505021830,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_profiles::teardown_session",
+    "time" : {
+      "start" : 1631505021830,
+      "stop" : 1631505030428,
+      "duration" : 8598
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "4eb056796823c55d",
+      "name" : "iwinfo: ",
+      "source" : "4eb056796823c55d.attach",
+      "type" : "text/plain",
+      "size" : 3292
+    }, {
+      "uid" : "fb4325cd64d8976",
+      "name" : "AP Logs after test completion",
+      "source" : "fb4325cd64d8976.attach",
+      "type" : "text/plain",
+      "size" : 72341
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 2,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "get_apnos::0",
+    "time" : {
+      "start" : 1631509128235,
+      "stop" : 1631509128235,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_PassPointConniOS_data::0",
+    "time" : {
+      "start" : 1631504854445,
+      "stop" : 1631504854446,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "labels" : [ {
+    "name" : "feature",
+    "value" : "NAT MODE CLIENT CONNECTIVITY"
+  }, {
+    "name" : "tag",
+    "value" : "PassPointConnection"
+  }, {
+    "name" : "tag",
+    "value" : "open"
+  }, {
+    "name" : "tag",
+    "value" : "ios"
+  }, {
+    "name" : "tag",
+    "value" : "fiveg"
+  }, {
+    "name" : "tag",
+    "value" : "interop_ios"
+  }, {
+    "name" : "tag",
+    "value" : "@pytest.mark.usefixtures('setup_profiles')"
+  }, {
+    "name" : "tag",
+    "value" : "interop"
+  }, {
+    "name" : "tag",
+    "value" : "sanity"
+  }, {
+    "name" : "parentSuite",
+    "value" : "e2e.interOp.iOS.PassPoint"
+  }, {
+    "name" : "suite",
+    "value" : "test_PassPointConnection"
+  }, {
+    "name" : "subSuite",
+    "value" : "TestPassPointConnection"
+  }, {
+    "name" : "host",
+    "value" : "interop-ci-209-ios-hd59k"
+  }, {
+    "name" : "thread",
+    "value" : "6-MainThread"
+  }, {
+    "name" : "framework",
+    "value" : "pytest"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "package",
+    "value" : "e2e.interOp.iOS.PassPoint.test_PassPointConnection"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ {
+    "name" : "setup_profiles",
+    "value" : "{'mode': 'NAT', 'ssid_modes': {'open': [{'ssid_name': 'ssid_open_2g', 'appliedRadios': ['2G'], 'security': 'none'}, {'ssid_name': 'ssid_open_5g', 'appliedRadios': ['5G'], 'security': 'none'}], 'wpa': [{'ssid_name': 'ssid_wpa_2g', 'appliedRadios': ['2G'], 'security_key': 'something', 'security': 'psk'}, {'ssid_name': 'ssid_wpa_5g', 'appliedRadios': ['5G'], 'security_key': 'something', 'security': 'psk'}], 'wpa2_personal': [{'ssid_name': 'ssid_wpa2_2g', 'appliedRadios': ['2G'], 'security_key': 'something', 'security': 'psk2'}, {'ssid_name': 'ssid_wpa2_5g', 'appliedRadios': ['5G'], 'security_key': 'something', 'security': 'psk2'}]}, 'rf': {}, 'radius': False}"
+  } ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ {
+      "name" : "Product defects",
+      "matchedStatuses" : [ ],
+      "flaky" : false
+    } ],
+    "history" : {
+      "statistic" : {
+        "failed" : 3,
+        "broken" : 8,
+        "skipped" : 2,
+        "passed" : 6,
+        "unknown" : 0,
+        "total" : 19
+      },
+      "items" : [ {
+        "uid" : "c1bbcc18787cee6d",
+        "status" : "broken",
+        "statusDetails" : "requests.exceptions.ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
+        "time" : {
+          "start" : 1631407124323,
+          "stop" : 1631407124323,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "fb78913903b6adbc",
+        "status" : "passed",
+        "time" : {
+          "start" : 1631333374038,
+          "stop" : 1631333469052,
+          "duration" : 95014
+        }
+      }, {
+        "uid" : "f739aa970d8d1f83",
+        "status" : "passed",
+        "time" : {
+          "start" : 1631246300306,
+          "stop" : 1631246392302,
+          "duration" : 91996
+        }
+      }, {
+        "uid" : "d4f52d17f6171058",
+        "status" : "passed",
+        "time" : {
+          "start" : 1631162773148,
+          "stop" : 1631162867529,
+          "duration" : 94381
+        }
+      }, {
+        "uid" : "9ba86f9ae9f0f6ce",
+        "status" : "broken",
+        "statusDetails" : "IndexError: list index out of range",
+        "time" : {
+          "start" : 1631074651699,
+          "stop" : 1631074651699,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "3fc1ae5a11472d26",
+        "status" : "skipped",
+        "statusDetails" : "XFAIL reason: SSID NOT AVAILABLE IN VIF STATE\n\n_pytest.outcomes.XFailed: SSID NOT AVAILABLE IN VIF STATE",
+        "time" : {
+          "start" : 1630988161303,
+          "stop" : 1630988161304,
+          "duration" : 1
+        }
+      }, {
+        "uid" : "e325af3a7aa0df27",
+        "status" : "failed",
+        "statusDetails" : "AssertionError",
+        "time" : {
+          "start" : 1630897777190,
+          "stop" : 1630897791693,
+          "duration" : 14503
+        }
+      }, {
+        "uid" : "c26103d06f427bb0",
+        "status" : "broken",
+        "statusDetails" : "selenium.common.exceptions.NoSuchElementException: Message: An element could not be located on the page using the given search parameters.\nFor documentation on this error, please visit: https://www.seleniumhq.org/exceptions/no_such_element.html\nBuild info: version: '3.141.59', revision: 'e82be7d358', time: '2018-11-14T08:17:03'\nDriver info: io.appium.java_client.ios.IOSDriver\nCapabilities {accessToken: eyJhbGciOiJSUzI1NiIsInR5cCI..., assert_javascript_enabled: true, authenticationTenant: operator, autoAcceptAlerts: true, browserName: , bundleId: com.apple.mobilesafari, cloud: tip.perfectomobile.com, databaseEnabled: false, deviceName: 00008101-00180D660801401E, deviceSessionId: rajp@perfectomobile.com_Rem..., entityType: remote_web_driver, executionId: rajp@perfectomobile.com_Rem..., executionTenantId: tip-perfectomobile-com, host: tip.perfectomobile.com, javascriptEnabled: true, liveStreamEnabled: false, locationContextEnabled: false, model: iPhone-12, networkConnectionEnabled: false, password: , platform: MAC, platformName: ios, platformVersion: 14.1, reportPdfUrl: https://tip.app.perfectomob..., scriptName: RemoteWebDriver, securityToken: , serverConnector: , serverHost: X.X.X.X:11601, simpleIsVisibleCheck: true, stopUrl: https://tip.perfectomobile...., takesScreenshot: true, testGridReportUrl: https://tip.app.perfectomob..., udid: 00008101-00180D660801401E, useAppiumForHybrid: false, useAppiumForWeb: false, user: , webStorageEnabled: false, xcuitestFindOptimizations: true}\nSession ID: 6b4c10e9-23a6-4d1b-82b1-567aed76c5ec\n*** Element info: {Using=xpath, value=//*[@label='selected']/parent::*/parent::*/XCUIElementTypeStaticText[@label='ssid_open_5g']/parent::*/XCUIElementTypeButton[@label='More Info']}\nStacktrace:\n    at sun.reflect.GeneratedConstructorAccessor1588.newInstance (None:-1)\n    at sun.reflect.DelegatingConstructorAccessorImpl.newInstance (DelegatingConstructorAccessorImpl.java:45)\n    at java.lang.reflect.Constructor.newInstance (Constructor.java:423)\n    at org.openqa.selenium.remote.http.W3CHttpResponseCodec.createException (W3CHttpResponseCodec.java:187)\n    at org.openqa.selenium.remote.http.W3CHttpResponseCodec.decode (W3CHttpResponseCodec.java:122)\n    at org.openqa.selenium.remote.http.W3CHttpResponseCodec.decode (W3CHttpResponseCodec.java:49)\n    at org.openqa.selenium.remote.HttpCommandExecutor.execute (HttpCommandExecutor.java:158)\n    at io.appium.java_client.remote.AppiumCommandExecutor.execute (AppiumCommandExecutor.java:239)\n    at org.openqa.selenium.remote.RemoteWebDriver.execute (RemoteWebDriver.java:552)\n    at io.appium.java_client.DefaultGenericMobileDriver.execute (DefaultGenericMobileDriver.java:41)\n    at io.appium.java_client.AppiumDriver.execute (AppiumDriver.java:1)\n    at io.appium.java_client.ios.IOSDriver.execute (IOSDriver.java:1)\n    at org.openqa.selenium.remote.RemoteWebDriver.findElement (RemoteWebDriver.java:323)\n    at io.appium.java_client.DefaultGenericMobileDriver.findElement (DefaultGenericMobileDriver.java:61)\n    at io.appium.java_client.AppiumDriver.findElement (AppiumDriver.java:1)\n    at io.appium.java_client.ios.IOSDriver.findElement (IOSDriver.java:1)\n    at org.openqa.selenium.remote.RemoteWebDriver.findElementByXPath (RemoteWebDriver.java:428)\n    at io.appium.java_client.DefaultGenericMobileDriver.findElementByXPath (DefaultGenericMobileDriver.java:151)\n    at io.appium.java_client.AppiumDriver.findElementByXPath (AppiumDriver.java:1)\n    at io.appium.java_client.ios.IOSDriver.findElementByXPath (IOSDriver.java:1)\n    at org.openqa.selenium.By$ByXPath.findElement (By.java:353)\n    at org.openqa.selenium.remote.RemoteWebDriver.findElement (RemoteWebDriver.java:315)\n    at io.appium.java_client.DefaultGenericMobileDriver.findElement (DefaultGenericMobileDriver.java:57)\n    at io.appium.java_client.AppiumDriver.findElement (AppiumDriver.java:1)\n    at io.appium.java_client.ios.IOSDriver.findElement (IOSDriver.java:1)\n    at com.perfectomobile.selenium.server.appium.AppiumIOSDriverWrapper$2.call (AppiumIOSDriverWrapper.java:94)\n    at com.nexperience.function.execute.ExecuteCallableCommand.process (ExecuteCallableCommand.java:30)\n    at com.nexperience.engine.script.command.AbstractScriptCommand.doExecute (AbstractScriptCommand.java:173)\n    at com.nexperience.engine.script.command.ScriptCommandBase.execute (ScriptCommandBase.java:105)\n    at com.nexperience.engine.script.tcl.event.CommandTclEvent.processEvent (CommandTclEvent.java:43)\n    at com.nexperience.engine.script.tcl.event.MaseTclEvent.processEvent (MaseTclEvent.java:56)\n    at tcl.lang.Notifier.serviceEvent (Notifier.java:457)\n    at tcl.lang.Notifier.doOneEvent (Notifier.java:610)\n    at tcl.lang.Notifier.processTclEvents (Notifier.java:786)\n    at com.nexperience.engine.script.tcl.event.TclEventProcessor.start (TclEventProcessor.java:80)\n    at com.nexperience.engine.script.tcl.TclInterpreter.startEventProcessing (TclInterpreter.java:552)\n    at com.nexperience.engine.script.execution.step.StepExecutionEventProcessor.callImpl (StepExecutionEventProcessor.java:85)\n    at com.nexperience.engine.script.execution.step.StepExecutionEventProcessor.callImpl (StepExecutionEventProcessor.java:21)\n    at com.nexperience.util.thread.WrappedCallable.call (WrappedCallable.java:31)\n    at java.util.concurrent.FutureTask.run (FutureTask.java:266)\n    at java.util.concurrent.ThreadPoolExecutor.runWorker (ThreadPoolExecutor.java:1142)\n    at java.util.concurrent.ThreadPoolExecutor$Worker.run (ThreadPoolExecutor.java:617)\n    at java.lang.Thread.run (Thread.java:748)",
+        "time" : {
+          "start" : 1630728100278,
+          "stop" : 1630728178772,
+          "duration" : 78494
+        }
+      }, {
+        "uid" : "7ed3adfeff2a4919",
+        "status" : "broken",
+        "statusDetails" : "selenium.common.exceptions.NoSuchElementException: Message: An element could not be located on the page using the given search parameters.\nFor documentation on this error, please visit: https://www.seleniumhq.org/exceptions/no_such_element.html\nBuild info: version: '3.141.59', revision: 'e82be7d358', time: '2018-11-14T08:17:03'\nDriver info: io.appium.java_client.ios.IOSDriver\nCapabilities {accessToken: eyJhbGciOiJSUzI1NiIsInR5cCI..., assert_javascript_enabled: true, authenticationTenant: operator, autoAcceptAlerts: true, browserName: , bundleId: com.apple.mobilesafari, cloud: tip.perfectomobile.com, databaseEnabled: false, deviceName: 00008101-00180D660801401E, deviceSessionId: rajp@perfectomobile.com_Rem..., entityType: remote_web_driver, executionId: rajp@perfectomobile.com_Rem..., executionTenantId: tip-perfectomobile-com, host: tip.perfectomobile.com, javascriptEnabled: true, liveStreamEnabled: false, locationContextEnabled: false, model: iPhone-12, networkConnectionEnabled: false, password: , platform: MAC, platformName: ios, platformVersion: 14.1, reportPdfUrl: https://tip.app.perfectomob..., scriptName: RemoteWebDriver, securityToken: , serverConnector: , serverHost: X.X.X.X:11601, simpleIsVisibleCheck: true, stopUrl: https://tip.perfectomobile...., takesScreenshot: true, testGridReportUrl: https://tip.app.perfectomob..., udid: 00008101-00180D660801401E, useAppiumForHybrid: false, useAppiumForWeb: false, user: , webStorageEnabled: false, xcuitestFindOptimizations: true}\nSession ID: 228e13a5-fb4c-40cf-98ca-1d80c9b1136e\n*** Element info: {Using=xpath, value=//*[@label='selected']/parent::*/parent::*/XCUIElementTypeStaticText[@label='ssid_open_5g']/parent::*/XCUIElementTypeButton[@label='More Info']}\nStacktrace:\n    at sun.reflect.GeneratedConstructorAccessor1440.newInstance (None:-1)\n    at sun.reflect.DelegatingConstructorAccessorImpl.newInstance (DelegatingConstructorAccessorImpl.java:45)\n    at java.lang.reflect.Constructor.newInstance (Constructor.java:423)\n    at org.openqa.selenium.remote.http.W3CHttpResponseCodec.createException (W3CHttpResponseCodec.java:187)\n    at org.openqa.selenium.remote.http.W3CHttpResponseCodec.decode (W3CHttpResponseCodec.java:122)\n    at org.openqa.selenium.remote.http.W3CHttpResponseCodec.decode (W3CHttpResponseCodec.java:49)\n    at org.openqa.selenium.remote.HttpCommandExecutor.execute (HttpCommandExecutor.java:158)\n    at io.appium.java_client.remote.AppiumCommandExecutor.execute (AppiumCommandExecutor.java:239)\n    at org.openqa.selenium.remote.RemoteWebDriver.execute (RemoteWebDriver.java:552)\n    at io.appium.java_client.DefaultGenericMobileDriver.execute (DefaultGenericMobileDriver.java:41)\n    at io.appium.java_client.AppiumDriver.execute (AppiumDriver.java:1)\n    at io.appium.java_client.ios.IOSDriver.execute (IOSDriver.java:1)\n    at org.openqa.selenium.remote.RemoteWebDriver.findElement (RemoteWebDriver.java:323)\n    at io.appium.java_client.DefaultGenericMobileDriver.findElement (DefaultGenericMobileDriver.java:61)\n    at io.appium.java_client.AppiumDriver.findElement (AppiumDriver.java:1)\n    at io.appium.java_client.ios.IOSDriver.findElement (IOSDriver.java:1)\n    at org.openqa.selenium.remote.RemoteWebDriver.findElementByXPath (RemoteWebDriver.java:428)\n    at io.appium.java_client.DefaultGenericMobileDriver.findElementByXPath (DefaultGenericMobileDriver.java:151)\n    at io.appium.java_client.AppiumDriver.findElementByXPath (AppiumDriver.java:1)\n    at io.appium.java_client.ios.IOSDriver.findElementByXPath (IOSDriver.java:1)\n    at org.openqa.selenium.By$ByXPath.findElement (By.java:353)\n    at org.openqa.selenium.remote.RemoteWebDriver.findElement (RemoteWebDriver.java:315)\n    at io.appium.java_client.DefaultGenericMobileDriver.findElement (DefaultGenericMobileDriver.java:57)\n    at io.appium.java_client.AppiumDriver.findElement (AppiumDriver.java:1)\n    at io.appium.java_client.ios.IOSDriver.findElement (IOSDriver.java:1)\n    at com.perfectomobile.selenium.server.appium.AppiumIOSDriverWrapper$2.call (AppiumIOSDriverWrapper.java:94)\n    at com.nexperience.function.execute.ExecuteCallableCommand.process (ExecuteCallableCommand.java:30)\n    at com.nexperience.engine.script.command.AbstractScriptCommand.doExecute (AbstractScriptCommand.java:173)\n    at com.nexperience.engine.script.command.ScriptCommandBase.execute (ScriptCommandBase.java:105)\n    at com.nexperience.engine.script.tcl.event.CommandTclEvent.processEvent (CommandTclEvent.java:43)\n    at com.nexperience.engine.script.tcl.event.MaseTclEvent.processEvent (MaseTclEvent.java:56)\n    at tcl.lang.Notifier.serviceEvent (Notifier.java:457)\n    at tcl.lang.Notifier.doOneEvent (Notifier.java:610)\n    at tcl.lang.Notifier.processTclEvents (Notifier.java:786)\n    at com.nexperience.engine.script.tcl.event.TclEventProcessor.start (TclEventProcessor.java:80)\n    at com.nexperience.engine.script.tcl.TclInterpreter.startEventProcessing (TclInterpreter.java:552)\n    at com.nexperience.engine.script.execution.step.StepExecutionEventProcessor.callImpl (StepExecutionEventProcessor.java:85)\n    at com.nexperience.engine.script.execution.step.StepExecutionEventProcessor.callImpl (StepExecutionEventProcessor.java:21)\n    at com.nexperience.util.thread.WrappedCallable.call (WrappedCallable.java:31)\n    at java.util.concurrent.FutureTask.run (FutureTask.java:266)\n    at java.util.concurrent.ThreadPoolExecutor.runWorker (ThreadPoolExecutor.java:1142)\n    at java.util.concurrent.ThreadPoolExecutor$Worker.run (ThreadPoolExecutor.java:617)\n    at java.lang.Thread.run (Thread.java:748)",
+        "time" : {
+          "start" : 1630643630650,
+          "stop" : 1630643687563,
+          "duration" : 56913
+        }
+      }, {
+        "uid" : "dc3fcd9a32ba9fb3",
+        "status" : "broken",
+        "statusDetails" : "selenium.common.exceptions.NoSuchElementException: Message: An element could not be located on the page using the given search parameters.\nFor documentation on this error, please visit: https://www.seleniumhq.org/exceptions/no_such_element.html\nBuild info: version: '3.141.59', revision: 'e82be7d358', time: '2018-11-14T08:17:03'\nDriver info: io.appium.java_client.ios.IOSDriver\nCapabilities {accessToken: eyJhbGciOiJSUzI1NiIsInR5cCI..., assert_javascript_enabled: true, authenticationTenant: operator, autoAcceptAlerts: true, browserName: , bundleId: com.apple.mobilesafari, cloud: tip.perfectomobile.com, databaseEnabled: false, deviceName: 00008101-00180D660801401E, deviceSessionId: rajp@perfectomobile.com_Rem..., entityType: remote_web_driver, executionId: rajp@perfectomobile.com_Rem..., executionTenantId: tip-perfectomobile-com, host: tip.perfectomobile.com, javascriptEnabled: true, liveStreamEnabled: false, locationContextEnabled: false, model: iPhone-12, networkConnectionEnabled: false, password: , platform: MAC, platformName: ios, platformVersion: 14.1, reportPdfUrl: https://tip.app.perfectomob..., scriptName: RemoteWebDriver, securityToken: , serverConnector: , serverHost: X.X.X.X:11601, simpleIsVisibleCheck: true, stopUrl: https://tip.perfectomobile...., takesScreenshot: true, testGridReportUrl: https://tip.app.perfectomob..., udid: 00008101-00180D660801401E, useAppiumForHybrid: false, useAppiumForWeb: false, user: , webStorageEnabled: false, xcuitestFindOptimizations: true}\nSession ID: 78d0dd67-9827-4213-a9ed-c6f8b0b1096d\n*** Element info: {Using=xpath, value=//*[@label='selected']/parent::*/parent::*/XCUIElementTypeStaticText[@label='ssid_open_5g']/parent::*/XCUIElementTypeButton[@label='More Info']}\nStacktrace:\n    at sun.reflect.GeneratedConstructorAccessor1361.newInstance (None:-1)\n    at sun.reflect.DelegatingConstructorAccessorImpl.newInstance (DelegatingConstructorAccessorImpl.java:45)\n    at java.lang.reflect.Constructor.newInstance (Constructor.java:423)\n    at org.openqa.selenium.remote.http.W3CHttpResponseCodec.createException (W3CHttpResponseCodec.java:187)\n    at org.openqa.selenium.remote.http.W3CHttpResponseCodec.decode (W3CHttpResponseCodec.java:122)\n    at org.openqa.selenium.remote.http.W3CHttpResponseCodec.decode (W3CHttpResponseCodec.java:49)\n    at org.openqa.selenium.remote.HttpCommandExecutor.execute (HttpCommandExecutor.java:158)\n    at io.appium.java_client.remote.AppiumCommandExecutor.execute (AppiumCommandExecutor.java:239)\n    at org.openqa.selenium.remote.RemoteWebDriver.execute (RemoteWebDriver.java:552)\n    at io.appium.java_client.DefaultGenericMobileDriver.execute (DefaultGenericMobileDriver.java:41)\n    at io.appium.java_client.AppiumDriver.execute (AppiumDriver.java:1)\n    at io.appium.java_client.ios.IOSDriver.execute (IOSDriver.java:1)\n    at org.openqa.selenium.remote.RemoteWebDriver.findElement (RemoteWebDriver.java:323)\n    at io.appium.java_client.DefaultGenericMobileDriver.findElement (DefaultGenericMobileDriver.java:61)\n    at io.appium.java_client.AppiumDriver.findElement (AppiumDriver.java:1)\n    at io.appium.java_client.ios.IOSDriver.findElement (IOSDriver.java:1)\n    at org.openqa.selenium.remote.RemoteWebDriver.findElementByXPath (RemoteWebDriver.java:428)\n    at io.appium.java_client.DefaultGenericMobileDriver.findElementByXPath (DefaultGenericMobileDriver.java:151)\n    at io.appium.java_client.AppiumDriver.findElementByXPath (AppiumDriver.java:1)\n    at io.appium.java_client.ios.IOSDriver.findElementByXPath (IOSDriver.java:1)\n    at org.openqa.selenium.By$ByXPath.findElement (By.java:353)\n    at org.openqa.selenium.remote.RemoteWebDriver.findElement (RemoteWebDriver.java:315)\n    at io.appium.java_client.DefaultGenericMobileDriver.findElement (DefaultGenericMobileDriver.java:57)\n    at io.appium.java_client.AppiumDriver.findElement (AppiumDriver.java:1)\n    at io.appium.java_client.ios.IOSDriver.findElement (IOSDriver.java:1)\n    at com.perfectomobile.selenium.server.appium.AppiumIOSDriverWrapper$2.call (AppiumIOSDriverWrapper.java:94)\n    at com.nexperience.function.execute.ExecuteCallableCommand.process (ExecuteCallableCommand.java:30)\n    at com.nexperience.engine.script.command.AbstractScriptCommand.doExecute (AbstractScriptCommand.java:173)\n    at com.nexperience.engine.script.command.ScriptCommandBase.execute (ScriptCommandBase.java:105)\n    at com.nexperience.engine.script.tcl.event.CommandTclEvent.processEvent (CommandTclEvent.java:43)\n    at com.nexperience.engine.script.tcl.event.MaseTclEvent.processEvent (MaseTclEvent.java:56)\n    at tcl.lang.Notifier.serviceEvent (Notifier.java:457)\n    at tcl.lang.Notifier.doOneEvent (Notifier.java:610)\n    at tcl.lang.Notifier.processTclEvents (Notifier.java:786)\n    at com.nexperience.engine.script.tcl.event.TclEventProcessor.start (TclEventProcessor.java:80)\n    at com.nexperience.engine.script.tcl.TclInterpreter.startEventProcessing (TclInterpreter.java:552)\n    at com.nexperience.engine.script.execution.step.StepExecutionEventProcessor.callImpl (StepExecutionEventProcessor.java:85)\n    at com.nexperience.engine.script.execution.step.StepExecutionEventProcessor.callImpl (StepExecutionEventProcessor.java:21)\n    at com.nexperience.util.thread.WrappedCallable.call (WrappedCallable.java:31)\n    at java.util.concurrent.FutureTask.run (FutureTask.java:266)\n    at java.util.concurrent.ThreadPoolExecutor.runWorker (ThreadPoolExecutor.java:1142)\n    at java.util.concurrent.ThreadPoolExecutor$Worker.run (ThreadPoolExecutor.java:617)\n    at java.lang.Thread.run (Thread.java:748)",
+        "time" : {
+          "start" : 1630558479201,
+          "stop" : 1630558536661,
+          "duration" : 57460
+        }
+      }, {
+        "uid" : "46deb2e54abd12bf",
+        "status" : "broken",
+        "statusDetails" : "KeyError: 'ip'",
+        "time" : {
+          "start" : 1630369973668,
+          "stop" : 1630369973668,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "396ea7f414911a79",
+        "status" : "passed",
+        "time" : {
+          "start" : 1630300736508,
+          "stop" : 1630300827314,
+          "duration" : 90806
+        }
+      }, {
+        "uid" : "fe9f518c65855cbe",
+        "status" : "passed",
+        "time" : {
+          "start" : 1630219823513,
+          "stop" : 1630219912535,
+          "duration" : 89022
+        }
+      }, {
+        "uid" : "b9670ff3c468db28",
+        "status" : "passed",
+        "time" : {
+          "start" : 1630133531951,
+          "stop" : 1630133621261,
+          "duration" : 89310
+        }
+      }, {
+        "uid" : "d3c3e7a1b566106a",
+        "status" : "skipped",
+        "statusDetails" : "XFAIL reason: SSID NOT AVAILABLE IN VIF STATE\n\n_pytest.outcomes.XFailed: SSID NOT AVAILABLE IN VIF STATE",
+        "time" : {
+          "start" : 1629787247438,
+          "stop" : 1629787247439,
+          "duration" : 1
+        }
+      }, {
+        "uid" : "6e6a46221c4e50af",
+        "status" : "broken",
+        "statusDetails" : "KeyError: 'interop'",
+        "time" : {
+          "start" : 1629678518409,
+          "stop" : 1629678518409,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "8f6c8f1dbc390ce0",
+        "status" : "broken",
+        "statusDetails" : "KeyError: 'interop'",
+        "time" : {
+          "start" : 1629649270921,
+          "stop" : 1629649270921,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "9c165b10426cefb9",
+        "status" : "failed",
+        "statusDetails" : "AssertionError",
+        "time" : {
+          "start" : 1629614566171,
+          "stop" : 1629614588952,
+          "duration" : 22781
+        }
+      } ]
+    },
+    "tags" : [ "@pytest.mark.usefixtures('setup_profiles')", "interop_ios", "interop", "sanity", "fiveg", "ios", "PassPointConnection", "open" ]
+  },
+  "source" : "823d5e604c91923d.json",
+  "parameterValues" : [ "{'mode': 'NAT', 'ssid_modes': {'open': [{'ssid_name': 'ssid_open_2g', 'appliedRadios': ['2G'], 'security': 'none'}, {'ssid_name': 'ssid_open_5g', 'appliedRadios': ['5G'], 'security': 'none'}], 'wpa': [{'ssid_name': 'ssid_wpa_2g', 'appliedRadios': ['2G'], 'security_key': 'something', 'security': 'psk'}, {'ssid_name': 'ssid_wpa_5g', 'appliedRadios': ['5G'], 'security_key': 'something', 'security': 'psk'}], 'wpa2_personal': [{'ssid_name': 'ssid_wpa2_2g', 'appliedRadios': ['2G'], 'security_key': 'something', 'security': 'psk2'}, {'ssid_name': 'ssid_wpa2_5g', 'appliedRadios': ['5G'], 'security_key': 'something', 'security': 'psk2'}]}, 'rf': {}, 'radius': False}" ]
+}
