@@ -1,0 +1,946 @@
+{
+  "uid" : "c8e57349089612cb",
+  "name" : "test_ToogleWifiMode_2g_WPA[setup_profiles0]",
+  "fullName" : "e2e.interOp.android.WifiMode.test_ToggleWifiMode.TestToggleWifiMode#test_ToogleWifiMode_2g_WPA",
+  "historyId" : "c1f14d8103a2a9eafafe07402cd301dc",
+  "time" : {
+    "start" : 1631584127782,
+    "stop" : 1631584177796,
+    "duration" : 50014
+  },
+  "status" : "failed",
+  "statusMessage" : "AssertionError",
+  "statusTrace" : "request = <FixtureRequest for <Function test_ToogleWifiMode_2g_WPA[setup_profiles0]>>\nWifiName = 'ssid_wpa_2g', WifiPass = 'something'\nsetup_perfectoMobile = (<appium.webdriver.webdriver.WebDriver (session=\"18bbe845-1e18-4007-ae3f-679a6eca85e9\")>, <perfecto.client.PerfectoReportiumClient.PerfectoReportiumClient object at 0x7fde68124d30>)\nconnData = {'appPackage-android': 'com.android.settings', 'bundleId-iOS-Settings': 'com.apple.Preferences', 'platformName-android': 'Android'}\n\n    def set_APconnMobileDevice_android(request, WifiName, WifiPass, setup_perfectoMobile, connData):\n        print(\"\\n-------------------------------------\")\n        print(\"Select Wifi/AccessPoint Connection\")\n        print(\"-------------------------------------\")\n        print(\"Verifying Wifi/AP Connection Details....\")\n        report = setup_perfectoMobile[1]\n        driver = setup_perfectoMobile[0]\n    \n        report.step_start(\"Switching Driver Context\")\n        print(\"Switching Context to Native\")\n        contexts = driver.contexts\n        driver.switch_to.context(contexts[0])\n    \n        #Open Settings Application\n        openApp(connData[\"appPackage-android\"], setup_perfectoMobile)\n    \n        deviceModelName = getDeviceModelName(setup_perfectoMobile)\n        print (\"Selected Device Model: \" + deviceModelName)\n    \n        if deviceModelName!=(\"Pixel 4\"):\n    \n            report.step_start(\"Set Wifi Network to \" + WifiName)\n            try:\n                print(\"Verifying Connected Wifi Connection\")\n                report.step_start(\"Click Connections\")\n                connElement = driver.find_element_by_xpath(\"//*[@text='Connections']\")\n                connElement.click()\n            except NoSuchElementException:\n                print(\"Exception: Verify Xpath - Update/check Xpath for Click Connections\")\n    \n            try:\n                print(\"Get Connected Wifi Name if any\")\n                report.step_start(\"Get Connected Wifi Name if any\")\n                try:\n                    driver.implicitly_wait(20)\n                    WifiNameElement = driver.find_element_by_xpath(\"//*[@resource-id='android:id/summary']\")\n                    Wifi_AP_Name = WifiNameElement.text\n                    print(\"Current Wifi Status Name: \" + Wifi_AP_Name)\n                except NoSuchElementException:\n                    report.step_start(\"Checking Wifi Radio Button Status\")\n                    try:\n                        driver.implicitly_wait(5)\n                        WifiRadioBtnConnections = driver.find_element_by_xpath(\"//*[@resource-id='android:id/switch_widget' and @content-desc='Wi-Fi' and @text='Off']\")\n                        report.step_start(\"Wifi Radio Button Disabled, Enabling Radio Button..\")\n                        print(\"Wifi Radio Button Disabled, Enabling Radio Button..\")\n                        WifiRadioBtnConnections.click()\n                    except NoSuchElementException:\n                        Wifi_AP_Name=\"Null\"\n                        driver.implicitly_wait(25)\n                        report.step_start(\"Wifi Radio Button Already Enabled\")\n                        print(\"Wifi Radio Button Already Enabled\")\n    \n            except NoSuchElementException:\n                Wifi_AP_Name=\"Null\"\n                print(\"Device not connected to any Wifi\")\n    \n            report.step_start(\"Clicking Wi-Fi\")\n            wifiElement = driver.find_element_by_xpath(\"//*[@text='Wi-Fi']\")\n            wifiElement.click()\n    \n            if Wifi_AP_Name.__eq__(WifiName):\n                print(\"Wifi Name Matches - Already Connected To: \" + Wifi_AP_Name)\n    \n                try:\n                    report.step_start(\"Verify if Wifi is Connected\")\n                    WifiInternetErrMsg = driver.find_element_by_xpath(\"//*[@resource-id='com.android.settings:id/summary' and @text='Connected']/parent::*/android.widget.TextView[@text='\" + WifiName + \"']\")\n                    print(\"Wifi Successfully Connected\")\n    \n                except NoSuchElementException:\n                    print(\"Wifi Connection Error: \" + WifiName)\n    \n            else:\n    \n                #print(\"Set Wifi Radio Button to enabled\")\n                #try:\n                #    report.step_start(\"Set Wifi Radio Button to enabled\")\n                #    wifiRadioBtn = driver.find_element_by_xpath(\"//*[@resource-id='com.android.settings:id/switch_widget' and @text='Wi-Fi, Off']\")\n                #    wifiRadioBtn.click()\n               # except NoSuchElementException:\n               #     report.step_start(\"Set Wifi Radio Button Already enabled\")\n                 #   print(\"Radio button Already Enabled\")\n    \n                print(\"Selecting Wifi: \" + WifiName)\n                try:\n                    report.step_start(\"Selecting Wifi: \" + WifiName)\n>                   wifiSelectionElement = WebDriverWait(driver, 35).until(EC.presence_of_element_located((MobileBy.XPATH, \"//*[@text='\"+ WifiName + \"']\")))\n\n../libs/perfecto_libs/android_lib.py:156: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <selenium.webdriver.support.wait.WebDriverWait (session=\"18bbe845-1e18-4007-ae3f-679a6eca85e9\")>\nmethod = <selenium.webdriver.support.expected_conditions.presence_of_element_located object at 0x7fde6039c8b0>\nmessage = ''\n\n    def until(self, method, message=''):\n        \"\"\"Calls the method provided with the driver as an argument until the \\\n        return value is not False.\"\"\"\n        screen = None\n        stacktrace = None\n    \n        end_time = time.time() + self._timeout\n        while True:\n            try:\n                value = method(self._driver)\n                if value:\n                    return value\n            except self._ignored_exceptions as exc:\n                screen = getattr(exc, 'screen', None)\n                stacktrace = getattr(exc, 'stacktrace', None)\n            time.sleep(self._poll)\n            if time.time() > end_time:\n                break\n>       raise TimeoutException(message, screen, stacktrace)\nE       selenium.common.exceptions.TimeoutException: Message: \nE       Stacktrace:\nE           at sun.reflect.GeneratedConstructorAccessor2734.newInstance (None:-1)\nE           at sun.reflect.DelegatingConstructorAccessorImpl.newInstance (DelegatingConstructorAccessorImpl.java:45)\nE           at java.lang.reflect.Constructor.newInstance (Constructor.java:423)\nE           at org.openqa.selenium.remote.ErrorHandler.createThrowable (ErrorHandler.java:214)\nE           at org.openqa.selenium.remote.ErrorHandler.throwIfResponseFailed (ErrorHandler.java:166)\nE           at org.openqa.selenium.remote.http.JsonHttpResponseCodec.reconstructValue (JsonHttpResponseCodec.java:40)\nE           at org.openqa.selenium.remote.http.AbstractHttpResponseCodec.decode (AbstractHttpResponseCodec.java:80)\nE           at org.openqa.selenium.remote.http.AbstractHttpResponseCodec.decode (AbstractHttpResponseCodec.java:44)\nE           at org.openqa.selenium.remote.HttpCommandExecutor.execute (HttpCommandExecutor.java:158)\nE           at io.appium.java_client.remote.AppiumCommandExecutor.execute (AppiumCommandExecutor.java:239)\nE           at org.openqa.selenium.remote.RemoteWebDriver.execute (RemoteWebDriver.java:552)\nE           at io.appium.java_client.DefaultGenericMobileDriver.execute (DefaultGenericMobileDriver.java:41)\nE           at io.appium.java_client.AppiumDriver.execute (AppiumDriver.java:1)\nE           at io.appium.java_client.android.AndroidDriver.execute (AndroidDriver.java:1)\nE           at org.openqa.selenium.remote.RemoteWebDriver.findElement (RemoteWebDriver.java:323)\nE           at io.appium.java_client.DefaultGenericMobileDriver.findElement (DefaultGenericMobileDriver.java:61)\nE           at io.appium.java_client.AppiumDriver.findElement (AppiumDriver.java:1)\nE           at io.appium.java_client.android.AndroidDriver.findElement (AndroidDriver.java:1)\nE           at org.openqa.selenium.remote.RemoteWebDriver.findElementByXPath (RemoteWebDriver.java:428)\nE           at io.appium.java_client.DefaultGenericMobileDriver.findElementByXPath (DefaultGenericMobileDriver.java:151)\nE           at io.appium.java_client.AppiumDriver.findElementByXPath (AppiumDriver.java:1)\nE           at io.appium.java_client.android.AndroidDriver.findElementByXPath (AndroidDriver.java:1)\nE           at org.openqa.selenium.By$ByXPath.findElement (By.java:353)\nE           at org.openqa.selenium.remote.RemoteWebDriver.findElement (RemoteWebDriver.java:315)\nE           at io.appium.java_client.DefaultGenericMobileDriver.findElement (DefaultGenericMobileDriver.java:57)\nE           at io.appium.java_client.AppiumDriver.findElement (AppiumDriver.java:1)\nE           at io.appium.java_client.android.AndroidDriver.findElement (AndroidDriver.java:1)\nE           at com.perfectomobile.selenium.server.appium.AppiumAndroidDriverWrapper$2.call (AppiumAndroidDriverWrapper.java:78)\nE           at com.nexperience.function.execute.ExecuteCallableCommand.process (ExecuteCallableCommand.java:30)\nE           at com.nexperience.engine.script.command.AbstractScriptCommand.doExecute (AbstractScriptCommand.java:173)\nE           at com.nexperience.engine.script.command.ScriptCommandBase.execute (ScriptCommandBase.java:105)\nE           at com.nexperience.engine.script.tcl.event.CommandTclEvent.processEvent (CommandTclEvent.java:43)\nE           at com.nexperience.engine.script.tcl.event.MaseTclEvent.processEvent (MaseTclEvent.java:56)\nE           at tcl.lang.Notifier.serviceEvent (Notifier.java:457)\nE           at tcl.lang.Notifier.doOneEvent (Notifier.java:610)\nE           at tcl.lang.Notifier.processTclEvents (Notifier.java:786)\nE           at com.nexperience.engine.script.tcl.event.TclEventProcessor.start (TclEventProcessor.java:80)\nE           at com.nexperience.engine.script.tcl.TclInterpreter.startEventProcessing (TclInterpreter.java:552)\nE           at com.nexperience.engine.script.execution.step.StepExecutionEventProcessor.callImpl (StepExecutionEventProcessor.java:85)\nE           at com.nexperience.engine.script.execution.step.StepExecutionEventProcessor.callImpl (StepExecutionEventProcessor.java:21)\nE           at com.nexperience.util.thread.WrappedCallable.call (WrappedCallable.java:31)\nE           at java.util.concurrent.FutureTask.run (FutureTask.java:266)\nE           at java.util.concurrent.ThreadPoolExecutor.runWorker (ThreadPoolExecutor.java:1142)\nE           at java.util.concurrent.ThreadPoolExecutor$Worker.run (ThreadPoolExecutor.java:617)\nE           at java.lang.Thread.run (Thread.java:748)\n\n/usr/local/lib/python3.8/site-packages/selenium/webdriver/support/wait.py:80: TimeoutException\n\nDuring handling of the above exception, another exception occurred:\n\nself = <tests.e2e.interOp.android.WifiMode.test_ToggleWifiMode.TestToggleWifiMode object at 0x7fde6813b880>\nrequest = <FixtureRequest for <Function test_ToogleWifiMode_2g_WPA[setup_profiles0]>>\nget_vif_state = ['ssid_open_2g', 'ssid_open_5g', 'ssid_wpa_2g', 'ssid_wpa_2g', 'ssid_wpa_5g', 'ssid_wpa_2g', ...]\nget_ToggleWifiMode_data = {'appPackage-android': 'com.android.settings', 'bundleId-iOS-Settings': 'com.apple.Preferences', 'platformName-android': 'Android'}\nsetup_perfectoMobile_android = (<appium.webdriver.webdriver.WebDriver (session=\"18bbe845-1e18-4007-ae3f-679a6eca85e9\")>, <perfecto.client.PerfectoReportiumClient.PerfectoReportiumClient object at 0x7fde68124d30>)\n\n    @pytest.mark.twog\n    @pytest.mark.wpa\n    def test_ToogleWifiMode_2g_WPA(self, request, get_vif_state, get_ToggleWifiMode_data, setup_perfectoMobile_android):\n    \n        profile_data = setup_params_general[\"ssid_modes\"][\"wpa\"][0]\n        ssidName = profile_data[\"ssid_name\"]\n        ssidPassword = profile_data[\"security_key\"]\n        print(\"SSID_NAME: \" + ssidName)\n        print(\"SSID_PASS: \" + ssidPassword)\n    \n        if ssidName not in get_vif_state:\n            allure.attach(name=\"retest,vif state ssid not available:\", body=str(get_vif_state))\n            pytest.xfail(\"SSID NOT AVAILABLE IN VIF STATE\")\n    \n        report = setup_perfectoMobile_android[1]\n        driver = setup_perfectoMobile_android[0]\n        connData = get_ToggleWifiMode_data\n    \n        # Set Wifi/AP Mode\n>       set_APconnMobileDevice_android(request, ssidName, ssidPassword, setup_perfectoMobile_android, connData)\n\ne2e/interOp/android/WifiMode/test_ToggleWifiMode.py:154: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nrequest = <FixtureRequest for <Function test_ToogleWifiMode_2g_WPA[setup_profiles0]>>\nWifiName = 'ssid_wpa_2g', WifiPass = 'something'\nsetup_perfectoMobile = (<appium.webdriver.webdriver.WebDriver (session=\"18bbe845-1e18-4007-ae3f-679a6eca85e9\")>, <perfecto.client.PerfectoReportiumClient.PerfectoReportiumClient object at 0x7fde68124d30>)\nconnData = {'appPackage-android': 'com.android.settings', 'bundleId-iOS-Settings': 'com.apple.Preferences', 'platformName-android': 'Android'}\n\n    def set_APconnMobileDevice_android(request, WifiName, WifiPass, setup_perfectoMobile, connData):\n        print(\"\\n-------------------------------------\")\n        print(\"Select Wifi/AccessPoint Connection\")\n        print(\"-------------------------------------\")\n        print(\"Verifying Wifi/AP Connection Details....\")\n        report = setup_perfectoMobile[1]\n        driver = setup_perfectoMobile[0]\n    \n        report.step_start(\"Switching Driver Context\")\n        print(\"Switching Context to Native\")\n        contexts = driver.contexts\n        driver.switch_to.context(contexts[0])\n    \n        #Open Settings Application\n        openApp(connData[\"appPackage-android\"], setup_perfectoMobile)\n    \n        deviceModelName = getDeviceModelName(setup_perfectoMobile)\n        print (\"Selected Device Model: \" + deviceModelName)\n    \n        if deviceModelName!=(\"Pixel 4\"):\n    \n            report.step_start(\"Set Wifi Network to \" + WifiName)\n            try:\n                print(\"Verifying Connected Wifi Connection\")\n                report.step_start(\"Click Connections\")\n                connElement = driver.find_element_by_xpath(\"//*[@text='Connections']\")\n                connElement.click()\n            except NoSuchElementException:\n                print(\"Exception: Verify Xpath - Update/check Xpath for Click Connections\")\n    \n            try:\n                print(\"Get Connected Wifi Name if any\")\n                report.step_start(\"Get Connected Wifi Name if any\")\n                try:\n                    driver.implicitly_wait(20)\n                    WifiNameElement = driver.find_element_by_xpath(\"//*[@resource-id='android:id/summary']\")\n                    Wifi_AP_Name = WifiNameElement.text\n                    print(\"Current Wifi Status Name: \" + Wifi_AP_Name)\n                except NoSuchElementException:\n                    report.step_start(\"Checking Wifi Radio Button Status\")\n                    try:\n                        driver.implicitly_wait(5)\n                        WifiRadioBtnConnections = driver.find_element_by_xpath(\"//*[@resource-id='android:id/switch_widget' and @content-desc='Wi-Fi' and @text='Off']\")\n                        report.step_start(\"Wifi Radio Button Disabled, Enabling Radio Button..\")\n                        print(\"Wifi Radio Button Disabled, Enabling Radio Button..\")\n                        WifiRadioBtnConnections.click()\n                    except NoSuchElementException:\n                        Wifi_AP_Name=\"Null\"\n                        driver.implicitly_wait(25)\n                        report.step_start(\"Wifi Radio Button Already Enabled\")\n                        print(\"Wifi Radio Button Already Enabled\")\n    \n            except NoSuchElementException:\n                Wifi_AP_Name=\"Null\"\n                print(\"Device not connected to any Wifi\")\n    \n            report.step_start(\"Clicking Wi-Fi\")\n            wifiElement = driver.find_element_by_xpath(\"//*[@text='Wi-Fi']\")\n            wifiElement.click()\n    \n            if Wifi_AP_Name.__eq__(WifiName):\n                print(\"Wifi Name Matches - Already Connected To: \" + Wifi_AP_Name)\n    \n                try:\n                    report.step_start(\"Verify if Wifi is Connected\")\n                    WifiInternetErrMsg = driver.find_element_by_xpath(\"//*[@resource-id='com.android.settings:id/summary' and @text='Connected']/parent::*/android.widget.TextView[@text='\" + WifiName + \"']\")\n                    print(\"Wifi Successfully Connected\")\n    \n                except NoSuchElementException:\n                    print(\"Wifi Connection Error: \" + WifiName)\n    \n            else:\n    \n                #print(\"Set Wifi Radio Button to enabled\")\n                #try:\n                #    report.step_start(\"Set Wifi Radio Button to enabled\")\n                #    wifiRadioBtn = driver.find_element_by_xpath(\"//*[@resource-id='com.android.settings:id/switch_widget' and @text='Wi-Fi, Off']\")\n                #    wifiRadioBtn.click()\n               # except NoSuchElementException:\n               #     report.step_start(\"Set Wifi Radio Button Already enabled\")\n                 #   print(\"Radio button Already Enabled\")\n    \n                print(\"Selecting Wifi: \" + WifiName)\n                try:\n                    report.step_start(\"Selecting Wifi: \" + WifiName)\n                    wifiSelectionElement = WebDriverWait(driver, 35).until(EC.presence_of_element_located((MobileBy.XPATH, \"//*[@text='\"+ WifiName + \"']\")))\n                    wifiSelectionElement.click()\n                except Exception as e:\n                    print(\"Exception on Selecting Wifi Network.  Please check wifi Name or signal\")\n                    request.config.cache.set(key=\"SelectingWifiFailed\", value=str(e))\n>                   assert False\nE                   AssertionError\n\n../libs/perfecto_libs/android_lib.py:161: AssertionError",
+  "flaky" : true,
+  "newFailed" : false,
+  "beforeStages" : [ {
+    "name" : "get_configuration",
+    "time" : {
+      "start" : 1631579256865,
+      "stop" : 1631579256865,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_profiles",
+    "time" : {
+      "start" : 1631583820390,
+      "stop" : 1631583903625,
+      "duration" : 83235
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "2f4ff8f14ffefc14",
+      "name" : "ucentral_config: ",
+      "source" : "2f4ff8f14ffefc14.attach",
+      "type" : "text/plain",
+      "size" : 2046
+    }, {
+      "uid" : "7c623ee41af4788c",
+      "name" : "Time Took to apply Config: 4.1161580085754395",
+      "source" : "7c623ee41af4788c.attach",
+      "type" : "application/octet-stream",
+      "size" : 0
+    }, {
+      "uid" : "92b0bd38f0a00299",
+      "name" : "Success : Active Config in AP: ",
+      "source" : "92b0bd38f0a00299.attach",
+      "type" : "text/plain",
+      "size" : 2046
+    }, {
+      "uid" : "303e663f61f5b247",
+      "name" : "iwinfo: ",
+      "source" : "303e663f61f5b247.attach",
+      "type" : "text/plain",
+      "size" : 1104
+    }, {
+      "uid" : "6a473cb3320dc7ca",
+      "name" : "AP Logs: ",
+      "source" : "6a473cb3320dc7ca.attach",
+      "type" : "text/plain",
+      "size" : 70781
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 5,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "add_allure_environment_property",
+    "time" : {
+      "start" : 1631579256865,
+      "stop" : 1631579256865,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_security_flags",
+    "time" : {
+      "start" : 1631579260520,
+      "stop" : 1631579260520,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "radius_info",
+    "time" : {
+      "start" : 1631579261160,
+      "stop" : 1631579261160,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_controller",
+    "time" : {
+      "start" : 1631579260519,
+      "stop" : 1631579260519,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "radius_accounting_info",
+    "time" : {
+      "start" : 1631579261160,
+      "stop" : 1631579261161,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "fixtures_ver",
+    "time" : {
+      "start" : 1631579256866,
+      "stop" : 1631579256907,
+      "duration" : 41
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_perfectoMobile_android",
+    "time" : {
+      "start" : 1631584081762,
+      "stop" : 1631584127781,
+      "duration" : 46019
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_markers",
+    "time" : {
+      "start" : 1631579260521,
+      "stop" : 1631579260526,
+      "duration" : 5
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "create_lanforge_chamberview_dut",
+    "time" : {
+      "start" : 1631579260526,
+      "stop" : 1631579260834,
+      "duration" : 308
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_equipment_id",
+    "time" : {
+      "start" : 1631579260519,
+      "stop" : 1631579260520,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "lf_tools",
+    "time" : {
+      "start" : 1631579260834,
+      "stop" : 1631579261159,
+      "duration" : 325
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "testbed",
+    "time" : {
+      "start" : 1631579256865,
+      "stop" : 1631579256865,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_vif_state",
+    "time" : {
+      "start" : 1631583903625,
+      "stop" : 1631583903625,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_ToggleWifiMode_data",
+    "time" : {
+      "start" : 1631584081761,
+      "stop" : 1631584081761,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "instantiate_profile",
+    "time" : {
+      "start" : 1631579260520,
+      "stop" : 1631579260520,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "add_env_properties",
+    "time" : {
+      "start" : 1631579256908,
+      "stop" : 1631579260519,
+      "duration" : 3611
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_apnos",
+    "time" : {
+      "start" : 1631579256866,
+      "stop" : 1631579256866,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "test_access_point",
+    "time" : {
+      "start" : 1631579256866,
+      "stop" : 1631579256866,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "afterStages" : [ {
+    "name" : "get_configuration::0",
+    "time" : {
+      "start" : 1631586413011,
+      "stop" : 1631586413011,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_profiles::1",
+    "time" : {
+      "start" : 1631584433395,
+      "stop" : 1631584433396,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_profiles::teardown_session",
+    "time" : {
+      "start" : 1631584433396,
+      "stop" : 1631584441896,
+      "duration" : 8500
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "d0735872b4af1645",
+      "name" : "iwinfo: ",
+      "source" : "d0735872b4af1645.attach",
+      "type" : "text/plain",
+      "size" : 2208
+    }, {
+      "uid" : "34d6c52e12c17f80",
+      "name" : "AP Logs after test completion",
+      "source" : "34d6c52e12c17f80.attach",
+      "type" : "text/plain",
+      "size" : 70729
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 2,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "add_allure_environment_property::0",
+    "time" : {
+      "start" : 1631586413031,
+      "stop" : 1631586413031,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_security_flags::0",
+    "time" : {
+      "start" : 1631586412814,
+      "stop" : 1631586412814,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "radius_info::0",
+    "time" : {
+      "start" : 1631586412790,
+      "stop" : 1631586412790,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_controller::1",
+    "time" : {
+      "start" : 1631586412829,
+      "stop" : 1631586412829,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_controller::disconnect",
+    "time" : {
+      "start" : 1631586412829,
+      "stop" : 1631586412873,
+      "duration" : 44
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "radius_accounting_info::0",
+    "time" : {
+      "start" : 1631586412784,
+      "stop" : 1631586412784,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "fixtures_ver::0",
+    "time" : {
+      "start" : 1631586412889,
+      "stop" : 1631586412889,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_perfectoMobile_android::1",
+    "time" : {
+      "start" : 1631584178206,
+      "stop" : 1631584178206,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_perfectoMobile_android::teardown",
+    "time" : {
+      "start" : 1631584178207,
+      "stop" : 1631584201641,
+      "duration" : 23434
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_markers::0",
+    "time" : {
+      "start" : 1631586412807,
+      "stop" : 1631586412807,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "create_lanforge_chamberview_dut::0",
+    "time" : {
+      "start" : 1631586412802,
+      "stop" : 1631586412802,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_equipment_id::0",
+    "time" : {
+      "start" : 1631586412822,
+      "stop" : 1631586412822,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "lf_tools::0",
+    "time" : {
+      "start" : 1631586412798,
+      "stop" : 1631586412798,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "testbed::0",
+    "time" : {
+      "start" : 1631586413028,
+      "stop" : 1631586413028,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_vif_state::0",
+    "time" : {
+      "start" : 1631584433395,
+      "stop" : 1631584433395,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_ToggleWifiMode_data::0",
+    "time" : {
+      "start" : 1631584201642,
+      "stop" : 1631584201642,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "instantiate_profile::0",
+    "time" : {
+      "start" : 1631586412818,
+      "stop" : 1631586412818,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_apnos::0",
+    "time" : {
+      "start" : 1631586412939,
+      "stop" : 1631586412939,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "test_access_point::0",
+    "time" : {
+      "start" : 1631586412894,
+      "stop" : 1631586412894,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "labels" : [ {
+    "name" : "feature",
+    "value" : "NAT MODE CLIENT CONNECTIVITY"
+  }, {
+    "name" : "tag",
+    "value" : "ToggleWifiMode"
+  }, {
+    "name" : "tag",
+    "value" : "sanity"
+  }, {
+    "name" : "tag",
+    "value" : "android"
+  }, {
+    "name" : "tag",
+    "value" : "interop_and"
+  }, {
+    "name" : "tag",
+    "value" : "wpa"
+  }, {
+    "name" : "tag",
+    "value" : "twog"
+  }, {
+    "name" : "tag",
+    "value" : "@pytest.mark.usefixtures('setup_profiles')"
+  }, {
+    "name" : "tag",
+    "value" : "interop"
+  }, {
+    "name" : "parentSuite",
+    "value" : "e2e.interOp.android.WifiMode"
+  }, {
+    "name" : "suite",
+    "value" : "test_ToggleWifiMode"
+  }, {
+    "name" : "subSuite",
+    "value" : "TestToggleWifiMode"
+  }, {
+    "name" : "host",
+    "value" : "interop-ci-212-android-cg2bt"
+  }, {
+    "name" : "thread",
+    "value" : "7-MainThread"
+  }, {
+    "name" : "framework",
+    "value" : "pytest"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "package",
+    "value" : "e2e.interOp.android.WifiMode.test_ToggleWifiMode"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ {
+    "name" : "setup_profiles",
+    "value" : "{'mode': 'NAT', 'ssid_modes': {'open': [{'ssid_name': 'ssid_open_2g', 'appliedRadios': ['2G'], 'security': 'none'}, {'ssid_name': 'ssid_open_5g', 'appliedRadios': ['5G'], 'security': 'none'}], 'wpa': [{'ssid_name': 'ssid_wpa_2g', 'appliedRadios': ['2G'], 'security_key': 'something', 'security': 'psk'}, {'ssid_name': 'ssid_wpa_5g', 'appliedRadios': ['5G'], 'security_key': 'something', 'security': 'psk'}], 'wpa2_personal': [{'ssid_name': 'ssid_wpa2_2g', 'appliedRadios': ['2G'], 'security_key': 'something', 'security': 'psk2'}, {'ssid_name': 'ssid_wpa2_5g', 'appliedRadios': ['5G'], 'security_key': 'something', 'security': 'psk2'}]}, 'rf': {}, 'radius': False}"
+  } ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ {
+      "name" : "Product defects",
+      "matchedStatuses" : [ ],
+      "flaky" : false
+    } ],
+    "history" : {
+      "statistic" : {
+        "failed" : 9,
+        "broken" : 24,
+        "skipped" : 2,
+        "passed" : 28,
+        "unknown" : 0,
+        "total" : 63
+      },
+      "items" : [ {
+        "uid" : "6e93af702da31708",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: assert False\n +  where False = Toggle_WifiMode_android(<FixtureRequest for <Function test_ToogleWifiMode_2g_WPA[setup_profiles0]>>, (<appium.webdriver.webdriver.WebDriver (session=\"c178e1ce-94b8-4c3e-8ba3-22312796bb9f\")>, <perfecto.client.PerfectoReportiumClient.PerfectoReportiumClient object at 0x7f57383a4220>), 'ssid_wpa_2g', {'appPackage-android': 'com.android.settings', 'bundleId-iOS-Settings': 'com.apple.Preferences', 'platformName-android': 'Android'})",
+        "time" : {
+          "start" : 1631498437917,
+          "stop" : 1631498499384,
+          "duration" : 61467
+        }
+      }, {
+        "uid" : "e48ffd0e0dba6bb0",
+        "status" : "broken",
+        "statusDetails" : "requests.exceptions.ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
+        "time" : {
+          "start" : 1631406706498,
+          "stop" : 1631406706498,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "80e2e95b2d7f75e7",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: assert False\n +  where False = Toggle_WifiMode_android(<FixtureRequest for <Function test_ToogleWifiMode_2g_WPA[setup_profiles0]>>, (<appium.webdriver.webdriver.WebDriver (session=\"594f35c9-b7ec-4590-9adb-ef913ebcc621\")>, <perfecto.client.PerfectoReportiumClient.PerfectoReportiumClient object at 0x7f49542dcd30>), 'ssid_wpa_2g', {'appPackage-android': 'com.android.settings', 'bundleId-iOS-Settings': 'com.apple.Preferences', 'platformName-android': 'Android'})",
+        "time" : {
+          "start" : 1631324898562,
+          "stop" : 1631324960980,
+          "duration" : 62418
+        }
+      }, {
+        "uid" : "e0326854e8b045a4",
+        "status" : "failed",
+        "statusDetails" : "AssertionError",
+        "time" : {
+          "start" : 1631238038482,
+          "stop" : 1631238087881,
+          "duration" : 49399
+        }
+      }, {
+        "uid" : "cb51812f10dcc6d0",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: assert False\n +  where False = Toggle_WifiMode_android(<FixtureRequest for <Function test_ToogleWifiMode_2g_WPA[setup_profiles0]>>, (<appium.webdriver.webdriver.WebDriver (session=\"f48f5f31-dae5-4197-a96b-68851c50ed01\")>, <perfecto.client.PerfectoReportiumClient.PerfectoReportiumClient object at 0x7fb06b582ee0>), 'ssid_wpa_2g', {'appPackage-android': 'com.android.settings', 'bundleId-iOS-Settings': 'com.apple.Preferences', 'platformName-android': 'Android'})",
+        "time" : {
+          "start" : 1631153332107,
+          "stop" : 1631153395214,
+          "duration" : 63107
+        }
+      }, {
+        "uid" : "afddca0b9742362f",
+        "status" : "passed",
+        "time" : {
+          "start" : 1631068428125,
+          "stop" : 1631068506471,
+          "duration" : 78346
+        }
+      }, {
+        "uid" : "effb660468763ffe",
+        "status" : "passed",
+        "time" : {
+          "start" : 1630981501961,
+          "stop" : 1630981621623,
+          "duration" : 119662
+        }
+      }, {
+        "uid" : "f18dfd12c92ebb5",
+        "status" : "skipped",
+        "statusDetails" : "XFAIL reason: SSID NOT AVAILABLE IN VIF STATE\n\n_pytest.outcomes.XFailed: SSID NOT AVAILABLE IN VIF STATE",
+        "time" : {
+          "start" : 1630892157049,
+          "stop" : 1630892157050,
+          "duration" : 1
+        }
+      }, {
+        "uid" : "c8c8feb5efae6290",
+        "status" : "failed",
+        "statusDetails" : "AssertionError",
+        "time" : {
+          "start" : 1630721398417,
+          "stop" : 1630721485043,
+          "duration" : 86626
+        }
+      }, {
+        "uid" : "882112a27550c10f",
+        "status" : "passed",
+        "time" : {
+          "start" : 1630634715507,
+          "stop" : 1630634795355,
+          "duration" : 79848
+        }
+      }, {
+        "uid" : "f66a9c70f62ac5fb",
+        "status" : "broken",
+        "statusDetails" : "selenium.common.exceptions.TimeoutException: Message: \nStacktrace:\n    at sun.reflect.GeneratedConstructorAccessor1341.newInstance (None:-1)\n    at sun.reflect.DelegatingConstructorAccessorImpl.newInstance (DelegatingConstructorAccessorImpl.java:45)\n    at java.lang.reflect.Constructor.newInstance (Constructor.java:423)\n    at org.openqa.selenium.remote.ErrorHandler.createThrowable (ErrorHandler.java:214)\n    at org.openqa.selenium.remote.ErrorHandler.throwIfResponseFailed (ErrorHandler.java:166)\n    at org.openqa.selenium.remote.http.JsonHttpResponseCodec.reconstructValue (JsonHttpResponseCodec.java:40)\n    at org.openqa.selenium.remote.http.AbstractHttpResponseCodec.decode (AbstractHttpResponseCodec.java:80)\n    at org.openqa.selenium.remote.http.AbstractHttpResponseCodec.decode (AbstractHttpResponseCodec.java:44)\n    at org.openqa.selenium.remote.HttpCommandExecutor.execute (HttpCommandExecutor.java:158)\n    at io.appium.java_client.remote.AppiumCommandExecutor.execute (AppiumCommandExecutor.java:239)\n    at org.openqa.selenium.remote.RemoteWebDriver.execute (RemoteWebDriver.java:552)\n    at io.appium.java_client.DefaultGenericMobileDriver.execute (DefaultGenericMobileDriver.java:41)\n    at io.appium.java_client.AppiumDriver.execute (AppiumDriver.java:1)\n    at io.appium.java_client.android.AndroidDriver.execute (AndroidDriver.java:1)\n    at org.openqa.selenium.remote.RemoteWebDriver.findElement (RemoteWebDriver.java:323)\n    at io.appium.java_client.DefaultGenericMobileDriver.findElement (DefaultGenericMobileDriver.java:61)\n    at io.appium.java_client.AppiumDriver.findElement (AppiumDriver.java:1)\n    at io.appium.java_client.android.AndroidDriver.findElement (AndroidDriver.java:1)\n    at org.openqa.selenium.remote.RemoteWebDriver.findElementByXPath (RemoteWebDriver.java:428)\n    at io.appium.java_client.DefaultGenericMobileDriver.findElementByXPath (DefaultGenericMobileDriver.java:151)\n    at io.appium.java_client.AppiumDriver.findElementByXPath (AppiumDriver.java:1)\n    at io.appium.java_client.android.AndroidDriver.findElementByXPath (AndroidDriver.java:1)\n    at org.openqa.selenium.By$ByXPath.findElement (By.java:353)\n    at org.openqa.selenium.remote.RemoteWebDriver.findElement (RemoteWebDriver.java:315)\n    at io.appium.java_client.DefaultGenericMobileDriver.findElement (DefaultGenericMobileDriver.java:57)\n    at io.appium.java_client.AppiumDriver.findElement (AppiumDriver.java:1)\n    at io.appium.java_client.android.AndroidDriver.findElement (AndroidDriver.java:1)\n    at com.perfectomobile.selenium.server.appium.AppiumAndroidDriverWrapper$2.call (AppiumAndroidDriverWrapper.java:78)\n    at com.nexperience.function.execute.ExecuteCallableCommand.process (ExecuteCallableCommand.java:30)\n    at com.nexperience.engine.script.command.AbstractScriptCommand.doExecute (AbstractScriptCommand.java:173)\n    at com.nexperience.engine.script.command.ScriptCommandBase.execute (ScriptCommandBase.java:105)\n    at com.nexperience.engine.script.tcl.event.CommandTclEvent.processEvent (CommandTclEvent.java:43)\n    at com.nexperience.engine.script.tcl.event.MaseTclEvent.processEvent (MaseTclEvent.java:56)\n    at tcl.lang.Notifier.serviceEvent (Notifier.java:457)\n    at tcl.lang.Notifier.doOneEvent (Notifier.java:610)\n    at tcl.lang.Notifier.processTclEvents (Notifier.java:786)\n    at com.nexperience.engine.script.tcl.event.TclEventProcessor.start (TclEventProcessor.java:80)\n    at com.nexperience.engine.script.tcl.TclInterpreter.startEventProcessing (TclInterpreter.java:552)\n    at com.nexperience.engine.script.execution.step.StepExecutionEventProcessor.callImpl (StepExecutionEventProcessor.java:85)\n    at com.nexperience.engine.script.execution.step.StepExecutionEventProcessor.callImpl (StepExecutionEventProcessor.java:21)\n    at com.nexperience.util.thread.WrappedCallable.call (WrappedCallable.java:31)\n    at java.util.concurrent.FutureTask.run (FutureTask.java:266)\n    at java.util.concurrent.ThreadPoolExecutor.runWorker (ThreadPoolExecutor.java:1142)\n    at java.util.concurrent.ThreadPoolExecutor$Worker.run (ThreadPoolExecutor.java:617)\n    at java.lang.Thread.run (Thread.java:748)",
+        "time" : {
+          "start" : 1630549391318,
+          "stop" : 1630549468673,
+          "duration" : 77355
+        }
+      }, {
+        "uid" : "9a35dfa1dd40f350",
+        "status" : "broken",
+        "statusDetails" : "KeyError: 'ip'",
+        "time" : {
+          "start" : 1630369759519,
+          "stop" : 1630369759519,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "91878ad1f34cd2ae",
+        "status" : "passed",
+        "time" : {
+          "start" : 1630291317300,
+          "stop" : 1630291435417,
+          "duration" : 118117
+        }
+      }, {
+        "uid" : "a881baaf50e55bb4",
+        "status" : "passed",
+        "time" : {
+          "start" : 1630205688715,
+          "stop" : 1630205806398,
+          "duration" : 117683
+        }
+      }, {
+        "uid" : "3cf5ad49583a6176",
+        "status" : "passed",
+        "time" : {
+          "start" : 1630119802982,
+          "stop" : 1630119919578,
+          "duration" : 116596
+        }
+      }, {
+        "uid" : "d71a213d7c41fe78",
+        "status" : "passed",
+        "time" : {
+          "start" : 1629773431399,
+          "stop" : 1629773548904,
+          "duration" : 117505
+        }
+      }, {
+        "uid" : "67a17cbdb572d1c",
+        "status" : "broken",
+        "statusDetails" : "KeyError: 'interop'",
+        "time" : {
+          "start" : 1629678411007,
+          "stop" : 1629678411007,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "29c8977825d05da1",
+        "status" : "broken",
+        "statusDetails" : "KeyError: 'interop'",
+        "time" : {
+          "start" : 1629649165537,
+          "stop" : 1629649165537,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "56aabb66428b189f",
+        "status" : "passed",
+        "time" : {
+          "start" : 1629601159587,
+          "stop" : 1629601243292,
+          "duration" : 83705
+        }
+      }, {
+        "uid" : "d9ee3807d73c1505",
+        "status" : "passed",
+        "time" : {
+          "start" : 1629512491641,
+          "stop" : 1629512612156,
+          "duration" : 120515
+        }
+      } ]
+    },
+    "tags" : [ "@pytest.mark.usefixtures('setup_profiles')", "ToggleWifiMode", "android", "interop", "sanity", "interop_and", "wpa", "twog" ]
+  },
+  "source" : "c8e57349089612cb.json",
+  "parameterValues" : [ "{'mode': 'NAT', 'ssid_modes': {'open': [{'ssid_name': 'ssid_open_2g', 'appliedRadios': ['2G'], 'security': 'none'}, {'ssid_name': 'ssid_open_5g', 'appliedRadios': ['5G'], 'security': 'none'}], 'wpa': [{'ssid_name': 'ssid_wpa_2g', 'appliedRadios': ['2G'], 'security_key': 'something', 'security': 'psk'}, {'ssid_name': 'ssid_wpa_5g', 'appliedRadios': ['5G'], 'security_key': 'something', 'security': 'psk'}], 'wpa2_personal': [{'ssid_name': 'ssid_wpa2_2g', 'appliedRadios': ['2G'], 'security_key': 'something', 'security': 'psk2'}, {'ssid_name': 'ssid_wpa2_5g', 'appliedRadios': ['5G'], 'security_key': 'something', 'security': 'psk2'}]}, 'rf': {}, 'radius': False}" ]
+}
