@@ -1,0 +1,1072 @@
+{
+  "uid" : "acbfe1775e2b1f6a",
+  "name" : "test_wpa3_personal_ssid_5g[setup_profiles0]",
+  "fullName" : "e2e.basic.validation_of_operating_modes.vlan_mode.client_connectivity.test_general_security_modes.TestvlanModeConnectivitySuiteTwo#test_wpa3_personal_ssid_5g",
+  "historyId" : "6746b21f772df062e574aef28155fe88",
+  "time" : {
+    "start" : 1631670039394,
+    "stop" : 1631670119879,
+    "duration" : 80485
+  },
+  "description" : "Client Connectivity open ssid 2.4G\n           pytest -m \"client_connectivity and vlan and general and wpa3_personal and fiveg\"\n        ",
+  "descriptionHtml" : "<p>Client Connectivity open ssid 2.4G\npytest -m &quot;client_connectivity and vlan and general and wpa3_personal and fiveg&quot;</p>\n",
+  "status" : "broken",
+  "statusMessage" : "TypeError: 'NoneType' object is not subscriptable",
+  "statusTrace" : "self = <tests.e2e.basic.validation_of_operating_modes.vlan_mode.client_connectivity.test_general_security_modes.TestvlanModeConnectivitySuiteTwo object at 0x7fd8d81fd5b0>\nget_vif_state = ['ssid_wpa2_eap_2g', 'ssid_wpa2_eap_5g', 'ssid_wpa3_eap_2g', 'ssid_wpa3_eap_5g', 'ssid_wpa2_eap_2g', 'ssid_wpa2_eap_5g', ...]\nget_ap_logs = None, station_names_fiveg = ['sta0000']\nget_lanforge_data = {'lanforge-port-number': 8080, 'lanforge_2dot4g': '1.1.wiphy0', 'lanforge_2dot4g_prefix': 'sta10', 'lanforge_2dot4g_station': 'sta10', ...}\nlf_test = <lanforge.lf_tests.RunTest object at 0x7fd8f41d4c70>, test_cases = []\nupdate_report = <testrails.reporting.Reporting object at 0x7fd8f42658b0>\n\n    @pytest.mark.uc_sanity\n    @pytest.mark.wpa3_personal\n    @pytest.mark.fiveg\n    @allure.story('open 5 GHZ Band')\n    def test_wpa3_personal_ssid_5g(self, get_vif_state, get_ap_logs,\n                                   station_names_fiveg, get_lanforge_data, lf_test, test_cases,\n                                   update_report):\n        \"\"\"Client Connectivity open ssid 2.4G\n           pytest -m \"client_connectivity and vlan and general and wpa3_personal and fiveg\"\n        \"\"\"\n        profile_data = setup_params_general_two[\"ssid_modes\"][\"wpa3_personal\"][1]\n        ssid_name = profile_data[\"ssid_name\"]\n        security_key = profile_data[\"security_key\"]\n        security = \"wpa3\"\n        mode = \"VLAN\"\n        band = \"fiveg\"\n        vlan = 100\n        get_vif_state.append(ssid_name)\n        if ssid_name not in get_vif_state:\n            allure.attach(name=\"retest,vif state ssid not available:\", body=str(get_vif_state))\n            pytest.xfail(\"SSID NOT AVAILABLE IN VIF STATE\")\n>       passes, result = lf_test.Client_Connectivity(ssid=ssid_name, security=security,\n                                                     passkey=security_key, mode=mode, band=band,\n                                                     station_name=station_names_fiveg, vlan_id=vlan)\n\ne2e/basic/validation_of_operating_modes/vlan_mode/client_connectivity/test_general_security_modes.py:292: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <lanforge.lf_tests.RunTest object at 0x7fd8f41d4c70>\nssid = 'ssid_wpa3_p_5g', passkey = 'something', security = 'wpa3'\nextra_securities = [], station_name = ['sta0000'], mode = 'VLAN', vlan_id = 100\nband = 'fiveg'\n\n    def Client_Connectivity(self, ssid=\"[BLANK]\", passkey=\"[BLANK]\", security=\"open\", extra_securities=[],\n                            station_name=[], mode=\"BRIDGE\", vlan_id=1, band=\"twog\"):\n        \"\"\"SINGLE CLIENT CONNECTIVITY using test_connect2.py\"\"\"\n        self.staConnect = StaConnect2(self.lanforge_ip, self.lanforge_port, debug_=self.debug)\n        self.staConnect.sta_mode = 0\n        self.staConnect.upstream_resource = 1\n        if mode == \"BRIDGE\":\n            self.staConnect.upstream_port = self.upstream_port\n        elif mode == \"NAT\":\n            self.staConnect.upstream_port = self.upstream_port\n        else:\n            self.staConnect.upstream_port = self.upstream_port + \".\" + str(vlan_id)\n        if band == \"twog\":\n            self.staConnect.radio = self.twog_radios[0]\n            self.staConnect.sta_prefix = self.twog_prefix\n        if band == \"fiveg\":\n            self.staConnect.radio = self.fiveg_radios[0]\n            self.staConnect.sta_prefix = self.fiveg_prefix\n        self.staConnect.resource = 1\n        self.staConnect.dut_ssid = ssid\n        self.staConnect.dut_passwd = passkey\n        self.staConnect.dut_security = security\n        self.staConnect.station_names = station_name\n        self.staConnect.runtime_secs = 40\n        self.staConnect.bringup_time_sec = 80\n        self.staConnect.cleanup_on_exit = True\n        # self.staConnect.cleanup()\n        self.staConnect.setup(extra_securities=extra_securities)\n        self.staConnect.start()\n        print(\"napping %f sec\" % self.staConnect.runtime_secs)\n        time.sleep(self.staConnect.runtime_secs)\n        for sta_name in self.staConnect.station_names:\n            try:\n                station_data_str = \"\"\n                sta_url = self.staConnect.get_station_url(sta_name)\n                station_info = self.staConnect.json_get(sta_url)\n                for i in station_info[\"interface\"]:\n                    try:\n                        station_data_str = station_data_str + i + \"  :  \" + str(station_info[\"interface\"][i]) + \"\\n\"\n                    except Exception as e:\n                        print(e)\n                allure.attach(name=str(sta_name), body=str(station_data_str))\n            except Exception as e:\n                print(e)\n        self.staConnect.stop()\n        self.staConnect.cleanup()\n        run_results = self.staConnect.get_result_list()\n        for result in run_results:\n            print(\"test result: \" + result)\n        result = True\n        print(\"Client Connectivity :\", self.staConnect.passes)\n        endp_data = []\n        for i in self.staConnect.resulting_endpoints:\n>           endp_data.append(self.staConnect.resulting_endpoints[i][\"endpoint\"])\nE           TypeError: 'NoneType' object is not subscriptable\n\n../libs/lanforge/lf_tests.py:127: TypeError",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ {
+    "name" : "create_lanforge_chamberview_dut",
+    "time" : {
+      "start" : 1631664105703,
+      "stop" : 1631664108609,
+      "duration" : 2906
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "add_env_properties",
+    "time" : {
+      "start" : 1631664101562,
+      "stop" : 1631664105390,
+      "duration" : 3828
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_apnos",
+    "time" : {
+      "start" : 1631664101510,
+      "stop" : 1631664101510,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_equipment_id",
+    "time" : {
+      "start" : 1631664105391,
+      "stop" : 1631664105391,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "lf_test",
+    "time" : {
+      "start" : 1631664101495,
+      "stop" : 1631664101496,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "station_names_fiveg",
+    "time" : {
+      "start" : 1631664273248,
+      "stop" : 1631664273248,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "test_access_point",
+    "time" : {
+      "start" : 1631664101510,
+      "stop" : 1631664101510,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "update_report",
+    "time" : {
+      "start" : 1631664101497,
+      "stop" : 1631664101497,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "radius_accounting_info",
+    "time" : {
+      "start" : 1631664108609,
+      "stop" : 1631664108609,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "add_allure_environment_property",
+    "time" : {
+      "start" : 1631664101493,
+      "stop" : 1631664101494,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "lf_tools",
+    "time" : {
+      "start" : 1631664105393,
+      "stop" : 1631664105703,
+      "duration" : 310
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "test_cases",
+    "time" : {
+      "start" : 1631664101509,
+      "stop" : 1631664101509,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_controller",
+    "time" : {
+      "start" : 1631664105390,
+      "stop" : 1631664105390,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_profiles",
+    "time" : {
+      "start" : 1631669812488,
+      "stop" : 1631669940002,
+      "duration" : 127514
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "8f74d0d52cfa8a69",
+      "name" : "ucentral_config: ",
+      "source" : "8f74d0d52cfa8a69.attach",
+      "type" : "text/plain",
+      "size" : 2054
+    }, {
+      "uid" : "8004336ed0ab6691",
+      "name" : "Time Took to apply Config: 7.350704669952393",
+      "source" : "8004336ed0ab6691.attach",
+      "type" : "application/octet-stream",
+      "size" : 0
+    }, {
+      "uid" : "97858244eaaacd56",
+      "name" : "Success : Active Config in AP: ",
+      "source" : "97858244eaaacd56.attach",
+      "type" : "text/plain",
+      "size" : 2054
+    }, {
+      "uid" : "1ab00c9cb8532694",
+      "name" : "iwinfo: ",
+      "source" : "1ab00c9cb8532694.attach",
+      "type" : "text/plain",
+      "size" : 3390
+    }, {
+      "uid" : "2e11bedb414c01c1",
+      "name" : "AP Log: ",
+      "source" : "2e11bedb414c01c1.attach",
+      "type" : "text/plain",
+      "size" : 43023
+    }, {
+      "uid" : "117ff7003a28ea26",
+      "name" : "wifi status",
+      "source" : "117ff7003a28ea26.attach",
+      "type" : "text/plain",
+      "size" : 3796
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 6,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "get_lanforge_data",
+    "time" : {
+      "start" : 1631664101495,
+      "stop" : 1631664101495,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "radius_info",
+    "time" : {
+      "start" : 1631664101509,
+      "stop" : 1631664101509,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "instantiate_profile",
+    "time" : {
+      "start" : 1631664105391,
+      "stop" : 1631664105391,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_influx",
+    "time" : {
+      "start" : 1631664101495,
+      "stop" : 1631664101495,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_ap_logs",
+    "time" : {
+      "start" : 1631670035141,
+      "stop" : 1631670039392,
+      "duration" : 4251
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_security_flags",
+    "time" : {
+      "start" : 1631664105391,
+      "stop" : 1631664105391,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_vif_state",
+    "time" : {
+      "start" : 1631669940002,
+      "stop" : 1631669940002,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_configuration",
+    "time" : {
+      "start" : 1631664101494,
+      "stop" : 1631664101494,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "testbed",
+    "time" : {
+      "start" : 1631664101494,
+      "stop" : 1631664101494,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_markers",
+    "time" : {
+      "start" : 1631664105391,
+      "stop" : 1631664105392,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "fixtures_ver",
+    "time" : {
+      "start" : 1631664101510,
+      "stop" : 1631664101562,
+      "duration" : 52
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "afterStages" : [ {
+    "name" : "get_apnos::0",
+    "time" : {
+      "start" : 1631670518865,
+      "stop" : 1631670518865,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_equipment_id::0",
+    "time" : {
+      "start" : 1631670518796,
+      "stop" : 1631670518796,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "lf_test::0",
+    "time" : {
+      "start" : 1631670518869,
+      "stop" : 1631670518869,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "station_names_fiveg::0",
+    "time" : {
+      "start" : 1631670518873,
+      "stop" : 1631670518873,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "test_access_point::0",
+    "time" : {
+      "start" : 1631670518855,
+      "stop" : 1631670518855,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "update_report::0",
+    "time" : {
+      "start" : 1631670518868,
+      "stop" : 1631670518868,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "radius_accounting_info::0",
+    "time" : {
+      "start" : 1631670518746,
+      "stop" : 1631670518746,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "add_allure_environment_property::0",
+    "time" : {
+      "start" : 1631670518939,
+      "stop" : 1631670518940,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "lf_tools::0",
+    "time" : {
+      "start" : 1631670518770,
+      "stop" : 1631670518770,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "test_cases::0",
+    "time" : {
+      "start" : 1631670518868,
+      "stop" : 1631670518868,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_controller::1",
+    "time" : {
+      "start" : 1631670518804,
+      "stop" : 1631670518804,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_controller::disconnect",
+    "time" : {
+      "start" : 1631670518804,
+      "stop" : 1631670518833,
+      "duration" : 29
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_profiles::1",
+    "time" : {
+      "start" : 1631670512649,
+      "stop" : 1631670512649,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_profiles::teardown_session",
+    "time" : {
+      "start" : 1631670512650,
+      "stop" : 1631670518739,
+      "duration" : 6089
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "7ba854390eb01dd2",
+      "name" : "wifi status",
+      "source" : "7ba854390eb01dd2.attach",
+      "type" : "text/plain",
+      "size" : 5
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "get_lanforge_data::0",
+    "time" : {
+      "start" : 1631670518872,
+      "stop" : 1631670518872,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "radius_info::0",
+    "time" : {
+      "start" : 1631670518753,
+      "stop" : 1631670518753,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "instantiate_profile::0",
+    "time" : {
+      "start" : 1631670518791,
+      "stop" : 1631670518791,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "setup_influx::0",
+    "time" : {
+      "start" : 1631670518872,
+      "stop" : 1631670518872,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_ap_logs::collect_logs",
+    "time" : {
+      "start" : 1631670119922,
+      "stop" : 1631670133987,
+      "duration" : 14065
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "fb4d51aea7518ae5",
+      "name" : "logread",
+      "source" : "fb4d51aea7518ae5.attach",
+      "type" : "text/plain",
+      "size" : 6211
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  }, {
+    "name" : "get_security_flags::0",
+    "time" : {
+      "start" : 1631670518787,
+      "stop" : 1631670518788,
+      "duration" : 1
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_vif_state::0",
+    "time" : {
+      "start" : 1631670512648,
+      "stop" : 1631670512648,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_configuration::0",
+    "time" : {
+      "start" : 1631670518907,
+      "stop" : 1631670518907,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "testbed::0",
+    "time" : {
+      "start" : 1631670518931,
+      "stop" : 1631670518931,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "get_markers::0",
+    "time" : {
+      "start" : 1631670518777,
+      "stop" : 1631670518777,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  }, {
+    "name" : "fixtures_ver::0",
+    "time" : {
+      "start" : 1631670518852,
+      "stop" : 1631670518852,
+      "duration" : 0
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "labels" : [ {
+    "name" : "feature",
+    "value" : "vlan MODE CLIENT CONNECTIVITY"
+  }, {
+    "name" : "story",
+    "value" : "open 5 GHZ Band"
+  }, {
+    "name" : "tag",
+    "value" : "wpa3_personal"
+  }, {
+    "name" : "tag",
+    "value" : "vlan"
+  }, {
+    "name" : "tag",
+    "value" : "fiveg"
+  }, {
+    "name" : "tag",
+    "value" : "sanity"
+  }, {
+    "name" : "tag",
+    "value" : "suiteB"
+  }, {
+    "name" : "tag",
+    "value" : "@pytest.mark.usefixtures('setup_profiles')"
+  }, {
+    "name" : "tag",
+    "value" : "uc_sanity"
+  }, {
+    "name" : "tag",
+    "value" : "ucentral"
+  }, {
+    "name" : "tag",
+    "value" : "general"
+  }, {
+    "name" : "tag",
+    "value" : "client_connectivity"
+  }, {
+    "name" : "parentSuite",
+    "value" : "e2e.basic.validation_of_operating_modes.vlan_mode.client_connectivity"
+  }, {
+    "name" : "suite",
+    "value" : "test_general_security_modes"
+  }, {
+    "name" : "subSuite",
+    "value" : "TestvlanModeConnectivitySuiteTwo"
+  }, {
+    "name" : "host",
+    "value" : "testing-139-zh76k"
+  }, {
+    "name" : "thread",
+    "value" : "6-MainThread"
+  }, {
+    "name" : "framework",
+    "value" : "pytest"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "package",
+    "value" : "e2e.basic.validation_of_operating_modes.vlan_mode.client_connectivity.test_general_security_modes"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ {
+    "name" : "setup_profiles",
+    "value" : "{'mode': 'VLAN', 'ssid_modes': {'wpa3_personal': [{'ssid_name': 'ssid_wpa3_p_2g', 'appliedRadios': ['2G'], 'security_key': 'something', 'vlan': 100, 'security': 'sae'}, {'ssid_name': 'ssid_wpa3_p_5g', 'appliedRadios': ['5G'], 'security_key': 'something', 'vlan': 100, 'security': 'sae'}], 'wpa3_personal_mixed': [{'ssid_name': 'ssid_wpa3_p_m_2g', 'appliedRadios': ['2G'], 'security_key': 'something', 'vlan': 100, 'security': 'sae-mixed'}, {'ssid_name': 'ssid_wpa3_p_m_5g', 'appliedRadios': ['5G'], 'security_key': 'something', 'vlan': 100, 'security': 'sae-mixed'}], 'wpa_wpa2_personal_mixed': [{'ssid_name': 'ssid_wpa_wpa2_p_m_2g', 'appliedRadios': ['2G'], 'security_key': 'something', 'vlan': 100, 'security': 'psk-mixed'}, {'ssid_name': 'ssid_wpa_wpa2_p_m_5g', 'appliedRadios': ['5G'], 'security_key': 'something', 'vlan': 100, 'security': 'psk-mixed'}]}, 'rf': {}, 'radius': False}"
+  } ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ {
+      "name" : "Test defects",
+      "matchedStatuses" : [ ],
+      "flaky" : false
+    } ],
+    "history" : {
+      "statistic" : {
+        "failed" : 7,
+        "broken" : 10,
+        "skipped" : 2,
+        "passed" : 42,
+        "unknown" : 0,
+        "total" : 61
+      },
+      "items" : [ {
+        "uid" : "6d4b508cb7ce18fb",
+        "status" : "passed",
+        "time" : {
+          "start" : 1631649155314,
+          "stop" : 1631649237609,
+          "duration" : 82295
+        }
+      }, {
+        "uid" : "59d1e355457dd7f",
+        "status" : "passed",
+        "time" : {
+          "start" : 1631600335441,
+          "stop" : 1631600491608,
+          "duration" : 156167
+        }
+      }, {
+        "uid" : "6f5194b33016e46a",
+        "status" : "passed",
+        "time" : {
+          "start" : 1631588000115,
+          "stop" : 1631588153849,
+          "duration" : 153734
+        }
+      }, {
+        "uid" : "62e9ebf5efabaf98",
+        "status" : "passed",
+        "time" : {
+          "start" : 1631569488566,
+          "stop" : 1631569632474,
+          "duration" : 143908
+        }
+      }, {
+        "uid" : "8a4fca046ca0eeb",
+        "status" : "passed",
+        "time" : {
+          "start" : 1631501943905,
+          "stop" : 1631502093462,
+          "duration" : 149557
+        }
+      }, {
+        "uid" : "c663f232bfd4d8ba",
+        "status" : "passed",
+        "time" : {
+          "start" : 1631465577618,
+          "stop" : 1631465711012,
+          "duration" : 133394
+        }
+      }, {
+        "uid" : "6b14dd95b4c28035",
+        "status" : "passed",
+        "time" : {
+          "start" : 1631408344424,
+          "stop" : 1631408456550,
+          "duration" : 112126
+        }
+      }, {
+        "uid" : "80ea3c4c0f65ff70",
+        "status" : "passed",
+        "time" : {
+          "start" : 1631350848530,
+          "stop" : 1631350950637,
+          "duration" : 102107
+        }
+      }, {
+        "uid" : "9deae1acfa2eb30a",
+        "status" : "passed",
+        "time" : {
+          "start" : 1631327859788,
+          "stop" : 1631327986348,
+          "duration" : 126560
+        }
+      }, {
+        "uid" : "674cb4141978f236",
+        "status" : "passed",
+        "time" : {
+          "start" : 1631240280188,
+          "stop" : 1631240375962,
+          "duration" : 95774
+        }
+      }, {
+        "uid" : "31df9efb26ebf25c",
+        "status" : "passed",
+        "time" : {
+          "start" : 1631198607916,
+          "stop" : 1631198701614,
+          "duration" : 93698
+        }
+      }, {
+        "uid" : "fa433d910c62b038",
+        "status" : "passed",
+        "time" : {
+          "start" : 1631152191410,
+          "stop" : 1631152274544,
+          "duration" : 83134
+        }
+      }, {
+        "uid" : "20d619c33a6a896c",
+        "status" : "passed",
+        "time" : {
+          "start" : 1631064620520,
+          "stop" : 1631064701522,
+          "duration" : 81002
+        }
+      }, {
+        "uid" : "9c748ffab09a7c83",
+        "status" : "passed",
+        "time" : {
+          "start" : 1631028516555,
+          "stop" : 1631028599225,
+          "duration" : 82670
+        }
+      }, {
+        "uid" : "bd1c6e39ad7892f7",
+        "status" : "passed",
+        "time" : {
+          "start" : 1631022564975,
+          "stop" : 1631022645775,
+          "duration" : 80800
+        }
+      }, {
+        "uid" : "def5d186223320d3",
+        "status" : "passed",
+        "time" : {
+          "start" : 1630979466819,
+          "stop" : 1630979547409,
+          "duration" : 80590
+        }
+      }, {
+        "uid" : "ab09fe77d7fb8f7e",
+        "status" : "passed",
+        "time" : {
+          "start" : 1630893607111,
+          "stop" : 1630893686696,
+          "duration" : 79585
+        }
+      }, {
+        "uid" : "556230bf46d9de1a",
+        "status" : "passed",
+        "time" : {
+          "start" : 1630807019791,
+          "stop" : 1630807098371,
+          "duration" : 78580
+        }
+      }, {
+        "uid" : "d75f7f2bbf69b6b6",
+        "status" : "passed",
+        "time" : {
+          "start" : 1630766144647,
+          "stop" : 1630766231450,
+          "duration" : 86803
+        }
+      }, {
+        "uid" : "fe5cb6cacec05af9",
+        "status" : "passed",
+        "time" : {
+          "start" : 1630633671293,
+          "stop" : 1630633749253,
+          "duration" : 77960
+        }
+      } ]
+    },
+    "tags" : [ "ucentral", "@pytest.mark.usefixtures('setup_profiles')", "general", "vlan", "suiteB", "sanity", "client_connectivity", "fiveg", "wpa3_personal", "uc_sanity" ]
+  },
+  "source" : "acbfe1775e2b1f6a.json",
+  "parameterValues" : [ "{'mode': 'VLAN', 'ssid_modes': {'wpa3_personal': [{'ssid_name': 'ssid_wpa3_p_2g', 'appliedRadios': ['2G'], 'security_key': 'something', 'vlan': 100, 'security': 'sae'}, {'ssid_name': 'ssid_wpa3_p_5g', 'appliedRadios': ['5G'], 'security_key': 'something', 'vlan': 100, 'security': 'sae'}], 'wpa3_personal_mixed': [{'ssid_name': 'ssid_wpa3_p_m_2g', 'appliedRadios': ['2G'], 'security_key': 'something', 'vlan': 100, 'security': 'sae-mixed'}, {'ssid_name': 'ssid_wpa3_p_m_5g', 'appliedRadios': ['5G'], 'security_key': 'something', 'vlan': 100, 'security': 'sae-mixed'}], 'wpa_wpa2_personal_mixed': [{'ssid_name': 'ssid_wpa_wpa2_p_m_2g', 'appliedRadios': ['2G'], 'security_key': 'something', 'vlan': 100, 'security': 'psk-mixed'}, {'ssid_name': 'ssid_wpa_wpa2_p_m_5g', 'appliedRadios': ['5G'], 'security_key': 'something', 'vlan': 100, 'security': 'psk-mixed'}]}, 'rf': {}, 'radius': False}" ]
+}
